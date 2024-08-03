@@ -1,0 +1,13 @@
+a {
+  text-decoration: none;
+}
+
+.footer-link {
+  transition: 0.4s;
+}
+
+.footer-link:hover {
+  color: #fff !important;
+  cursor: pointer;
+  margin-left: 8px;
+}
