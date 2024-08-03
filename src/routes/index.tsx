@@ -1,27 +1,11 @@
-import Home from "../pages/home/Home";
-import AddRoom from "../pages/room/AddRoom";
-import EditRoom from "../pages/room/EditRoom";
-import ExistingRooms from "../pages/room/ExistingRooms";
+// Pages
+import { useLocation } from "react-router-dom";
+import { Fragment } from "react/jsx-runtime";
 
-const publicRoutes: any[] = [
+const publicRoutes = [
   {
     path: "/",
-    component: Home,
-    layout: "default",
-  },
-  {
-    path: "/rooms/existing",
-    component: ExistingRooms,
-    layout: "default",
-  },
-  {
-    path: "/rooms/add",
-    component: AddRoom,
-    layout: "default",
-  },
-  {
-    path: "/rooms/edit/:roomId",
-    component: EditRoom,
+    component: Fragment,
     layout: "default",
   },
 ];

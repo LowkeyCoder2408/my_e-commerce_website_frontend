@@ -2,18 +2,15 @@ import React, { Fragment } from "react";
 import { ToastContainer } from "react-toastify";
 import { ConfirmProvider } from "material-ui-confirm";
 import "./App.css";
-import AddRoom from "./pages/room/AddRoom";
 import "react-toastify/dist/ReactToastify.css";
-import ExistingRooms from "./pages/room/ExistingRooms";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import ScrollToTop from "./utils/ScrollToTop";
 import { publicRoutes } from "./routes";
-import DefaultLayout from "./layout/DefaultLayout";
+import DefaultLayout from "./components/layout/DefaultLayout";
 
 function MyRoutes() {
   return (
     <ConfirmProvider>
-      <ScrollToTop />
+      {/* <ScrollToTop /> */}
       <div className="App">
         <Routes>
           {publicRoutes.map((route, index) => {
