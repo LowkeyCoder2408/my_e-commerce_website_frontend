@@ -1,0 +1,37 @@
+.brand-area {
+  margin-top: 60px !important;
+}
+
+.brand-area-list {
+  transition: 0.3s;
+  border-radius: 1px;
+  margin-top: 40px;
+}
+
+.brand-area-list:hover .brand-area-item-img {
+  filter: grayscale(100%);
+}
+
+.brand-area-item {
+  display: block;
+  height: 125px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  filter: none;
+}
+
+.brand-area-item-img:nth-child(1) {
+  width: 70%;
+  object-fit: contain;
+}
+
+.brand-area-item-img {
+  transition: filter 0.3s ease;
+  height: 60%;
+  filter: none;
+}
+
+.brand-area-item:hover .brand-area-item-img {
+  filter: none;
+}

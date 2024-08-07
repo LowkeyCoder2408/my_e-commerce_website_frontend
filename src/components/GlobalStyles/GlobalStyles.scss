@@ -1,0 +1,75 @@
+@import 'normalize.css';
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
+
+:root {
+  --black: #000;
+  --primary: #fe2c55;
+  --default-layout-header-height: 60px;
+  --default-layout-width: 1150px;
+  --text-color: #333;
+  /* BG */
+  --main-bg: #2a3447;
+  --soft-bg: #384256;
+  --dark-bg: #222b3c;
+
+  /* TEXT */
+  --main-color: white;
+  --soft-color: #ddd;
+  --dark-color: #2a3447;
+
+  --navbar-height: 90px;
+  --logo-image-height: 70px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.6rem;
+  line-height: 1.5;
+  text-rendering: optimizeSpeed;
+}
+
+a {
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:focus {
+  color: var(--soft-color);
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+ul,
+li,
+ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+img {
+  max-width: 100%;
+}
