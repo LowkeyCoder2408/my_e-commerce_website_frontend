@@ -13,6 +13,7 @@ async function getCategories(url: string): Promise<ResultInterface> {
   const result: CategoryModel[] = responseData.map((data: any) => ({
     id: data.id,
     name: data.name,
+    alias: data.alias,
     image: data.image,
     enabled: data.enabled,
     brandIds: data.brandIds,

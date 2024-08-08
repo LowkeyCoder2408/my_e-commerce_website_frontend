@@ -9,7 +9,7 @@ import { getAllCategories } from '../../../../api/CategoryAPI';
 const cx = classNames.bind(styles);
 
 function Header() {
-  const [categoryList, setCategoryList] = useState<CategoryModel[]>([]);
+  const [categories, setCategories] = useState<CategoryModel[]>([]);
   const [isCategoryClose, setIsCategoryClose] = useState(true);
   const [isAccessoryClose, setIsAccessoryClose] = useState(true);
   const [isSearchClose, setIsSearchClose] = useState(true);
@@ -51,7 +51,7 @@ function Header() {
     setIsSidebarClose(true);
     setIsSearchClose(true);
     getAllCategories().then((result) => {
-      setCategoryList(result.categories);
+      setCategories(result.categories);
     });
   }, [pathname]);
 
@@ -85,7 +85,7 @@ function Header() {
 
   return (
     <div className="container-fluid p-0 bg-white">
-      <div className="container p-0">
+      <div className="container">
         <nav className={cx('navbar-area')}>
           <div className={cx('navbar')}>
             <i
@@ -136,11 +136,11 @@ function Header() {
                     ></i>
                   </a>
                   <ul className={cx('accessory-menu', 'sub-menu')}>
-                    {categoryList.map((category, index) => (
+                    {categories.map((category, index) => (
                       <li key={index}>
                         <Link
                           className={cx('link-cat', 'text-dark')}
-                          to={`/product-list/${category.id}`}
+                          to={`/product-list/${category.alias}`}
                         >
                           {category.name}
                         </Link>

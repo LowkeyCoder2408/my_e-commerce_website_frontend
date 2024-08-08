@@ -121,7 +121,7 @@ function Information() {
                 src={getAvatarByToken()}
                 sx={{ width: 30, height: 30 }}
               /> */}
-          <div className={cx('btn-group')}>
+          {/* <div className={cx('btn-group')}>
             <button
               style={{ backgroundColor: 'transparent' }}
               className={cx('dropdown-toggle')}
@@ -149,26 +149,26 @@ function Information() {
                 </button>
               </li>
 
-              {/* <li
-                    style={{
-                      fontSize: '15px',
-                      padding: '4px 6px',
-                      color: '#666',
-                    }}
+              <li
+                style={{
+                  fontSize: '15px',
+                  padding: '4px 6px',
+                  color: '#666',
+                }}
+              >
+                <Link to={'/wish-list'}>
+                  <button
+                    className="dropdown-item d-flex gap-3 align-items-center"
+                    type="button"
                   >
-                    <Link to={'/wish-list'}>
-                      <button
-                        className="dropdown-item d-flex gap-3 align-items-center"
-                        type="button"
-                      >
-                        <FontAwesomeIcon
-                          style={{ width: '12px', height: '12px' }}
-                          icon={faList as IconProp}
-                        />
-                        Sản phẩm yêu thích
-                      </button>
-                    </Link>
-                  </li> */}
+                    <FontAwesomeIcon
+                      style={{ width: '12px', height: '12px' }}
+                      icon={faList as IconProp}
+                    />
+                    Sản phẩm yêu thích
+                  </button>
+                </Link>
+              </li>
               <li
                 style={{
                   fontSize: '15px',
@@ -253,7 +253,7 @@ function Information() {
                 </button>
               </li>
             </ul>
-          </div>
+          </div> */}
         </div>
         {/* )}  */}
       </div>

@@ -1,0 +1,28 @@
+.service__list {
+  border: 2px solid #d1d1d1;
+  border-radius: 10px;
+  margin: 0;
+}
+
+.service__item-wrapper {
+  padding: 0 !important;
+}
+
+.service__item {
+  gap: 25px;
+  padding: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.service__item img {
+  margin-left: 10px !important;
+  width: 40px;
+  height: 35px;
+}
+
+.service__item-description {
+  display: block;
+  width: 240px;
+}

@@ -100,6 +100,104 @@ export async function getAllFilteredProducts(
   return getProducts(url);
 }
 
+export async function findProductsByCategoryId(
+  categoryId: number,
+): Promise<ProductModel[]> {
+  const url = `${backendEndpoint}/products/findByCategoryId?categoryId=${categoryId}`;
+
+  const responseData = await myRequest(url);
+
+  const result = responseData.map((data: any) => ({
+    id: data.id,
+    name: data.name,
+    alias: data.alias,
+    shortDescription: data.shortDescription,
+    listedPrice: data.listedPrice,
+    weight: data.weight,
+    mainImage: data.mainImage,
+    category: data.category,
+    brand: data.brand,
+    images: data.images,
+    fullDescription: data.fullDescription,
+    createdTime: data.createdTime,
+    updatedTime: data.updatedTime,
+    enabled: data.enabled,
+    quantity: data.quantity,
+    soldQuantity: data.soldQuantity,
+    currentPrice: data.currentPrice,
+    discountPercent: data.discountPercent,
+    length: data.length,
+    width: data.width,
+    height: data.height,
+    operatingSystem: data.operatingSystem,
+    mainImagePublicId: data.mainImagePublicId,
+    ratingCount: data.ratingCount,
+    averageRating: data.averageRating,
+  }));
+
+  return result;
+}
+
+export function getTotalProductQuantity(products: ProductModel[]): number {
+  let totalQuantity = 0;
+  for (const product of products) {
+    if (product.quantity) {
+      totalQuantity += product.quantity;
+    }
+  }
+  return totalQuantity;
+}
+
+export async function getDealProducts(
+  totalElements: number,
+): Promise<ProductModel[]> {
+  const url: string =
+    backendEndpoint +
+    `/products/findProductsByPriceDifferencePrice?size=${totalElements}`;
+
+  const responseData = await myRequest(url);
+
+  const result = responseData.map((data: any) => ({
+    id: data.id,
+    name: data.name,
+    alias: data.alias,
+    shortDescription: data.shortDescription,
+    listedPrice: data.listedPrice,
+    weight: data.weight,
+    mainImage: data.mainImage,
+    category: data.category,
+    brand: data.brand,
+    images: data.images,
+    fullDescription: data.fullDescription,
+    createdTime: data.createdTime,
+    updatedTime: data.updatedTime,
+    enabled: data.enabled,
+    quantity: data.quantity,
+    soldQuantity: data.soldQuantity,
+    currentPrice: data.currentPrice,
+    discountPercent: data.discountPercent,
+    length: data.length,
+    width: data.width,
+    height: data.height,
+    operatingSystem: data.operatingSystem,
+    mainImagePublicId: data.mainImagePublicId,
+    ratingCount: data.ratingCount,
+    averageRating: data.averageRating,
+  }));
+
+  return result;
+}
+
+export async function getTopSoldProducts(
+  totalElements: number,
+): Promise<ResultInterface> {
+  const url: string =
+    backendEndpoint +
+    `/products?sortBy=soldQuantity&sortDir=desc&size=${totalElements}`;
+
+  return getProducts(url);
+}
+
 // export async function findProducts(
 //   size: number,
 //   keyword: string,
@@ -278,49 +376,12 @@ export async function getAllFilteredProducts(
 //   return getProducts(url);
 // }
 
-// export async function getDealProducts(
-//   totalElements: number,
-// ): Promise<ResultInterface> {
-//   const url: string =
-//     backendEndpoint +
-//     `/product/search/findProductsByPriceDifferencePrice?size=${totalElements}`;
-
-//   return getProducts(url);
-// }
-
 // // http://localhost:8080/product/search/findByBrand_Id?brandId=12
 
 // export async function findProductsByBrandId(
 //   brandId: number,
 // ): Promise<ResultInterface> {
 //   const url = `${backendEndpoint}/product/search/findByBrand_Id?brandId=${brandId}`;
-
-//   return getProducts(url);
-// }
-
-// export async function findProductsByCategoryId(
-//   categoryId: number,
-// ): Promise<ResultInterface> {
-//   const url = `${backendEndpoint}/product/search/findByCategory_Id?categoryId=${categoryId}&size=1000`;
-
-//   return getProducts(url);
-// }
-
-// export function getTotalProductQuantity(products: ProductModel[]): number {
-//   let totalQuantity = 0;
-//   for (const product of products) {
-//     if (product.quantity) {
-//       totalQuantity += product.quantity;
-//     }
-//   }
-//   return totalQuantity;
-// }
-
-// export async function getTopSoldProducts(
-//   totalElements: number,
-// ): Promise<ResultInterface> {
-//   const url: string =
-//     backendEndpoint + `/product?sort=soldQuantity,desc&size=${totalElements}`;
 
 //   return getProducts(url);
 // }

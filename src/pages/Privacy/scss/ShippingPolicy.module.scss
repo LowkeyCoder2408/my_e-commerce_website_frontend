@@ -1,0 +1,15 @@
+.shipping-policy {
+  border-radius: 5px;
+  margin-top: 30px;
+  padding: 30px;
+  line-height: 2.8rem;
+  text-align: justify;
+}
+
+.shipping-policy ul {
+  padding-left: 2rem !important;
+}
+
+.shipping-policy:hover {
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}

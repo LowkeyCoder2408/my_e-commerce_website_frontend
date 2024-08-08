@@ -1,0 +1,103 @@
+.contact {
+  margin-top: 30px;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 10px;
+  line-height: 2.8rem;
+  transition: 0.3s;
+}
+
+.contact:hover {
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.contact__info {
+  text-align: center;
+  line-height: 1.6;
+}
+
+.contact__item {
+  margin-top: 30px;
+}
+
+.contact__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  color: #000;
+}
+
+.contact__title span {
+  color: #000;
+  font-weight: 700;
+}
+
+.contact__desc {
+  color: #666;
+  font-size: 16px;
+}
+
+.question__heading {
+  font-size: 2.5rem;
+  font-weight: 600;
+  padding: 0;
+}
+
+.question__form {
+  margin-top: 30px;
+}
+
+.question__form label {
+  font-weight: 700;
+}
+
+.question-form__field {
+  display: inline-block;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  width: 100%;
+  min-height: 40px;
+  padding: 0 15px;
+  font-family: 'Nunito Sans', sans-serif;
+  word-spacing: 3px;
+  letter-spacing: 0.8px;
+  font-weight: 500;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  transition: 0.5s;
+}
+
+.question-form__field::placeholder {
+  letter-spacing: 0;
+  font-size: 1.6rem;
+}
+
+.question-form__question {
+  padding: 20px 15px;
+  height: 128px;
+  resize: none;
+}
+
+.question-form__field:focus {
+  border: 2px solid #000;
+  outline: none;
+}
+
+.question-form__btn {
+  margin-bottom: 20px;
+  padding: 8px 50px;
+  font-weight: 700;
+  font-size: 16px;
+  text-align: center;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  transition: 0.25s;
+  cursor: pointer;
+}
+
+.contact__map iframe {
+  width: 100%;
+  height: 500px;
+}

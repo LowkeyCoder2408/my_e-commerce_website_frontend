@@ -1,0 +1,23 @@
+.product-details__rating {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 5px;
+}
+
+.product-details__rating svg {
+  color: #f5c31a;
+  font-size: 1.4rem;
+  margin-bottom: 4px;
+}
+
+.product-details__rating-count,
+.product-details__rating-quantity {
+  font-size: 1.6rem;
+  margin: 0 5px;
+}
+
+.product-details__rating-count {
+  color: #000;
+  font-weight: 500;
+}

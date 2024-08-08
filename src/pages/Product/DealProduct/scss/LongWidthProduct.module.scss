@@ -1,0 +1,120 @@
+.long-width-product {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: calc(500px / 6);
+  border-radius: 5px;
+  transition: 0.8s;
+  padding: 5px 15px 5px 0;
+}
+
+.long-width-product:hover {
+  scale: 1.03;
+}
+
+.long-width-product__icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 25%;
+}
+
+.long-width-product__img {
+  height: 60px;
+  width: 60px;
+  border: 1px solid #d4d4d4;
+  border-radius: 3px;
+  object-fit: contain;
+}
+
+.long-width-product__info__collection {
+  font-size: 14px;
+  display: flex;
+  gap: 5px;
+}
+
+.long-width-product__info__collection-name {
+  text-decoration: none;
+  color: #000;
+  text-transform: uppercase;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  transition: all 0.3s ease;
+  margin-bottom: -5px;
+}
+
+.long-width-product__info__collection span {
+  color: #999999;
+}
+
+.long-width-product__info__rate {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 7px;
+  margin-top: 2px;
+  font-size: 1.4rem;
+}
+
+.long-width-product__rating-quantity {
+  margin-top: 2px;
+  font-size: 1.3rem;
+}
+
+.long-width-product__info {
+  width: 75%;
+}
+
+.long-width-product-progress {
+  position: relative;
+  margin-top: 10px;
+}
+
+.long-width-product-progress-quantity {
+  font-size: 1.3rem;
+  font-weight: 500;
+  margin-top: 3px;
+  color: rgb(228, 0, 0);
+}
+
+.long-width-product-progress-bar {
+  /* border: 1px solid #cacaca; */
+  position: relative;
+  background-color: #e7e7e7;
+  height: 4px;
+  border-radius: 24px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.long-width-product-progress-value {
+  background-color: rgb(37, 37, 37);
+  height: 100%;
+}
+
+@media (max-width: 991.98px) {
+  .long-width-product {
+    height: auto;
+    padding: 8px 30px;
+    gap: 20px;
+  }
+  .long-width-product__img {
+    height: 80px;
+    width: 80px;
+  }
+  .long-width-product__info__rate {
+    margin-top: 10px;
+  }
+
+  .long-width-product__info {
+    flex: 1;
+  }
+
+  .long-width-product__icon {
+    justify-content: initial;
+    width: auto;
+  }
+}

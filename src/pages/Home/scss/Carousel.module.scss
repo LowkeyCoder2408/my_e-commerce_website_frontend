@@ -1,0 +1,34 @@
+.carousel-indicator-scss {
+  height: 3px !important;
+  width: 35px !important;
+}
+
+@media ((min-width: 1200px)) {
+  :root {
+    --slider-height: 420px;
+  }
+}
+
+@media ((min-width: 992px) and (max-width: 1200px)) {
+  :root {
+    --slider-height: 330px;
+  }
+}
+
+@media ((min-width: 768px) and (max-width: 992px)) {
+  :root {
+    --slider-height: 250px;
+  }
+}
+
+@media ((min-width: 576px) and (max-width: 768px)) {
+  :root {
+    --slider-height: 200px;
+  }
+}
+
+@media (max-width: 576px) {
+  :root {
+    --slider-height: 150px;
+  }
+}

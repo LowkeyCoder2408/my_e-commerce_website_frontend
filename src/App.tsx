@@ -5,11 +5,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { publicRoutes } from './routes';
 import DefaultLayout from './components/layout/DefaultLayout/DefaultLayout';
+import ScrollToTop from './utils/ScrollToTop';
 
 function App() {
   return (
     <BrowserRouter>
       <ConfirmProvider>
+        <ScrollToTop />
         <div className="App">
           <Routes>
             {publicRoutes.map((route, index) => {
