@@ -39,9 +39,11 @@ function Information() {
     <div className="container-fluid bg-dark text-white">
       <div className="container">
         <div className="row">
-          <div className="col-md-6 col-sm-6 col-xs-12 text-center-mobile py-3 d-flex align-items-center">
+          <div
+            className={`${cx('text-center-mobile')} col-md-6 col-sm-6 col-xs-12 py-3 d-flex align-items-center`}
+          >
             <span>
-              Free ship trên toàn quốc | Miễn ship với hóa đơn từ{' '}
+              Miễn ship trên toàn quốc và đối với hóa đơn từ{' '}
               <strong>5.000.000đ</strong> (ngoại quốc)
             </span>
           </div>

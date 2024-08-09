@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import styles from './scss/DealProduct.module.scss';
-import ProductItem from './components/ProductItem';
+import ProductItem from './components/DealProductItem';
 import { toast } from 'react-toastify';
-import LongWidthProduct from './components/LongWidthProduct';
+import BestSellingProduct from './components/BestSellingProduct';
 import ProductModel from '../../../models/ProductModel';
 import { getDealProducts, getTopSoldProducts } from '../../../api/ProductAPI';
 import classNames from 'classnames/bind';
@@ -113,7 +113,7 @@ const DealProduct = () => {
           <div className={cx('deals__header')}>
             <h1 className={cx('deals__title')}>Siêu sale trong tuần</h1>
           </div>
-          <div className={`${cx('deals__body')} bg-white`}>
+          <div className={`${cx('deals__body')} bg-white border`}>
             <div
               data-time="00:00"
               className={cx('deals__countdown')}
@@ -157,7 +157,7 @@ const DealProduct = () => {
           </div>
           <div className={`${cx('top-selling__list')} bg-white`}>
             {topSoldProductList.map((brand) => (
-              <LongWidthProduct key={brand.id} product={brand} />
+              <BestSellingProduct key={brand.id} product={brand} />
             ))}
           </div>
         </div>

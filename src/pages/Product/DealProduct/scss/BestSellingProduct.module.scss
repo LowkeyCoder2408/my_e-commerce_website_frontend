@@ -57,11 +57,13 @@
   gap: 7px;
   margin-top: 2px;
   font-size: 1.4rem;
+  color: #000;
 }
 
 .long-width-product__rating-quantity {
   margin-top: 2px;
   font-size: 1.3rem;
+  color: #000;
 }
 
 .long-width-product__info {
@@ -117,4 +119,8 @@
     justify-content: initial;
     width: auto;
   }
+}
+
+.rating {
+  height: 25px;
 }

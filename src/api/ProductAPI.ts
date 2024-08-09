@@ -198,6 +198,26 @@ export async function getTopSoldProducts(
   return getProducts(url);
 }
 
+export async function getHottestProducts(
+  totalElements: number,
+): Promise<ResultInterface> {
+  const url: string =
+    backendEndpoint +
+    `/products?sortBy=averageRating&sortDir=desc&size=${totalElements}`;
+
+  return getProducts(url);
+}
+
+export async function getNewestProducts(
+  totalElements: number,
+): Promise<ResultInterface> {
+  const url: string =
+    backendEndpoint +
+    `/products?sortBy=createdTime&sortDir=desc&size=${totalElements}`;
+
+  return getProducts(url);
+}
+
 // export async function findProducts(
 //   size: number,
 //   keyword: string,
@@ -355,25 +375,6 @@ export async function getTopSoldProducts(
 //     console.log('Damn,', error);
 //     return null;
 //   }
-// }
-
-// export async function getNewestProducts(
-//   totalElements: number,
-// ): Promise<ResultInterface> {
-//   const url: string =
-//     backendEndpoint + `/product?sort=id,desc&size=${totalElements}`;
-
-//   return getProducts(url);
-// }
-
-// export async function getHottestProducts(
-//   totalElements: number,
-// ): Promise<ResultInterface> {
-//   const url: string =
-//     backendEndpoint +
-//     `/product?sort=averageRating,desc&size=${totalElements}`;
-
-//   return getProducts(url);
 // }
 
 // // http://localhost:8080/product/search/findByBrand_Id?brandId=12

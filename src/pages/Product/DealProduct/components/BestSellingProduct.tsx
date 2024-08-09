@@ -1,17 +1,16 @@
 import classNames from 'classnames/bind';
 import ProductModel from '../../../../models/ProductModel';
-import styles from '../scss/LongWidthProduct.module.scss';
-// import ProductRating from '../../../../../ProductList/components/ProductDetail/components/ProductRating';
+import styles from '../scss/BestSellingProduct.module.scss';
 import { Link } from 'react-router-dom';
 import ProductRating from '../../ProductRating/ProductRating';
 
 const cx = classNames.bind(styles);
 
-interface LongWidthProductProps {
+interface BestSellingProductProps {
   product: ProductModel;
 }
 
-const LongWidthProduct = (props: LongWidthProductProps) => {
+const BestSellingProduct = (props: BestSellingProductProps) => {
   const percentageSold =
     props.product.soldQuantity && props.product.quantity
       ? (props.product.soldQuantity /
@@ -39,12 +38,12 @@ const LongWidthProduct = (props: LongWidthProductProps) => {
         props.product.ratingCount > 0 ? (
           <div className={cx('long-width-product__info__rate')}>
             {props.product.averageRating && (
-              <div
-                className="d-flex justify-content-center align-items-center gap-2"
-                style={{ fontWeight: '520' }}
-              >
-                <ProductRating rating={props.product.averageRating} />(
-                {props.product.averageRating})
+              <div className="d-flex justify-content-center align-items-center gap-2">
+                <ProductRating
+                  rating={props.product.averageRating}
+                  starSize={1.3}
+                />
+                ({props.product.averageRating})
               </div>
             )}
             <div className={cx('long-width-product-progress-quantity')}>
@@ -78,4 +77,4 @@ const LongWidthProduct = (props: LongWidthProductProps) => {
   );
 };
 
-export default LongWidthProduct;
+export default BestSellingProduct;
