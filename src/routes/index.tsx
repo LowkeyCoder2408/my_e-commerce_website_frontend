@@ -8,11 +8,20 @@ import SecurityPolicy from '../pages/Privacy/components/SecurityPolicy';
 import Contact from '../pages/Contact/Contact';
 import FAQ from '../pages/FAQ/FAQ';
 import Home from '../pages/Home/Home';
+import Error403 from '../pages/Exception/Error403';
+import Error404 from '../pages/Exception/Error404';
+import ProductList from '../pages/ProductList/ProductList';
 
 const publicRoutes = [
   {
     path: '/',
     component: Home,
+    layout: 'default',
+  },
+  { path: '/product-list', component: ProductList, layout: 'default' },
+  {
+    path: '/product-list/:categoryAlias',
+    component: ProductList,
     layout: 'default',
   },
   { path: '/about-us', component: AboutUs, layout: 'default' },
@@ -37,6 +46,16 @@ const publicRoutes = [
     path: '/security-policy',
     component: SecurityPolicy,
     layout: 'default',
+  },
+  {
+    path: '/403-error',
+    component: Error403,
+    layout: 'none',
+  },
+  {
+    path: '/404-error',
+    component: Error404,
+    layout: 'none',
   },
 ];
 

@@ -9,6 +9,9 @@ import { getAllCategories } from '../../../../api/CategoryAPI';
 const cx = classNames.bind(styles);
 
 function Header() {
+  const location = useLocation();
+
+  const currentUrl = `${window.location.origin}${location.pathname}${location.search}`;
   const [categories, setCategories] = useState<CategoryModel[]>([]);
   const [isCategoryClose, setIsCategoryClose] = useState(true);
   const [isAccessoryClose, setIsAccessoryClose] = useState(true);
@@ -16,7 +19,6 @@ function Header() {
   const [isSidebarClose, setIsSidebarClose] = useState(true);
   const [keyword, setKeyword] = useState<string>('');
   // const userRoles = getRoleByToken();
-  const pathname = useLocation();
   const navLinksRef = useRef<HTMLDivElement>(null);
   const searchBoxRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -38,13 +40,16 @@ function Header() {
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const queryParams = new URLSearchParams();
-    if (keyword) {
-      queryParams.append('keyword', keyword);
+
+    if (currentUrl.startsWith('http://localhost:3000/product-list')) {
+      const queryParams = new URLSearchParams(location.search);
+      queryParams.set('keyword', keyword);
+      const newUrl = `${location.pathname}?${queryParams.toString()}`;
+      navigate(newUrl);
+    } else {
+      navigate(`/product-list?keyword=${encodeURIComponent(keyword)}`);
     }
-    navigate(
-      `/product-list${queryParams.toString() ? `?${queryParams.toString()}` : ''}`,
-    );
+    setKeyword('');
   };
 
   useEffect(() => {
@@ -53,7 +58,8 @@ function Header() {
     getAllCategories().then((result) => {
       setCategories(result.categories);
     });
-  }, [pathname]);
+    setKeyword('');
+  }, [location]);
 
   useEffect(() => {
     // Kiểm tra nếu form không đóng và input được tìm thấy

@@ -5,7 +5,7 @@ import { faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import ProductModel from '../../../models/ProductModel';
-import Loader from '../Loader/Loader';
+import Loader from '../../../utils/Loader/Loader';
 import { getHottestProducts } from '../../../api/ProductAPI';
 import ProductCard from '../ProductCard/ProductCard';
 import classNames from 'classnames/bind';

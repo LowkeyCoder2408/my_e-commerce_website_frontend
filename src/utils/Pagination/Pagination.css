@@ -1,0 +1,38 @@
+.pagination__navbar {
+  height: 35px !important;
+}
+
+.pagination {
+  display: flex;
+  gap: 10px;
+}
+
+.page-item {
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+.page-link {
+  color: #000000;
+  background-color: transparent;
+  width: 35px;
+  height: 35px;
+  border-radius: 50% !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: 1.6rem;
+  outline: none !important;
+  border: none !important;
+  background-color: #f0f0f0;
+  border: none;
+  outline: none;
+}
+
+.page-link:hover {
+  color: #343a40;
+}
+
+.page-link.active {
+  background-color: #343a40;
+  color: #fff;
+}

@@ -1,4 +1,4 @@
-import { backendEndpoint } from '../utils/Constant';
+import { backendEndpoint } from '../utils/Functions/Constant';
 import ProductModel from '../models/ProductModel';
 import { myRequest } from './MyRequest';
 
@@ -218,67 +218,44 @@ export async function getNewestProducts(
   return getProducts(url);
 }
 
-// export async function findProducts(
-//   size: number,
-//   keyword: string,
-//   categoryIdNumber: number,
-//   page: number,
-//   filter: number,
-//   minPrice: number,
-//   maxPrice: number,
-// ): Promise<ResultInterface> {
-//   if (keyword) {
-//     keyword = keyword.trim();
-//   }
+export async function getAndFindProducts(
+  size: number,
+  keyword: string,
+  categoryAlias: string,
+  page: number,
+  filter: number,
+  minPrice: number,
+  maxPrice: number,
+): Promise<ResultInterface> {
+  const optionToDisplay = `size=${size}&page=${page}`;
+  let url =
+    backendEndpoint +
+    `/products?minPrice=${minPrice}&maxPrice=${maxPrice}&` +
+    optionToDisplay;
 
-//   const optionToDisplay = `size=${size}&page=${page}`;
-
-//   let url =
-//     backendEndpoint +
-//     `/product/search/findByCurrentPriceBetween?minPrice=${minPrice}&maxPrice=${maxPrice}&` +
-//     optionToDisplay;
-//   let filterEndpoint = '';
-//   if (filter === 1) {
-//     filterEndpoint = `sort=id,desc`;
-//   } else if (filter === 2) {
-//     filterEndpoint = `sort=id,asc`;
-//   } else if (filter === 3) {
-//     filterEndpoint = `sort=currentPrice,asc`;
-//   } else if (filter === 4) {
-//     filterEndpoint = `sort=currentPrice,desc`;
-//   } else if (filter === 5) {
-//     filterEndpoint = `sort=discountPercent,desc`;
-//   } else if (filter === 6) {
-//     filterEndpoint = `sort=discountPercent,asc`;
-//   }
-
-//   if (keyword !== '' && categoryIdNumber === 0) {
-//     url =
-//       backendEndpoint +
-//       `/product/search/findByNameContainingAndCurrentPriceBetween?` +
-//       optionToDisplay +
-//       `&productName=${keyword}&minPrice=${minPrice}&maxPrice=${maxPrice}` +
-//       '&' +
-//       filterEndpoint;
-//   } else if (keyword === '' && categoryIdNumber > 0) {
-//     url =
-//       backendEndpoint +
-//       `/product/search/findByCategory_IdAndCurrentPriceBetween?` +
-//       optionToDisplay +
-//       `&categoryId=${categoryIdNumber}&minPrice=${minPrice}&maxPrice=${maxPrice}` +
-//       '&' +
-//       filterEndpoint;
-//   } else {
-//     url =
-//       backendEndpoint +
-//       `/product/search/findByNameContainingAndCategory_IdAndCurrentPriceBetween?` +
-//       optionToDisplay +
-//       `&categoryId=${categoryIdNumber}&productName=${keyword}&minPrice=${minPrice}&maxPrice=${maxPrice}` +
-//       '&' +
-//       filterEndpoint;
-//   }
-//   return getProducts(url);
-// }
+  let filterEndpoint = '';
+  if (filter === 1) {
+    filterEndpoint = `sortBy=createdTime&sortDir=desc`;
+  } else if (filter === 2) {
+    filterEndpoint = `sortBy=createdTime&sortDir=asc`;
+  } else if (filter === 3) {
+    filterEndpoint = `sortBy=currentPrice&sortDir=asc`;
+  } else if (filter === 4) {
+    filterEndpoint = `sortBy=currentPrice&sortDir=desc`;
+  } else if (filter === 5) {
+    filterEndpoint = `sortBy=discountPercent&sortDir=desc`;
+  } else if (filter === 6) {
+    filterEndpoint = `sortBy=discountPercent&sortDir=asc`;
+  }
+  url =
+    backendEndpoint +
+    `/products?` +
+    optionToDisplay +
+    `&categoryAlias=${categoryAlias}&productName=${keyword}&minPrice=${minPrice}&maxPrice=${maxPrice}` +
+    '&' +
+    filterEndpoint;
+  return getProducts(url);
+}
 
 // export async function getProductById(
 //   productId: number,

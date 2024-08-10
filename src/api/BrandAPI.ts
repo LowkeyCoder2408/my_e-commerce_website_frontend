@@ -1,4 +1,4 @@
-import { backendEndpoint } from '../utils/Constant';
+import { backendEndpoint } from '../utils/Functions/Constant';
 import { myRequest } from './MyRequest';
 import BrandModel from '../models/BrandModel';
 

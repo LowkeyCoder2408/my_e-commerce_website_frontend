@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import classNames from 'classnames/bind';
 import ProductModel from '../../../models/ProductModel';
 import { getNewestProducts } from '../../../api/ProductAPI';
-import Loader from '../Loader/Loader';
+import Loader from '../../../utils/Loader/Loader';
 import ProductCard from '../ProductCard/ProductCard';
 
 const cx = classNames.bind(styles);

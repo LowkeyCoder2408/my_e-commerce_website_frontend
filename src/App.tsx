@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { publicRoutes } from './routes';
 import DefaultLayout from './components/layout/DefaultLayout/DefaultLayout';
-import ScrollToTop from './utils/ScrollToTop';
+import ScrollToTop from './utils/Functions/ScrollToTop';
 
 function App() {
   return (

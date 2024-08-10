@@ -7,8 +7,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import styles from './ProductCard.module.scss';
 import { toast } from 'react-toastify';
 import ProductModel from '../../../models/ProductModel';
-import Loader from '../Loader/Loader';
-import FormatPrice from '../../../utils/FormatPrice';
+import Loader from '../../../utils/Loader/Loader';
+import FormatPrice from '../../../utils/Functions/FormatPrice';
 import { getNewestProducts } from '../../../api/ProductAPI';
 import classNames from 'classnames/bind';
 
