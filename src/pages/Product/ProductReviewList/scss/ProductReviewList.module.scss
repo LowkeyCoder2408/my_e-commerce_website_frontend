@@ -1,0 +1,38 @@
+.product-details__review__wrapper {
+  padding: 30px;
+  /* border: 3px solid #001d49; */
+  background-color: #fff;
+  border-radius: 10px;
+  transition: 0.5s;
+  position: relative;
+}
+
+.product-details__review {
+  display: flex;
+  padding: 0;
+  gap: 10px;
+  align-items: center;
+  /* border-bottom: 1px solid #cfcfcf; */
+  border-radius: 10px;
+  margin-bottom: 10px;
+  transition: 0.5s;
+}
+
+.product-details__review__heading {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.7rem;
+  /* font-weight: 600; */
+}
+
+.product-details__review__heading strong {
+  font-size: 2rem;
+  text-transform: uppercase;
+}
+
+.product-details__review__list-wrapper {
+  margin-top: 15px;
+  /* background-color: #999; */
+  height: 450px;
+  overflow-y: scroll;
+}

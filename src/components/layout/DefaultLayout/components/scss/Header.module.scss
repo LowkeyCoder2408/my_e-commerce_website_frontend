@@ -3,7 +3,6 @@
   width: 100%;
   height: var(--navbar-height);
   background-color: #fff;
-  z-index: 5;
 }
 
 .navbar {
@@ -32,6 +31,7 @@
 .nav-links {
   line-height: 60px;
   height: 100%;
+  z-index: 1000 !important;
 }
 
 .links {

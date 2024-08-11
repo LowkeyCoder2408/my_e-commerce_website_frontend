@@ -9,11 +9,6 @@
   border-radius: 5px;
 }
 
-.category-filter__wrapper {
-  /* height: 232px;
-  overflow-y: scroll; */
-}
-
 .category-filter__item a {
   display: block;
   border-radius: 5px;
@@ -33,7 +28,6 @@
 .category-filter__img {
   width: 60px;
   height: 60px;
-  /* background-color: aqua; */
 }
 
 .category-filter__name {
@@ -49,4 +43,5 @@
   overflow: hidden;
   text-overflow: ellipsis;
   margin: 0 !important;
+  color: #000;
 }

@@ -1,11 +1,14 @@
 import React from 'react';
-import './Pagination.css';
+import styles from './Pagination.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import {
   faChevronLeft,
   faChevronRight,
 } from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames/bind';
+
+const cx = classNames.bind(styles);
 
 interface PaginationProps {
   currentPage: number;
@@ -15,31 +18,6 @@ interface PaginationProps {
 
 export const Pagination: React.FC<PaginationProps> = (props) => {
   const pageList = [];
-
-  // if (props.currentPage === 1) {
-  //   pageList.push(props.currentPage);
-  //   if (props.numberOfPage >= props.currentPage + 1) {
-  //     pageList.push(props.currentPage + 1);
-  //   }
-  //   if (props.numberOfPage >= props.currentPage + 2) {
-  //     pageList.push(props.currentPage + 2);
-  //   }
-  // } else if (props.currentPage > 1) {
-  //   if (props.currentPage >= 3) {
-  //     pageList.push(props.currentPage - 2);
-  //   }
-  //   if (props.currentPage >= 2) {
-  //     pageList.push(props.currentPage - 1);
-  //   }
-  //   pageList.push(props.currentPage);
-  //   if (props.numberOfPage >= props.currentPage + 1) {
-  //     pageList.push(props.currentPage + 1);
-  //   }
-  //   if (props.numberOfPage >= props.currentPage + 2) {
-  //     pageList.push(props.currentPage + 2);
-  //   }
-  // }
-
   if (props.currentPage === 1) {
     pageList.push(props.currentPage);
     if (props.numberOfPage >= props.currentPage + 1) {
@@ -64,11 +42,11 @@ export const Pagination: React.FC<PaginationProps> = (props) => {
   return (
     <nav
       aria-label=""
-      className="pagination__navbar bg-transparent d-flex align-items-center"
+      className={`${cx('pagination__navbar')} bg-transparent d-flex align-items-center`}
     >
-      <ul className="pagination">
-        <li onClick={() => props.pagination(1)} className="page-item">
-          <button className="page-link">
+      <ul className={cx('pagination')}>
+        <li onClick={() => props.pagination(1)} className={cx('page-item')}>
+          <button className={cx('page-link')}>
             <FontAwesomeIcon icon={faChevronLeft as IconProp} />
           </button>
         </li>
@@ -78,13 +56,13 @@ export const Pagination: React.FC<PaginationProps> = (props) => {
             onClick={() => {
               props.pagination(page);
             }}
-            className="page-item"
+            className={cx('page-item')}
             key={page}
           >
             <button
-              className={
-                'page-link ' + (props.currentPage === page ? 'active' : '')
-              }
+              className={cx('page-link', {
+                active: props.currentPage === page,
+              })}
             >
               {page}
             </button>
@@ -92,10 +70,10 @@ export const Pagination: React.FC<PaginationProps> = (props) => {
         ))}
 
         <li
-          className="page-item"
+          className={cx('page-item')}
           onClick={() => props.pagination(props.numberOfPage)}
         >
-          <button className="page-link">
+          <button className={cx('page-link')}>
             <FontAwesomeIcon icon={faChevronRight as IconProp} />
           </button>
         </li>

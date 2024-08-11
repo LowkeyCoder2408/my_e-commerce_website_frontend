@@ -2,14 +2,13 @@ import { useEffect, useState } from 'react';
 import ProductModel from '../../models/ProductModel';
 import ProductCard from '../Product/ProductCard/ProductCard';
 import { useLocation, useParams } from 'react-router-dom';
-import './ProductList.css';
 import CategoryFilter from './components/CategoryFilter';
 import {
   getAllFilteredProducts,
   getAndFindProducts,
 } from '../../api/ProductAPI';
-import DropdownOnly from '../../utils/DropdownOnly';
-import { Pagination } from '../../utils/Pagination';
+import DropdownOnly from '../../utils/DropdownOnly/DropdownOnly';
+import { Pagination } from '../../utils/Pagination/Pagination';
 import SliderPriceFilter from './components/SliderPriceFilter';
 import Loader from '../../utils/Loader/Loader';
 
@@ -21,7 +20,6 @@ function ProductList() {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [numberOfPage, setNumberOfPage] = useState(0);
-  const [numberOfProductFound, setNumberOfProductFound] = useState(0);
   const [numberOfProductPerPage, setNumberOfProductPerPage] = useState(8);
   const [numberOfPageTemp, setTotalPageTemp] = useState(numberOfPage);
   const [selected, setSelected] = useState<string>('Chọn cách hiển thị');
@@ -32,9 +30,6 @@ function ProductList() {
   const { categoryAlias } = useParams();
 
   let keyword = queryParams.get('keyword');
-  if (keyword !== null && keyword !== undefined) {
-    keyword = keyword.trim().replace(/[^a-zA-Z0-9]/g, '');
-  }
 
   if (numberOfPageTemp !== numberOfPage) {
     setCurrentPage(1);
@@ -67,7 +62,6 @@ function ProductList() {
           setProductList(result.result);
           setNumberOfPage(result.totalPages);
           setLoading(false);
-          setNumberOfProductFound(result.totalElements);
         })
         .catch((error) => {
           setLoading(false);
@@ -87,7 +81,6 @@ function ProductList() {
           setProductList(result.result);
           setNumberOfPage(result.totalPages);
           setLoading(false);
-          setNumberOfProductFound(result.totalElements);
         })
         .catch((error) => {
           setLoading(false);
@@ -170,15 +163,8 @@ function ProductList() {
     }
   };
 
-  // const myObject: CartItemModel = {
-  //   customerId: 1,
-  //   id: 1,
-  //   product: productList[2],
-  //   quantity: 3,
-  // };
-
   return (
-    <div className="container prodict-list__wrapper">
+    <div className="container" style={{ marginTop: '30px' }}>
       <div className="row" style={{ marginTop: '50px' }}>
         <div className="col-xxl-3 col-xl-3 col-lg-4 col-12 mb-5">
           <div className="row">
@@ -189,11 +175,10 @@ function ProductList() {
                 handleSelectChange={handleSortSelectChange}
                 options={[
                   'Sản phẩm từ mới - cũ',
-                  'Sản phẩm từ cũ - mới',
-                  'Tăng dần (theo giá)',
-                  'Giảm dần (theo giá)',
-                  'Tỉ lệ giảm từ cao - thấp',
-                  'Tỉ lệ giảm từ thấp - cao',
+                  'Sản phẩm được đánh giá tốt',
+                  'Sản phẩm giá tốt',
+                  'Sản phẩm bán chạy',
+                  'Sản phẩm giảm nhiều (theo tỉ lệ)',
                 ]}
                 style={{ width: '100%' }}
               />
@@ -223,43 +208,43 @@ function ProductList() {
         </div>
         <div className="col-xxl-9 col-xl-9 col-lg-8 col-12">
           <div className="row">
-            <div className="d-flex justify-content-between align-items-center mb-5">
-              <Pagination
-                currentPage={currentPage}
-                numberOfPage={numberOfPage}
-                pagination={pagination}
-              />
-              <DropdownOnly
-                selected={selected}
-                setSelected={setSelected}
-                handleSelectChange={handleDisplaySelectChange}
-                options={[
-                  '8 sản phẩm/trang',
-                  '12 sản phẩm/trang',
-                  '16 sản phẩm/trang',
-                ]}
-                style={{ width: '340px' }}
-              />
-            </div>
-            {numberOfProductFound > 0 ? (
-              productList.map((product) => (
-                <div
-                  key={product.id}
-                  className="col-xxl-3 col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6"
-                >
-                  <ProductCard key={product.id} product={product} />
+            {productList.length > 0 ? (
+              <>
+                <div className="d-flex justify-content-between align-items-center mb-5">
+                  <Pagination
+                    currentPage={currentPage}
+                    numberOfPage={numberOfPage}
+                    pagination={pagination}
+                  />
+                  <DropdownOnly
+                    selected={selected}
+                    setSelected={setSelected}
+                    handleSelectChange={handleDisplaySelectChange}
+                    options={[
+                      '8 sản phẩm/trang',
+                      '12 sản phẩm/trang',
+                      '16 sản phẩm/trang',
+                    ]}
+                    style={{ width: '340px' }}
+                  />
                 </div>
-              ))
+                {productList.map((product) => (
+                  <div
+                    key={product.id}
+                    className="col-xxl-3 col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6"
+                  >
+                    <ProductCard key={product.id} product={product} />
+                  </div>
+                ))}
+              </>
             ) : (
               <div className="col-12 flex-column d-flex justify-center align-items-center mt-5">
-                <p className="mt-5">
-                  <strong>
-                    <h2>Rất tiếc! Không có sản phẩm nào phù hợp!</h2>
-                  </strong>
-                </p>
+                <div className="mt-5 text-center" style={{ fontSize: '3rem' }}>
+                  <strong>Rất tiếc! Không có sản phẩm nào phù hợp!</strong>
+                </div>
                 <img
-                  style={{ width: '30%', margin: 'auto' }}
-                  src="https://res.cloudinary.com/dgdn13yur/image/upload/v1709314497/no_item_found_b9rzyb.png"
+                  style={{ width: '40%', margin: 'auto' }}
+                  src="https://res.cloudinary.com/dgdn13yur/image/upload/v1723352364/seh1f26mmt3nm0cl7ljg.webp"
                   alt=""
                 />
               </div>

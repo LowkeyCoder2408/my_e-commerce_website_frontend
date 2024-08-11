@@ -19,7 +19,7 @@ const BestSellingProduct = (props: BestSellingProductProps) => {
       : 0;
   return (
     <Link
-      to={`/products?id=${props.product.id}`}
+      to={`/product-detail/${props.product.id}`}
       className={`${cx('long-width-product')} bg-white`}
     >
       <div className={cx('long-width-product__icon')}>

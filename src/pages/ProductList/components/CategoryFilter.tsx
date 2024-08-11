@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import './CategoryFilter.css';
-import CategoryModel from '../../../../models/CategoryModel';
-import { getAllCategories } from '../../../../api/CategoryAPI';
+import { useEffect, useState } from 'react';
+import styles from '../scss/CategoryFilter.module.scss';
 import { Link } from 'react-router-dom';
+import CategoryModel from '../../../models/CategoryModel';
+import { getAllCategories } from '../../../api/CategoryAPI';
+import classNames from 'classnames/bind';
+
+const cx = classNames.bind(styles);
 
 interface CategoryFilterProps {
   categoryAlias?: string;
@@ -28,10 +31,10 @@ function CategoryFilter(props: CategoryFilterProps) {
   }, [props.categoryAlias]);
 
   return (
-    <div className="category-filter__wrapper row m-0 p-0 mt-4">
+    <div className={`${cx('category-filter__wrapper')} row m-0 p-0 mt-4`}>
       {categoriesList.map((category, index) => (
         <div
-          className="col-xxl-3 col-xl-4 col-lg-3 col-md-2 col-sm-3 col-3 category-filter__item p-0"
+          className={`${cx('category-filter__item')} col-xxl-3 col-xl-4 col-lg-3 col-md-2 col-sm-3 col-3 p-0`}
           key={index}
         >
           <Link
@@ -42,17 +45,21 @@ function CategoryFilter(props: CategoryFilterProps) {
                 : `/product-list/${category.alias}`
             }
             onClick={() => handleCategoryClick(category.alias)}
-            className={`d-flex justify-content-center align-items-center flex-column ${
-              selectedCategoryAlias === category.alias &&
-              selectedCategoryAlias !== null
-                ? 'active'
-                : ''
-            }`}
+            className={`${cx({
+              active:
+                selectedCategoryAlias === category.alias &&
+                selectedCategoryAlias !== null,
+            })} d-flex justify-content-center align-items-center flex-column`}
           >
-            <div className="category-filter__img-wrapper">
-              <img className="category-filter__img" src={category.image} />
+            <div className={cx('category-filter__img-wrapper')}>
+              <img
+                className={cx('category-filter__img')}
+                src={category.image}
+              />
             </div>
-            <div className="category-filter__name mt-2">{category.name}</div>
+            <div className={`${cx('category-filter__name')} mt-2`}>
+              {category.name}
+            </div>
           </Link>
         </div>
       ))}

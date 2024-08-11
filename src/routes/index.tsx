@@ -11,6 +11,7 @@ import Home from '../pages/Home/Home';
 import Error403 from '../pages/Exception/Error403';
 import Error404 from '../pages/Exception/Error404';
 import ProductList from '../pages/ProductList/ProductList';
+import ProductDetail from '../pages/Product/ProductDetail/ProductDetail';
 
 const publicRoutes = [
   {
@@ -24,6 +25,7 @@ const publicRoutes = [
     component: ProductList,
     layout: 'default',
   },
+  { path: '/product-detail/:id', component: ProductDetail, layout: 'default' },
   { path: '/about-us', component: AboutUs, layout: 'default' },
   { path: '/contact', component: Contact, layout: 'default' },
   { path: '/faq', component: FAQ, layout: 'default' },

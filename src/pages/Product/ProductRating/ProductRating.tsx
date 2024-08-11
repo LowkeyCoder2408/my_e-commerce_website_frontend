@@ -40,6 +40,19 @@ const ProductRating: React.FC<ProductRatingProps> = (
           )}
         </div>
       )}
+
+      {props.rating !== undefined && props.rating == 0 && (
+        <div className={cx('product-details__rating')}>
+          0
+          <FontAwesomeIcon
+            icon={faStar as IconProp}
+            style={{
+              fontSize: `${props.starSize}rem`,
+              color: '#f5c31a',
+            }}
+          />
+        </div>
+      )}
     </>
   );
 };

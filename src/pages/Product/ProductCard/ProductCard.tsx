@@ -230,7 +230,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
       <div className={cx('product__item')}>
         <div className={cx('product__item-thumb')}>
           <Link
-            to={`/products?id=${props.product.id}`}
+            to={`/product-detail/${props.product.id}`}
             title="Xem chi tiết sản phẩm"
           >
             <img
@@ -291,7 +291,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
         </div>
         <div className={cx('product__item-caption')}>
           <Link
-            to={`/products?id=${props.product.id}`}
+            to={`/product-detail/${props.product.id}`}
             className={cx('product__item-caption-name')}
           >
             <h4>
@@ -311,7 +311,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
               {props.product.averageRating &&
               props.product.averageRating > 0 ? (
                 <>
-                  {props.product.averageRating}
+                  {props.product.averageRating.toFixed(1)}
                   <FontAwesomeIcon
                     icon={faStar as IconProp}
                     style={{ color: '#f5c31a' }}

@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import './DropdownOnly.css';
+import styles from './DropdownOnly.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames/bind';
+
+const cx = classNames.bind(styles);
 
 interface DropdownOnlyProps {
   selected: string;
@@ -33,17 +36,21 @@ function DropdownOnly(props: DropdownOnlyProps) {
   }, []);
 
   return (
-    <div className="display-dropdown" style={props.style} ref={dropdownRef}>
+    <div
+      className={cx('display-dropdown')}
+      style={props.style}
+      ref={dropdownRef}
+    >
       <div
         onClick={(e) => {
           setIsDisplayActive(!isDisplayActive);
         }}
-        className="display-dropdown__btn"
+        className={cx('display-dropdown__btn')}
       >
         {props.selected}
         <FontAwesomeIcon icon={faCaretDown as IconProp} />
         {isDisplayActive && (
-          <div className="display-dropdown__content">
+          <div className={cx('display-dropdown__content')}>
             {props.options.map((option, index) => (
               <div
                 onClick={(e) => {
@@ -51,7 +58,7 @@ function DropdownOnly(props: DropdownOnlyProps) {
                   props.setSelected(option);
                   setIsDisplayActive(false);
                 }}
-                className="display-dropdown__item"
+                className={cx('display-dropdown__item')}
                 key={index}
               >
                 {option}
