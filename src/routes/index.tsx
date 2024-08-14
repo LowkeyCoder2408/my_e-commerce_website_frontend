@@ -25,7 +25,7 @@ const publicRoutes = [
     component: ProductList,
     layout: 'default',
   },
-  { path: '/product-detail/:id', component: ProductDetail, layout: 'default' },
+  { path: '/product-detail', component: ProductDetail, layout: 'default' },
   { path: '/about-us', component: AboutUs, layout: 'default' },
   { path: '/contact', component: Contact, layout: 'default' },
   { path: '/faq', component: FAQ, layout: 'default' },

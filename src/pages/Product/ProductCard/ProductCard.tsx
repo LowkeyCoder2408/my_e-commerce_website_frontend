@@ -230,7 +230,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
       <div className={cx('product__item')}>
         <div className={cx('product__item-thumb')}>
           <Link
-            to={`/product-detail/${props.product.id}`}
+            to={`/product-detail?id=${props.product.id}`}
             title="Xem chi tiết sản phẩm"
           >
             <img
@@ -291,7 +291,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
         </div>
         <div className={cx('product__item-caption')}>
           <Link
-            to={`/product-detail/${props.product.id}`}
+            to={`/product-detail?id=${props.product.id}`}
             className={cx('product__item-caption-name')}
           >
             <h4>

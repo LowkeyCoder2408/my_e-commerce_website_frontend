@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import ProductModel from '../../../../models/ProductModel';
-import { format } from 'date-fns';
+import { format, isValid } from 'date-fns';
 import styles from '../scss/ProductSpecifications.module.scss';
 import classNames from 'classnames/bind';
 
@@ -13,14 +13,19 @@ interface ProductSpecificationsProps {
 function ProductSpecifications(props: ProductSpecificationsProps) {
   let [rowCount, setRowCount] = useState<number>(0);
 
-  useEffect(() => {
-    setRowCount(0);
-  }, [props.product]);
+  // Convert time array to Date object
+  const convertArrayToDate = (arr: number[] | undefined): Date | null => {
+    if (!arr) return null;
+    const [year, month, day, hour, minute, second] = arr;
+    return new Date(year, month - 1, day, hour, minute, second);
+  };
+
+  const createdTimeDate = convertArrayToDate(props.product.createdTime);
 
   return (
     <div className={cx('product-details__specifications__wrapper')}>
       <div
-        className={`{cx('product-details__specifications__heading')} text-center`}
+        className={`${cx('product-details__specifications__heading')} text-center`}
       >
         <strong>
           <h1>CÁC THÔNG SỐ KỸ THUẬT</h1>
@@ -154,14 +159,14 @@ function ProductSpecifications(props: ProductSpecificationsProps) {
                 </td>
               </tr>
             )}
-          {props.product.createdTime && (
+          {createdTimeDate && isValid(createdTimeDate) && (
             <tr className={rowCount++ % 2 === 0 ? 'table-secondary' : ''}>
               <td style={{ width: '40%', paddingLeft: '20px' }} className="">
                 Ngày nhập hàng
               </td>
               <td style={{ width: '60%', paddingLeft: '20px' }}>
-                {format(props.product.createdTime, 'dd/MM/yyyy')}, lúc{' '}
-                {format(props.product.createdTime, 'HH:mm')}
+                {format(createdTimeDate, 'dd/MM/yyyy')}, lúc{' '}
+                {format(createdTimeDate, 'HH:mm')}
               </td>
             </tr>
           )}

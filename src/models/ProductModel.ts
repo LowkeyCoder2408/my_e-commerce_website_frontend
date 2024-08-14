@@ -8,8 +8,8 @@ class ProductModel {
   alias: string;
   shortDescription: string;
   fullDescription?: string;
-  createdTime?: Date;
-  updatedTime?: Date;
+  createdTime?: number[];
+  updatedTime?: number[];
   enabled?: boolean;
   quantity?: number;
   soldQuantity?: number;
@@ -41,8 +41,8 @@ class ProductModel {
     brand: BrandModel,
     images: ProductImageModel[],
     fullDescription?: string,
-    createdTime?: Date,
-    updatedTime?: Date,
+    createdTime?: number[],
+    updatedTime?: number[],
     enabled?: boolean,
     quantity?: number,
     soldQuantity?: number,

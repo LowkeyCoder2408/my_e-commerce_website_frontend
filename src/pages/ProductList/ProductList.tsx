@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import ProductModel from '../../models/ProductModel';
 import ProductCard from '../Product/ProductCard/ProductCard';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import CategoryFilter from './components/CategoryFilter';
 import {
   getAllFilteredProducts,
@@ -15,6 +15,8 @@ import Loader from '../../utils/Loader/Loader';
 function ProductList() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
+  const { categoryAlias } = useParams();
+
   const [productList, setProductList] = useState<ProductModel[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState(null);
@@ -27,7 +29,6 @@ function ProductList() {
   const [filter, setFilter] = useState<number>(1);
   const [minPrice, setMinPrice] = useState<number>(0);
   const [maxPrice, setMaxPrice] = useState<number>(100000000);
-  const { categoryAlias } = useParams();
 
   let keyword = queryParams.get('keyword');
 

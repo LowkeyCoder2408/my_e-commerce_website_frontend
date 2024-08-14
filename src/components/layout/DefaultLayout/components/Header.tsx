@@ -5,6 +5,7 @@ import 'boxicons/css/boxicons.min.css';
 import classNames from 'classnames/bind';
 import styles from './scss/Header.module.scss';
 import { getAllCategories } from '../../../../api/CategoryAPI';
+import { frontendEndpoint } from '../../../../utils/Functions/Constant';
 
 const cx = classNames.bind(styles);
 
@@ -40,14 +41,22 @@ function Header() {
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const queryParams = new URLSearchParams(location.search);
 
-    if (currentUrl.startsWith('http://localhost:3000/product-list')) {
-      const queryParams = new URLSearchParams(location.search);
-      queryParams.set('keyword', keyword);
-      const newUrl = `${location.pathname}?${queryParams.toString()}`;
+    if (currentUrl.startsWith(`${frontendEndpoint}/product-list`)) {
+      if (keyword.trim() === '') {
+        queryParams.delete('keyword');
+      } else {
+        queryParams.set('keyword', encodeURIComponent(keyword));
+      }
+      const newUrl = `${location.pathname}?${queryParams}`;
       navigate(newUrl);
     } else {
-      navigate(`/product-list?keyword=${encodeURIComponent(keyword)}`);
+      if (keyword.trim() === '') {
+        navigate('/product-list');
+      } else {
+        navigate(`/product-list?keyword=${encodeURIComponent(keyword)}`);
+      }
     }
     setKeyword('');
   };

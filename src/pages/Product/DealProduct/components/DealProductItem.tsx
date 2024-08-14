@@ -26,7 +26,7 @@ const DealProductItem = (props: DealProductItemProps) => {
   return (
     <div className={cx('product-deal-item')}>
       <Link
-        to={`/product-detail/${props.product.id}`}
+        to={`/product-detail?id=${props.product.id}`}
         className={cx('product-deal-item__img')}
         title="Click để xem thông tin"
       >
@@ -35,7 +35,7 @@ const DealProductItem = (props: DealProductItemProps) => {
       <div className={cx('product-deal-item__info')}>
         <div className={cx('product-deal-item-meta')}>
           <Link
-            to={`/product-detail/${props.product.id}`}
+            to={`/product-detail?id=${props.product.id}`}
             className={cx('product-deal-item-meta__title')}
           >
             {props.product.name}

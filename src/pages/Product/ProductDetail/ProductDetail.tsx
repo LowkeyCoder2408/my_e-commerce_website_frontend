@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import styles from './scss/ProductDetail.module.scss';
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -18,8 +18,10 @@ import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
 
 function ProductDetail() {
-  const { id } = useParams();
-  const idNumber = id ? parseInt(id, 10) : NaN;
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const id = queryParams.get('id');
+  const idNumber = id ? parseInt(id, 10) : 0;
 
   const [product, setProduct] = useState<ProductModel | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -411,7 +413,15 @@ function ProductDetail() {
           </>
         ) : (
           <>
-            <h1>Sản phẩm không tồn tại</h1>
+            <h1 className="text-center mt-5">
+              <strong>SẢN PHẨM KHÔNG TỒN TẠI</strong>
+            </h1>
+            <img
+              style={{ width: '30%' }}
+              src="https://res.cloudinary.com/dgdn13yur/image/upload/v1723352364/seh1f26mmt3nm0cl7ljg.webp"
+              alt=""
+              className="mb-5"
+            />
           </>
         )}
       </div>
