@@ -13,22 +13,13 @@ interface ProductSpecificationsProps {
 function ProductSpecifications(props: ProductSpecificationsProps) {
   let [rowCount, setRowCount] = useState<number>(0);
 
-  // Convert time array to Date object
-  const convertArrayToDate = (arr: number[] | undefined): Date | null => {
-    if (!arr) return null;
-    const [year, month, day, hour, minute, second] = arr;
-    return new Date(year, month - 1, day, hour, minute, second);
-  };
-
-  const createdTimeDate = convertArrayToDate(props.product.createdTime);
-
   return (
     <div className={cx('product-details__specifications__wrapper')}>
       <div
         className={`${cx('product-details__specifications__heading')} text-center`}
       >
         <strong>
-          <h1>CÁC THÔNG SỐ KỸ THUẬT</h1>
+          <h2>CÁC THÔNG SỐ KỸ THUẬT</h2>
         </strong>
       </div>
       <table className={`${cx('table')} table mt-5`}>
@@ -159,14 +150,14 @@ function ProductSpecifications(props: ProductSpecificationsProps) {
                 </td>
               </tr>
             )}
-          {createdTimeDate && isValid(createdTimeDate) && (
+          {props.product.createdTime && (
             <tr className={rowCount++ % 2 === 0 ? 'table-secondary' : ''}>
               <td style={{ width: '40%', paddingLeft: '20px' }} className="">
                 Ngày nhập hàng
               </td>
               <td style={{ width: '60%', paddingLeft: '20px' }}>
-                {format(createdTimeDate, 'dd/MM/yyyy')}, lúc{' '}
-                {format(createdTimeDate, 'HH:mm')}
+                {format(props.product.createdTime, 'dd/MM/yyyy')}, lúc{' '}
+                {format(props.product.createdTime, 'HH:mm')}
               </td>
             </tr>
           )}

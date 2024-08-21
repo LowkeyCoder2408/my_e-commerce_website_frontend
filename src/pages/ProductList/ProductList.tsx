@@ -7,10 +7,10 @@ import {
   getAllFilteredProducts,
   getAndFindProducts,
 } from '../../api/ProductAPI';
-import DropdownOnly from '../../utils/DropdownOnly/DropdownOnly';
-import { Pagination } from '../../utils/Pagination/Pagination';
+import DropdownOnly from '../../utils/DropdownOnly';
+import { Pagination } from '../../utils/Pagination';
 import SliderPriceFilter from './components/SliderPriceFilter';
-import Loader from '../../utils/Loader/Loader';
+import Loader from '../../utils/Loader';
 
 function ProductList() {
   const location = useLocation();

@@ -19,7 +19,7 @@ const DealProduct = () => {
   useEffect(() => {
     Promise.all([getDealProducts(4), getTopSoldProducts(6)])
       .then(([dealResult, topSoldResult]) => {
-        setDealProductList(dealResult);
+        setDealProductList(dealResult.result);
         setTopSoldProductList(topSoldResult.result);
         setLoading(false);
       })

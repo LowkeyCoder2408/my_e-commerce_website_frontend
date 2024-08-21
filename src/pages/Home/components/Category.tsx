@@ -38,7 +38,7 @@ function Category() {
   const quantityOfCategory = async (categoryId: number): Promise<number> => {
     try {
       const products = await findProductsByCategoryId(categoryId);
-      const totalProducts = getTotalProductQuantity(products);
+      const totalProducts = getTotalProductQuantity(products.result);
       return totalProducts;
     } catch (error) {
       console.error('Xảy ra lỗi khi tính tổng sản phẩm theo danh mục:', error);

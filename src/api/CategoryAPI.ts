@@ -1,5 +1,5 @@
-import { backendEndpoint } from '../utils/Functions/Constant';
-import { myRequest } from './MyRequest';
+import { backendEndpoint } from '../utils/Service/Constant';
+import { publicRequest } from './Request';
 import CategoryModel from '../models/CategoryModel';
 
 interface ResultInterface {
@@ -8,7 +8,7 @@ interface ResultInterface {
 }
 
 async function getCategories(url: string): Promise<ResultInterface> {
-  const responseData: any[] = await myRequest(url);
+  const responseData: any[] = await publicRequest(url);
 
   const result: CategoryModel[] = responseData.map((data: any) => ({
     id: data.id,

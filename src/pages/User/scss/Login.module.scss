@@ -1,0 +1,136 @@
+.login__container {
+  border-radius: 10px;
+  background-color: #fff;
+  margin-top: 30px;
+}
+
+.login__logo {
+  padding: 30px;
+  min-height: 100px;
+}
+
+.login__logo img {
+  width: 70%;
+  object-fit: contain;
+}
+
+.login__logo h3 {
+  margin-top: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.login__error,
+.login__success {
+  height: 100%;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  top: 0;
+  right: 0;
+  padding: 10px 15px;
+  pointer-events: none;
+  font-size: 1.3rem;
+  transition: 0.8s;
+}
+
+.login__error svg {
+  color: crimson;
+  margin-left: 5px;
+}
+
+.login__success svg {
+  color: rgb(106, 212, 0);
+  margin-left: 5px;
+}
+
+.login__form {
+  padding: 30px;
+}
+
+.login__form-title {
+  font-size: 2.7rem;
+  letter-spacing: 1px;
+}
+
+.login__input-box__field {
+  margin-top: 20px;
+}
+
+.login__input-box {
+  position: relative;
+}
+
+.login__input-box input {
+  width: 100%;
+  border: 1px solid rgba(41, 41, 41, 0.25);
+  border-radius: 5px;
+  outline: none !important;
+  color: #000;
+  font-size: 1.5rem;
+  padding: 10px 15px;
+  background-color: transparent;
+  letter-spacing: 1px;
+  transition: 0.5s;
+}
+
+.login__input-box span {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px 15px;
+  pointer-events: none;
+  font-size: 1.6rem;
+  transition: 0.8s;
+}
+
+.login__input-box input:focus {
+  border: 1px solid #555;
+}
+
+.login__input-box input:focus + span,
+.login__input-box input:valid + span {
+  transform: translateX(10px) translateY(-3px);
+  font-size: 1.3rem;
+  height: 8px;
+  padding: 0 5px;
+  background-color: #fff;
+  border-radius: 5px;
+}
+
+.login__transfer {
+  margin-top: 10px;
+}
+
+.login__transfer a {
+  color: rgb(0, 109, 193);
+  font-weight: 430;
+}
+
+.login__transfer a:hover {
+  text-decoration: underline;
+}
+
+.login__input-checkbox label {
+  font-size: 1.5rem;
+}
+
+.login__input-checkbox a {
+  color: #ee4d2d;
+  font-weight: 430;
+}
+
+.login__input-checkbox a:hover {
+  text-decoration: underline;
+}
+
+.login__form button {
+  transition: 0.6s;
+}
+
+.login__form button.disabled {
+  opacity: 0.4 !important;
+}

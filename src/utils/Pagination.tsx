@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './Pagination.module.scss';
+import styles from './scss/Pagination.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import {

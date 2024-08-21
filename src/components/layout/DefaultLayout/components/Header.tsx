@@ -5,7 +5,7 @@ import 'boxicons/css/boxicons.min.css';
 import classNames from 'classnames/bind';
 import styles from './scss/Header.module.scss';
 import { getAllCategories } from '../../../../api/CategoryAPI';
-import { frontendEndpoint } from '../../../../utils/Functions/Constant';
+import { frontendEndpoint } from '../../../../utils/Service/Constant';
 
 const cx = classNames.bind(styles);
 

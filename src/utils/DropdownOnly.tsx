@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import styles from './DropdownOnly.module.scss';
+import styles from './scss/DropdownOnly.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';

@@ -2,7 +2,7 @@ import styles from '../scss/DealProductItem.module.scss';
 import { Link } from 'react-router-dom';
 import ProductModel from '../../../../models/ProductModel';
 import classNames from 'classnames/bind';
-import FormatPrice from '../../../../utils/Functions/FormatPrice';
+import FormatPrice from '../../../../utils/Service/FormatPrice';
 import ProductRating from '../../ProductRating/ProductRating';
 
 const cx = classNames.bind(styles);

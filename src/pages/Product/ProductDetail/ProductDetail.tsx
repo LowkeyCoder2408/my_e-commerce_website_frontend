@@ -9,11 +9,12 @@ import {
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import ProductModel from '../../../models/ProductModel';
 import { getProductById } from '../../../api/ProductAPI';
-import Loader from '../../../utils/Loader/Loader';
+import Loader from '../../../utils/Loader';
 import ProductRating from '../ProductRating/ProductRating';
-import FormatPrice from '../../../utils/Functions/FormatPrice';
+import FormatPrice from '../../../utils/Service/FormatPrice';
 import ProductSpecifications from './components/ProductSpecifications';
 import classNames from 'classnames/bind';
+import ProductReviewList from '../ProductReviewList/ProductReviewList';
 
 const cx = classNames.bind(styles);
 
@@ -400,7 +401,6 @@ function ProductDetail() {
                     className={cx('product-details__buy-now')}
                     onClick={handleBuyNow}
                   >
-                    {/* <FontAwesomeIcon icon={faCreditCard as IconProp} /> */}
                     Mua ngay
                   </button>
                 </div>
@@ -408,7 +408,7 @@ function ProductDetail() {
             </div>
             <div className={`${cx('product-details__overview')} mt-5`}>
               <ProductSpecifications product={product} />
-              {/* <ProductReviewList id={product.id} /> */}
+              <ProductReviewList product={product} />
             </div>
           </>
         ) : (

@@ -1,6 +1,7 @@
 import BrandModel from './BrandModel';
 import CategoryModel from './CategoryModel';
 import ProductImageModel from './ProductImageModel';
+import ReviewModel from './ReviewModel';
 
 class ProductModel {
   id: number;
@@ -8,8 +9,8 @@ class ProductModel {
   alias: string;
   shortDescription: string;
   fullDescription?: string;
-  createdTime?: number[];
-  updatedTime?: number[];
+  createdTime?: Date;
+  updatedTime?: Date;
   enabled?: boolean;
   quantity?: number;
   soldQuantity?: number;
@@ -28,6 +29,7 @@ class ProductModel {
   images: ProductImageModel[];
   ratingCount?: number;
   averageRating?: number;
+  reviews?: ReviewModel[];
 
   constructor(
     id: number,
@@ -41,8 +43,8 @@ class ProductModel {
     brand: BrandModel,
     images: ProductImageModel[],
     fullDescription?: string,
-    createdTime?: number[],
-    updatedTime?: number[],
+    createdTime?: Date,
+    updatedTime?: Date,
     enabled?: boolean,
     quantity?: number,
     soldQuantity?: number,
@@ -55,6 +57,7 @@ class ProductModel {
     mainImagePublicId?: string,
     ratingCount?: number,
     averageRating?: number,
+    reviews?: ReviewModel[],
   ) {
     this.id = id;
     this.name = name;
@@ -81,6 +84,7 @@ class ProductModel {
     this.mainImagePublicId = mainImagePublicId;
     this.ratingCount = ratingCount;
     this.averageRating = averageRating;
+    this.reviews = reviews;
   }
 }
 

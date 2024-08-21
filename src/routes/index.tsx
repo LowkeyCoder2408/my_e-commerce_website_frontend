@@ -1,5 +1,4 @@
 // Pages
-import { Fragment } from 'react/jsx-runtime';
 import AboutUs from '../pages/AboutUs/AboutUs';
 import ExchangeReturnRefundPolicy from '../pages/Privacy/components/ExchangeReturnRefundPolicy';
 import WarrantyPolicy from '../pages/Privacy/components/WarrantyPolicy';
@@ -12,11 +11,29 @@ import Error403 from '../pages/Exception/Error403';
 import Error404 from '../pages/Exception/Error404';
 import ProductList from '../pages/ProductList/ProductList';
 import ProductDetail from '../pages/Product/ProductDetail/ProductDetail';
+import Register from '../pages/User/Register';
+import EnableAccount from '../pages/User/EnableAccount';
+import Login from '../pages/User/Login';
 
 const publicRoutes = [
   {
     path: '/',
     component: Home,
+    layout: 'default',
+  },
+  {
+    path: '/login',
+    component: Login,
+    layout: 'default',
+  },
+  {
+    path: '/register',
+    component: Register,
+    layout: 'default',
+  },
+  {
+    path: '/enable/:email/:verificationCode',
+    component: EnableAccount,
     layout: 'default',
   },
   { path: '/product-list', component: ProductList, layout: 'default' },
