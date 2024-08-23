@@ -7,9 +7,7 @@ function Service() {
   return (
     <div className="container">
       <div className={`${cx('service__wrapper')} my-5`}>
-        <h2 className="my-3">
-          <strong>DỊCH VỤ CỦA TECH HUB</strong>
-        </h2>
+        <div className="default-title">DỊCH VỤ CỦA TECH HUB</div>
         <div className={`${cx('service__list')} row mt-5`}>
           <div
             className={`${cx('service__item-wrapper')} col-xxl-3 col-xl-3 col-lg-3 col-md-6 col-sm-12`}

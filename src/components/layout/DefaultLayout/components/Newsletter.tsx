@@ -21,9 +21,7 @@ function Newsletter() {
             <div
               className={`${cx('newsletter-title')} col-xxl-4 col-xl-4 col-lg-6 col-12 text-center`}
             >
-              <span>
-                <strong>ĐĂNG KÝ ĐỂ NHẬN THÔNG BÁO</strong>
-              </span>
+              <div className="default-title">ĐĂNG KÝ ĐỂ NHẬN THÔNG BÁO</div>
               <p>Hãy là người đầu tiên nhận bản tin ngay hôm nay</p>
             </div>
             <div

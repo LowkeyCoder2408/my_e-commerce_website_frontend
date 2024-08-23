@@ -43,6 +43,7 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.25.1",
     "react-scripts": "^5.0.1",
+    "react-simple-star-rating": "^5.1.7",
     "react-toastify": "^10.0.5",
     "sas": "^3.0.4",
     "schema-utils": "^4.2.0",

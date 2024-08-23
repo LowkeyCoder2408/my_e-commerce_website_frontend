@@ -48,9 +48,7 @@ function Category() {
 
   return (
     <div className="container" style={{ marginTop: '60px' }}>
-      <h2 className="my-3">
-        <strong>CÁC DANH MỤC NỔI BẬT</strong>
-      </h2>
+      <div className="default-title">CÁC DANH MỤC NỔI BẬT</div>
       <div className={`${cx('category__list')} row mt-5`}>
         {categories.map((category, index) => (
           <div

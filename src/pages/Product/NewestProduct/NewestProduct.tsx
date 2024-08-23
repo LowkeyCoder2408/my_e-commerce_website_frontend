@@ -127,7 +127,7 @@ function NewestProduct() {
     <div className="container">
       <div className="mb-5" style={{ marginTop: '50px' }}>
         <h2 className={`${cx('newest-product-title')} mt-5`}>
-          <strong>SẢN PHẨM MỚI TRONG TUẦN</strong>
+          <div className="default-title">SẢN PHẨM MỚI TRONG TUẦN</div>
           <div className={cx('newest-product-owl-controls')}>
             <div className={cx('newest-product-owl-nav')}>
               <div

@@ -127,7 +127,7 @@ function HottestProduct() {
     <div className="container">
       <div className="mb-5" style={{ marginTop: '50px' }}>
         <h2 className={`${cx('hottest-product-title')} mt-5`}>
-          <strong>SẢN PHẨM HOT</strong>
+          <div className="default-title">SẢN PHẨM HOT</div>
           <div className={cx('hottest-product-owl-controls')}>
             <div className={cx('hottest-product-owl-nav')}>
               <div

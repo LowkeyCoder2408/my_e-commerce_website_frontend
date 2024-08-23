@@ -110,9 +110,7 @@ const DealProduct = () => {
     <div className="container">
       <div className="row">
         <div className={`${cx('deals')} col-xxl-9 col-lg-8 col-sm-12 mt-3`}>
-          <div className={cx('deals__header')}>
-            <h1 className={cx('deals__title')}>Siêu sale trong tuần</h1>
-          </div>
+          <div className="default-title my-5">Siêu sale trong tuần</div>
           <div className={`${cx('deals__body')} bg-white border`}>
             <div
               data-time="00:00"
@@ -152,9 +150,8 @@ const DealProduct = () => {
         <div
           className={`${cx('top-selling')} col-xxl-3 col-lg-4 col-sm-12 mt-3`}
         >
-          <div className={cx('top-selling__header')}>
-            <h1 className={cx('top-selling__title')}>BÁN CHẠY NHẤT</h1>
-          </div>
+          <div className="default-title my-5">Bán chạy nhất</div>
+
           <div className={`${cx('top-selling__list')} bg-white`}>
             {topSoldProductList.map((brand) => (
               <BestSellingProduct key={brand.id} product={brand} />

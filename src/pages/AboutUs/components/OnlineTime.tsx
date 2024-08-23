@@ -14,9 +14,7 @@ const cx = classNames.bind(styles);
 function OnlineTime() {
   return (
     <div className="container" style={{ marginTop: '60px' }}>
-      <h2 className="my-3">
-        <strong>KẾT NỐI CÙNG TECH HUB</strong>
-      </h2>
+      <div className="default-title">KẾT NỐI CÙNG TECH HUB</div>
       <div className={`${cx('online-time__wrapper')} row mt-5`}>
         <div
           className={`${cx('online-time__item')} mt-5 col-xxl-3 col-xl-3 col-lg-6 col-md-6 col-sm-6 col-12`}

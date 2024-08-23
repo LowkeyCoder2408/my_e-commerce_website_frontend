@@ -18,9 +18,7 @@ function Brand() {
 
   return (
     <div className={`${cx('brand-area')} container`}>
-      <h2>
-        <strong>MUA SẮM THEO THƯƠNG HIỆU</strong>
-      </h2>
+      <div className="default-title">MUA SẮM THEO THƯƠNG HIỆU</div>
       <div className={`${cx('brand-area-list')} row mt-5`}>
         {brands.map((brand, index) => (
           <div

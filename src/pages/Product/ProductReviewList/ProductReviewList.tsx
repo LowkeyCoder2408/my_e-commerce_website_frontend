@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import ReviewModal from '../../Review/ReviewModal';
+import { useState } from 'react';
 import styles from './scss/ProductReviewList.module.scss';
 import { toast } from 'react-toastify';
 import ProductModel from '../../../models/ProductModel';
-import ReviewModel from '../../../models/ReviewModel';
-import { getUserIdByToken } from '../../../utils/Service/JwtService';
-import Loader from '../../../utils/Loader';
-import ProductReviewItem from './ProductReviewItem';
 import { useAuth } from '../../../utils/Context/AuthContext';
 import classNames from 'classnames/bind';
+import { getUserIdByToken } from '../../../utils/Service/JwtService';
+import { FadeModal } from '../../../utils/FadeModal';
+import ReviewItem from '../../Review/ReviewItem';
 
 const cx = classNames.bind(styles);
 
@@ -18,37 +18,13 @@ interface ProductReviewListProps {
 const ProductReviewList = (props: ProductReviewListProps) => {
   const { isLoggedIn } = useAuth();
 
-  const [userReview, setUserReview] = useState<ReviewModel | null>(null);
+  const [reviews, setReviews] = useState(props.product.reviews || []);
   const [visibleProductReviews, setVisibleProductReviews] = useState(4);
   const [hiddenProductReviews, setHiddenProductReviews] = useState(0);
-  const [error, setError] = useState<any>(null);
-
   const [openModal, setOpenModal] = useState<boolean>(false);
 
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
-
-  const token = localStorage.getItem('token');
-
-  // useEffect(() => {
-  //   const userId = getUserIdByToken();
-  //   getUserReviewByProduct(userId, props.productId)
-  //     .then((result) => {
-  //       console.log(result);
-  //       setUserReview(result.review);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // }, [reviewsList]);
-
-  if (error) {
-    return (
-      <div>
-        <h1>Gặp lỗi: {error.message}</h1>
-      </div>
-    );
-  }
 
   const loadMoreProductReviews = () => {
     setVisibleProductReviews(
@@ -62,22 +38,29 @@ const ProductReviewList = (props: ProductReviewListProps) => {
     setHiddenProductReviews(0);
   };
 
+  const handleDeleteReview = (reviewId: number) => {
+    setReviews((prevReviews) =>
+      prevReviews.filter((review) => review.id !== reviewId),
+    );
+    toast.success('Xóa đánh giá thành công!');
+  };
+
   return (
     <div className={cx('product-details__review__wrapper')}>
       <div className={cx('product-details__review__heading')}>
-        <strong>
-          <h2>ĐÁNH GIÁ CỦA NGƯỜI DÙNG</h2>
-        </strong>
-        ({props.product.reviews?.length} lượt đánh giá)
+        <div className="default-title">Đánh giá của người dùng</div> (
+        {reviews.length} lượt đánh giá)
       </div>
       <div className={cx('product-details__review__list-wrapper')}>
-        {props.product.reviews && props.product.reviews.length > 0 ? (
+        {reviews.length > 0 ? (
           <div className={cx('product-details__review__list')}>
-            {props.product.reviews
-              .slice(0, visibleProductReviews)
-              .map((review, index) => (
-                <ProductReviewItem key={index} review={review} />
-              ))}
+            {reviews.slice(0, visibleProductReviews).map((review, index) => (
+              <ReviewItem
+                key={index}
+                review={review}
+                onDeleteReview={handleDeleteReview}
+              />
+            ))}
           </div>
         ) : (
           <div className={cx('product-details__review__no')}>
@@ -91,12 +74,12 @@ const ProductReviewList = (props: ProductReviewListProps) => {
       </div>
       <div className={cx('product-details__review__footer')}>
         <div className={cx('product-details__review__show')}>
-          {visibleProductReviews < (props.product.reviews?.length || 0) && (
+          {visibleProductReviews < reviews.length && (
             <div
               className={cx('product-details__review__show-option')}
               onClick={loadMoreProductReviews}
             >
-              Xem thêm...
+              <strong>Xem thêm...</strong>
             </div>
           )}
           {hiddenProductReviews > 0 && (
@@ -104,26 +87,37 @@ const ProductReviewList = (props: ProductReviewListProps) => {
               className={cx('product-details__review__show-option')}
               onClick={hideProductReviews}
             >
-              Ẩn bớt
+              <strong>Ẩn bớt</strong>
             </div>
           )}
         </div>
-        {userReview === null ||
-          (userReview === undefined && (
-            <div
-              onClick={() => {
-                if (!isLoggedIn) {
-                  toast.error('Bạn cần đăng nhập để đánh giá!');
-                  return;
-                }
-                setOpenModal(true);
-              }}
-              className={cx('product-details__review__show-option')}
-            >
-              Viết đánh giá
-            </div>
-          ))}
+        {!reviews.some((review) => review.userId === getUserIdByToken()) && (
+          <div
+            onClick={() => {
+              if (!isLoggedIn) {
+                toast.error('Bạn cần đăng nhập để đánh giá!');
+                return;
+              }
+              setOpenModal(true);
+            }}
+            className={cx('product-details__review__show-option')}
+          >
+            <strong>Viết đánh giá</strong>
+          </div>
+        )}
       </div>
+      <FadeModal
+        open={openModal}
+        handleOpen={handleOpenModal}
+        handleClose={handleCloseModal}
+      >
+        {props.product && (
+          <ReviewModal
+            product={props.product}
+            handleCloseModal={handleCloseModal}
+          />
+        )}
+      </FadeModal>
     </div>
   );
 };

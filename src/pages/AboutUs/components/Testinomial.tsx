@@ -9,9 +9,7 @@ const cx = classNames.bind(styles);
 function Testinomial() {
   return (
     <div className="container" style={{ marginTop: '60px' }}>
-      <h2 className="my-5">
-        <strong>KHÁCH HÀNG NÓI GÌ VỀ TECH HUB?</strong>
-      </h2>
+      <div className="default-title">KHÁCH HÀNG NÓI GÌ VỀ TECH HUB?</div>
       <div className={`${cx('testimonial__wrapper')} my-5`}>
         <div className={cx('testimonial__box')}>
           <i className={`${cx('quote')} fas fa-quote-left`}></i>

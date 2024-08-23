@@ -18,9 +18,7 @@ function ProductSpecifications(props: ProductSpecificationsProps) {
       <div
         className={`${cx('product-details__specifications__heading')} text-center`}
       >
-        <strong>
-          <h2>CÁC THÔNG SỐ KỸ THUẬT</h2>
-        </strong>
+        <div className="default-title">CÁC THÔNG SỐ KỸ THUẬT</div>
       </div>
       <table className={`${cx('table')} table mt-5`}>
         <tbody>

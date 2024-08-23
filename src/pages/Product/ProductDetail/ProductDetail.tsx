@@ -1,4 +1,4 @@
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import styles from './scss/ProductDetail.module.scss';
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -173,6 +173,7 @@ function ProductDetail() {
   return (
     <div className="container mt-5">
       <div className={`${cx('product-details')} row m-0 p-5 bg-white`}>
+        <div className="default-title my-3">Thông tin chung về sản phẩm</div>
         {product ? (
           <>
             <div className="col col-xxl-6 col-12">
