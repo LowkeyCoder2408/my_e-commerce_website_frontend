@@ -409,7 +409,7 @@ function ProductDetail() {
             </div>
             <div className={`${cx('product-details__overview')} mt-5`}>
               <ProductSpecifications product={product} />
-              <ProductReviewList product={product} />
+              <ProductReviewList product={product} setProduct={setProduct} />
             </div>
           </>
         ) : (
