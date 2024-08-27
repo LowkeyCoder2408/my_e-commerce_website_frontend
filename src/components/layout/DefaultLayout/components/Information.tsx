@@ -15,57 +15,25 @@ import { useConfirm } from 'material-ui-confirm';
 import { toast } from 'react-toastify';
 import classNames from 'classnames/bind';
 import {
-  getFirstNameByToken,
-  getLastNameByToken,
+  getFullNameByToken,
   getPhotoByToken,
   getUserIdByToken,
   logout,
 } from '../../../../utils/Service/JwtService';
 import { Avatar } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { jwtDecode } from 'jwt-decode';
-import { JwtPayload } from '../../../../utils/AdminRequirement';
 import { useAuth } from '../../../../utils/Context/AuthContext';
+import { useFavoriteProducts } from '../../../../utils/Context/FavoriteProductContext';
+import { useCartItems } from '../../../../utils/Context/CartItemContext';
 
 const cx = classNames.bind(styles);
 
 function Information() {
-  const [firstName, setFirstName] = useState<string>('');
-  const [lastName, setLastName] = useState<string>('');
-
-  const customerId = getUserIdByToken();
   const { isLoggedIn, setIsLoggedIn } = useAuth();
   const navigate = useNavigate();
   const confirm = useConfirm();
   //   const { cartList } = useCartItem();
-  //   const [favoriteProductList, setFavoriteProductList] = useState<
-  //     FavoriteProductModel[]
-  //   >([]);
-
-  //   useEffect(() => {
-  //     getFavoriteProductsByCustomerId(customerId)
-  //       .then((result) => {
-  //         console.log(result.favoriteProductList);
-  //         setFavoriteProductList(result.favoriteProductList);
-  //       })
-  //       .catch((error) => {
-  //         console.log(error);
-  //       });
-  //   }, [favoriteProductList]);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-
-    if (token) {
-      try {
-        const decodedToken = jwtDecode<JwtPayload>(token);
-        setFirstName(decodedToken.firstName);
-        setLastName(decodedToken.lastName);
-      } catch (error) {
-        console.error('Invalid token:', error);
-      }
-    }
-  }, []);
+  const { favoriteProducts } = useFavoriteProducts();
+  const { cartItems } = useCartItems();
 
   return (
     <div className="container-fluid bg-dark text-white">
@@ -120,11 +88,13 @@ function Information() {
                     className="me-3"
                     icon={faCartShopping as IconProp}
                   />
-                  {/* {cartList.length > 0 && (
-                    <span className="information__cart-notice text-white">
-                      {cartList.length}
+                  {cartItems.length > 0 && (
+                    <span
+                      className={`${cx('information__cart-notice')} text-white`}
+                    >
+                      {cartItems.length}
                     </span>
-                  )} */}
+                  )}
                 </div>
               </Link>
               <Link
@@ -138,30 +108,18 @@ function Information() {
                     className="me-3"
                     icon={faHeart as IconProp}
                   />
-                  {/* {favoriteProductList.length > 0 && (
-                    <span className="information__cart-notice text-white">
-                      {favoriteProductList.length}
+                  {favoriteProducts.length > 0 && (
+                    <span
+                      className={`${cx('information__cart-notice')} text-white`}
+                    >
+                      {favoriteProducts.length}
                     </span>
-                  )} */}
+                  )}
                 </div>
               </Link>
-              {/* <Link to={'/'} className={cx('information__wishlist')}>
-                  <div className={cx('information__wishlist-wrap')}>
-                    <FontAwesomeIcon
-                      style={{ color: '#fff', width: '20px', height: '20px' }}
-                      className="me-3"
-                      icon={faHeart as IconProp}
-                    />
-                    <span
-                      className={`${cx('information__wishlist-notice')} text-white`}
-                    >
-                      {customerId}
-                    </span>
-                  </div>
-                </Link> */}
-              <div>Hi, {`${firstName} ${lastName}`}</div>
+              <div>Hi, {`${getFullNameByToken()}`}</div>
               <Avatar
-                alt={`"Ảnh của" ${firstName} ${lastName}`}
+                alt={`"Ảnh của" ${getFullNameByToken()}`}
                 src={getPhotoByToken()}
                 sx={{ width: 30, height: 30 }}
               />

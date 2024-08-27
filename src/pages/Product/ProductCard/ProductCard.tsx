@@ -3,7 +3,7 @@ import { faCartShopping, faStar } from '@fortawesome/free-solid-svg-icons';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './ProductCard.module.scss';
 import { toast } from 'react-toastify';
 import ProductModel from '../../../models/ProductModel';
@@ -11,10 +11,13 @@ import Loader from '../../../utils/Loader';
 import FormatPrice from '../../../utils/Service/FormatPrice';
 import { getNewestProducts } from '../../../api/ProductAPI';
 import classNames from 'classnames/bind';
-import { getUserIdByToken, isToken } from '../../../utils/Service/JwtService';
+import { getUserIdByToken } from '../../../utils/Service/JwtService';
 import { backendEndpoint } from '../../../utils/Service/Constant';
 import FavoriteProductModel from '../../../models/FavoriteProductModel';
 import { getAllFavoriteProductsByUserId } from '../../../api/FavoriteProductAPI';
+import { useFavoriteProducts } from '../../../utils/Context/FavoriteProductContext';
+import { useCartItems } from '../../../utils/Context/CartItemContext';
+import { useAuth } from '../../../utils/Context/AuthContext';
 
 interface ProductCardInterface {
   product: ProductModel;
@@ -26,12 +29,13 @@ const cx = classNames.bind(styles);
 const ProductCard: React.FC<ProductCardInterface> = (props) => {
   const userId = getUserIdByToken();
   const token = localStorage.getItem('token');
-
-  // const { setTotalCart, cartList } = useCartItem();
-  const [isFavoriteProduct, setIsFavoriteProduct] = useState(false);
+  const location = useLocation();
   const navigation = useNavigate();
+  const { isLoggedIn } = useAuth();
 
-  const [newestProducts, setNewestProducts] = useState<ProductModel[]>([]);
+  const { fetchFavoriteProducts } = useFavoriteProducts();
+  const { cartItems, fetchCartItems } = useCartItems();
+  const [isFavoriteProduct, setIsFavoriteProduct] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [isInNewestProducts, setIsInNewestProducts] = useState<boolean>(false);
 
@@ -40,7 +44,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
       try {
         const [newestResult, favoriteProducts] = await Promise.all([
           getNewestProducts(12),
-          isToken() ? getAllFavoriteProductsByUserId(userId ?? 0) : [],
+          isLoggedIn ? getAllFavoriteProductsByUserId(userId ?? 0) : [],
         ]);
 
         const isInNewest = newestResult.result.some(
@@ -50,13 +54,11 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
           (favorite: FavoriteProductModel) =>
             favorite.productId === props.product?.id,
         );
-
-        setNewestProducts(newestResult.result);
         setIsInNewestProducts(isInNewest);
         setIsFavoriteProduct(isProductFavorite);
       } catch (error) {
         setLoading(false);
-        toast.error('Lấy danh sách sản phẩm mới không thành công!');
+        console.log('Lấy danh sách sản phẩm mới không thành công: ', error);
       } finally {
         setLoading(false);
       }
@@ -65,103 +67,106 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
     fetchData();
   }, [userId, props.product?.id]);
 
-  // const handleAddAProductToCart = async (newProduct: ProductModel) => {
-  //   const inStockQuantity =
-  //     props.product && props.product.quantity ? props.product.quantity : 0;
+  const handleAddAProductToCart = async (newProduct: ProductModel) => {
+    const inStockQuantity = props.product.quantity || 0;
+    if (!isLoggedIn) {
+      toast.error('Bạn cần đăng nhập để thêm vào giỏ hàng!');
+      navigation('/login', { state: { from: location } });
+      return;
+    }
 
-  //   // Kiểm tra nếu chưa đăng nhập
-  //   if (!isToken()) {
-  //     // Hiển thị thông báo yêu cầu đăng nhập
-  //     toast.error('Bạn cần đăng nhập để thực hiện chức năng này!');
-  //     return;
-  //   }
+    let existingCartItem = cartItems.find(
+      (cartItem) => cartItem.product.id === newProduct.id,
+    );
+    try {
+      if (existingCartItem) {
+        if (
+          existingCartItem.quantity &&
+          existingCartItem.quantity + 1 <= inStockQuantity
+        ) {
+          existingCartItem.quantity += 1;
 
-  //   // cái existingProduct này sẽ tham chiếu đến cái cart ở trên, nên khi update thì cart nó cũng update theo
-  //   let existingProduct = cartList.find(
-  //     (cartItem) => cartItem.product.id === newProduct.id,
-  //   );
-  //   // Thêm 1 sản phẩm vào giỏ hàng
-  //   if (existingProduct) {
-  //     if (
-  //       existingProduct.quantity &&
-  //       existingProduct.quantity + 1 <= inStockQuantity
-  //     ) {
-  //       if (existingProduct.quantity !== undefined) {
-  //         // nếu có rồi thì sẽ tăng số lượng
-  //         existingProduct.quantity += 1;
-  //       }
+          const request = {
+            cartId: existingCartItem.id,
+            quantity: existingCartItem.quantity,
+          };
 
-  //       // Lưu vào csdl
-  //       const request = {
-  //         id: existingProduct.id,
-  //         quantity: existingProduct.quantity,
-  //       };
-  //       fetch(backendEndpoint + `/cart-item/update-item`, {
-  //         method: 'PUT',
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           'content-type': 'application/json',
-  //         },
-  //         body: JSON.stringify(request),
-  //       }).catch((error) => console.log(error));
-  //       // Thông báo toast
-  //       toast.success('Thêm vào giỏ hàng thành công');
-  //     } else {
-  //       toast.error(
-  //         `Số lượng sản phẩm trong giỏ vượt quá số lượng tồn kho (${inStockQuantity})`,
-  //       );
-  //     }
-  //   } else {
-  //     if (inStockQuantity >= 1) {
-  //       // Lưu vào db
-  //       try {
-  //         const request = {
-  //           quantity: 1,
-  //           product: newProduct,
-  //           userId: getUserIdByToken(),
-  //         };
-  //         const response = await fetch(
-  //           backendEndpoint + '/cart-item/add-item',
-  //           {
-  //             method: 'POST',
-  //             headers: {
-  //               Authorization: `Bearer ${token}`,
-  //               'Content-type': 'application/json',
-  //             },
-  //             body: JSON.stringify(request),
-  //           },
-  //         );
+          const response = await fetch(
+            backendEndpoint + `/cart-items/update-item`,
+            {
+              method: 'PUT',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-type': 'application/json',
+              },
+              body: JSON.stringify(request),
+            },
+          );
 
-  //         if (response.ok) {
-  //           const idCart = await response.json();
-  //           cartList.push({
-  //             id: idCart,
-  //             quantity: 1,
-  //             product: newProduct,
-  //           });
-  //         }
-  //       } catch (error) {
-  //         console.log('Lỗi là', error);
-  //       }
-  //       // Thông báo toast
-  //       toast.success('Thêm vào giỏ hàng thành công');
-  //     } else {
-  //       toast.error(
-  //         `Số lượng sản phẩm trong giỏ vượt quá số lượng tồn kho (${inStockQuantity})`,
-  //       );
-  //     }
-  //   }
-  //   // Lưu vào localStorage
-  //   localStorage.setItem('cart', JSON.stringify(cartList));
-  //   setTotalCart(cartList.length);
-  // };
+          const responseData = await response.json();
 
-  // Xử lý chức năng yêu sản phẩm
+          if (response.ok && responseData.status === 'success') {
+            toast.success(
+              responseData.message || 'Thêm vào giỏ hàng thành công',
+            );
+            fetchCartItems();
+          } else {
+            toast.error(
+              responseData.message || 'Thêm vào giỏ hàng không thành công',
+            );
+          }
+        } else {
+          toast.error(
+            `Số lượng sản phẩm trong giỏ vượt quá số lượng tồn kho (${inStockQuantity})`,
+          );
+        }
+      } else {
+        if (inStockQuantity >= 1) {
+          const request = {
+            quantity: 1,
+            productId: newProduct.id,
+            userId: getUserIdByToken(),
+          };
+
+          const response = await fetch(
+            backendEndpoint + '/cart-items/add-item',
+            {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-type': 'application/json',
+              },
+              body: JSON.stringify(request),
+            },
+          );
+
+          const data = await response.json();
+          if (response.ok && data.status === 'success') {
+            toast.success(data.message);
+            fetchCartItems();
+          } else {
+            toast.error(
+              data.message || 'Thêm sản phẩm vào giỏ hàng không thành công',
+            );
+          }
+        } else {
+          toast.error(
+            `Số lượng sản phẩm trong giỏ vượt quá số lượng tồn kho (${inStockQuantity})`,
+          );
+        }
+      }
+    } catch (error) {
+      console.log('Lỗi là', error);
+      toast.error('Có lỗi xảy ra khi thêm vào giỏ hàng');
+    }
+  };
 
   const handleFavoriteProduct = async (newProduct: ProductModel) => {
-    if (!isToken()) {
-      toast.info('Bạn phải đăng nhập để sử dụng chức năng này');
-      // navigation('/login');
+    if (!isLoggedIn) {
+      toast.error('Bạn phải đăng nhập để yêu thích sản phẩm');
+      navigation('/login', {
+        state: { from: location },
+      });
       return;
     }
 
@@ -180,6 +185,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
         .then((response) => {
           if (response.ok) {
             toast.success('Đã thêm vào danh sách sản phẩm yêu thích!');
+            fetchFavoriteProducts();
           } else {
             toast.error(
               'Thêm vào danh sách sản phẩm yêu thích không thành công!',
@@ -204,6 +210,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
         .then((response) => {
           if (response.ok) {
             toast.success('Đã xóa khỏi danh sách sản phẩm yêu thích!');
+            fetchFavoriteProducts();
           } else {
             toast.error(
               'Xóa khỏi danh sách sản phẩm yêu thích không thành công!',
@@ -212,6 +219,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
         })
         .catch((error) => console.log(error));
     }
+    // Sau khi API call thành công, cập nhật lại danh sách sản phẩm yêu thích
     setIsFavoriteProduct(!isFavoriteProduct);
   };
 
@@ -244,7 +252,9 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
                     ? 'rgb(255, 66, 79)'
                     : '#fff',
                 }}
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   handleFavoriteProduct(props.product);
                 }}
                 className={cx('product__item-quick-link-item')}
@@ -258,7 +268,11 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
               </div>
               <div
                 title="Thêm vào giỏ"
-                // onClick={() => handleAddAProductToCart(props.product)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleAddAProductToCart(props.product);
+                }}
                 className={cx('product__item-quick-link-item')}
               >
                 <FontAwesomeIcon icon={faCartShopping as IconProp} />

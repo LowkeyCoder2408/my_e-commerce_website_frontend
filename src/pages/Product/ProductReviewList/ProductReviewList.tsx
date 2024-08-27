@@ -10,6 +10,8 @@ import { FadeModal } from '../../../utils/FadeModal';
 import ReviewItem from '../../Review/ReviewItem';
 import ReviewModel from '../../../models/ReviewModel';
 import { getReviewsByProduct } from '../../../api/ReviewAPI';
+import Loader from '../../../utils/Loader';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
@@ -20,6 +22,8 @@ interface ProductReviewListProps {
 
 const ProductReviewList = (props: ProductReviewListProps) => {
   const { isLoggedIn } = useAuth();
+  const navigation = useNavigate();
+  const location = useLocation();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [reviews, setReviews] = useState<ReviewModel[]>([]);
@@ -40,7 +44,7 @@ const ProductReviewList = (props: ProductReviewListProps) => {
       const result = await getReviewsByProduct(props.product.id);
       setReviews(result);
     } catch (error) {
-      toast.error('Đã xảy ra lỗi khi lấy dữ liệu các phòng');
+      toast.error('Đã xảy ra lỗi khi lấy dữ liệu các đánh giá');
     } finally {
       setIsLoading(false);
     }
@@ -57,6 +61,10 @@ const ProductReviewList = (props: ProductReviewListProps) => {
     setVisibleProductReviews(4);
     setHiddenProductReviews(0);
   };
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <div className={cx('product-details__review__wrapper')}>
@@ -110,6 +118,9 @@ const ProductReviewList = (props: ProductReviewListProps) => {
             onClick={() => {
               if (!isLoggedIn) {
                 toast.error('Bạn cần đăng nhập để đánh giá!');
+                navigation('/login', {
+                  state: { from: location },
+                });
                 return;
               }
               setOpenModal(true);

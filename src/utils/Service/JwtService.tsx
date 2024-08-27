@@ -28,19 +28,11 @@ export function getPhotoByToken() {
   }
 }
 
-export function getFirstNameByToken() {
+export function getFullNameByToken() {
   const token = localStorage.getItem('token');
   if (token) {
     const decodedToken = jwtDecode<JwtPayload>(token);
-    return decodedToken.firstName;
-  }
-}
-
-export function getLastNameByToken() {
-  const token = localStorage.getItem('token');
-  if (token) {
-    const decodedToken = jwtDecode<JwtPayload>(token);
-    return decodedToken.lastName;
+    return decodedToken.fullName;
   }
 }
 

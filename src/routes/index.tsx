@@ -14,6 +14,7 @@ import ProductDetail from '../pages/Product/ProductDetail/ProductDetail';
 import Register from '../pages/User/Register';
 import EnableAccount from '../pages/User/EnableAccount';
 import Login from '../pages/User/Login';
+import FavoriteProductList from '../pages/Product/FavoriteProduct/FavoriteProductList';
 
 const publicRoutes = [
   {
@@ -40,6 +41,11 @@ const publicRoutes = [
   {
     path: '/product-list/:categoryAlias',
     component: ProductList,
+    layout: 'default',
+  },
+  {
+    path: '/wish-list',
+    component: FavoriteProductList,
     layout: 'default',
   },
   { path: '/product-detail', component: ProductDetail, layout: 'default' },

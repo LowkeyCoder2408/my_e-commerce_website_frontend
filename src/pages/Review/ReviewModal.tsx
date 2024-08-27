@@ -88,7 +88,22 @@ const ReviewModal: React.FC<ReviewModalProps> = (props) => {
     const fetchReview = async () => {
       if (userId && props.product?.id) {
         try {
-          const result = await getUserReviewByProduct(userId, props.product.id);
+          const url = `${backendEndpoint}/reviews/findByUserIdAndProductId?userId=${userId}&productId=${props.product.id}`;
+          const response = await fetch(url);
+
+          if (!response.ok) {
+            throw new Error('Không thể truy cập dữ liệu');
+          }
+
+          // Kiểm tra xem phản hồi có dữ liệu không
+          if (response.status === 204) {
+            // Phản hồi không có nội dung
+            setUserReview(null);
+            return;
+          }
+
+          // Parse JSON nếu có dữ liệu
+          const result = await response.json();
           setUserReview(result);
         } catch (error) {
           console.error('Lỗi khi lấy dữ liệu review theo người dùng', error);

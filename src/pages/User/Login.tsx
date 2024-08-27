@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './scss/Login.module.scss';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -7,11 +7,15 @@ import classNames from 'classnames/bind';
 import { jwtDecode } from 'jwt-decode';
 import { JwtPayload } from '../../utils/AdminRequirement';
 import { useAuth } from '../../utils/Context/AuthContext';
+import { useFavoriteProducts } from '../../utils/Context/FavoriteProductContext';
 
 const cx = classNames.bind(styles);
 
 function Login() {
+  const location = useLocation();
   const navigation = useNavigate();
+  const { fetchFavoriteProducts } = useFavoriteProducts();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { isLoggedIn, setIsLoggedIn } = useAuth();
@@ -47,9 +51,15 @@ function Login() {
         }
         setIsLoggedIn(true); // Đã đăng nhập
         localStorage.setItem('token', jwt);
-        window.location.href = '/';
+        const from = location.state?.from;
+        if (from) {
+          navigation(from);
+        } else {
+          navigation('/');
+        }
+        fetchFavoriteProducts();
 
-        const cartData: string | null = localStorage.getItem('cart');
+        // const cartData: string | null = localStorage.getItem('cart');
         // let cart: CartItemModel[] = cartData ? JSON.parse(cartData) : [];
         // Khi đăng nhập thành công mà trước đó đã thêm sản phẩm vào giỏ hàng thì các sản phẩm đó sẽ được thêm vào db
         // if (cart.length !== 0) {
@@ -99,6 +109,7 @@ function Login() {
         // } else {
         //   navigation('/');
         // }
+        toast.success('Đăng nhập thành công');
       } else {
         toast.error('Đăng nhập thất bại');
       }

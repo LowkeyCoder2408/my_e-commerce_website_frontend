@@ -82,7 +82,7 @@ function Register() {
       });
       if (response.ok) {
         toast.success(
-          'Đăng ký thành công, vui lòng kiểm tra email để xác thực và kích hoạt',
+          'Đăng ký thành công, vui lòng kiểm tra email để kích hoạt',
         );
         setSubmitLoading(false);
       } else {

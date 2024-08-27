@@ -66,7 +66,7 @@ function ReviewItem(props: ReviewItemProps) {
                 toast.error('Gặp lỗi trong quá trình xóa đánh giá!');
               });
           } else {
-            toast.error('Bạn cần đăng nhập để thực hiện chức năng này!');
+            toast.error('Bạn cần đăng nhập để xóa đánh giá!');
           }
         })
         .catch(() => {});

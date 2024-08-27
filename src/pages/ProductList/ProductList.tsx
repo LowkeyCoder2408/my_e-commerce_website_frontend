@@ -184,9 +184,7 @@ function ProductList() {
                 style={{ width: '100%' }}
               />
               <div className="mt-5">
-                <h3>
-                  <strong>LỌC THEO KHOẢNG GIÁ</strong>
-                </h3>
+                <div className="default-title">LỌC THEO KHOẢNG GIÁ</div>
                 <SliderPriceFilter
                   min={0}
                   max={100000000}
@@ -199,9 +197,7 @@ function ProductList() {
                 />
               </div>
               <div className="mt-5">
-                <h3>
-                  <strong>LỌC THEO DANH MỤC</strong>
-                </h3>
+                <div className="default-title">LỌC THEO DANH MỤC</div>
                 <CategoryFilter categoryAlias={categoryAlias} />
               </div>
             </div>

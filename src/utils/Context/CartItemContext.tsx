@@ -1,51 +1,54 @@
-// import React, { createContext, useContext, useEffect, useState } from 'react';
-// import CartItemModel from '../../model/CartItemModel';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { getUserIdByToken } from '../Service/JwtService';
+import { toast } from 'react-toastify';
+import CartItemModel from '../../models/CartItemModel';
+import { getAllCartItemsByUserId } from '../../api/CartItemAPI';
 
-// interface CartItemProps {
-//   children: React.ReactNode;
-// }
+interface CartItemsContextType {
+  cartItems: CartItemModel[];
+  fetchCartItems: () => void;
+}
 
-// interface CartItemType {
-//   cartItems: CartItemModel[];
-//   setCartItems: any;
-//   totalCartItems: number;
-//   setTotalCartItems: any;
-// }
+const CartItemsContext = createContext<CartItemsContextType | undefined>(
+  undefined,
+);
 
-// const CartItem = createContext<CartItemType | undefined>(undefined);
+interface CartItemsProviderProps {
+  children: React.ReactNode;
+}
 
-// export const CartItemProvider: React.FC<CartItemProps> = (props) => {
-//   const [cartItems, setCartItems] = useState<CartItemModel[]>([]);
-//   const [totalCartItems, setTotalCartItems] = useState(0);
+export const CartItemsProvider: React.FC<CartItemsProviderProps> = (props) => {
+  const [cartItems, setCartItems] = useState<CartItemModel[]>([]);
+  const userId = getUserIdByToken();
 
-//   useEffect(() => {
-//     const cartData: string | null = localStorage.getItem('cart');
-//     let cart: CartItemModel[] = [];
-//     cart = cartData ? JSON.parse(cartData) : [];
-//     setCartItems(cart);
-//     setTotalCartItems(cart.length);
-//   }, []);
+  const fetchCartItems = async () => {
+    try {
+      if (userId) {
+        const result = await getAllCartItemsByUserId(userId);
+        setCartItems(result);
+      }
+    } catch (error) {
+      toast.error('Đã xảy ra lỗi khi lấy dữ liệu các sản phẩm trong giỏ hàng');
+    }
+  };
 
-//   return (
-//     <CartItem.Provider
-//       value={{ cartItems, setCartItems, totalCartItems, setTotalCartItems }}
-//     >
-//       {props.children}
-//     </CartItem.Provider>
-//   );
-// };
+  useEffect(() => {
+    fetchCartItems();
+  }, []);
 
-// export const useCartItem = (): CartItemType => {
-//   const context = useContext(CartItem);
-//   if (!context) {
-//     throw new Error('Lỗi context');
-//   }
-//   return context;
-// };
-import React from 'react';
-
-const CartItemContext = () => {
-  return <div>CartItemContext</div>;
+  return (
+    <CartItemsContext.Provider value={{ cartItems, fetchCartItems }}>
+      {props.children}
+    </CartItemsContext.Provider>
+  );
 };
 
-export default CartItemContext;
+export const useCartItems = () => {
+  const context = useContext(CartItemsContext);
+  if (context === undefined) {
+    throw new Error(
+      'useCartItems phải được dùng bên trong 1 CartItemsProvider',
+    );
+  }
+  return context;
+};

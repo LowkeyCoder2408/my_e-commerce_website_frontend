@@ -17,12 +17,17 @@ export async function getUserReviewByProduct(
   userId: number,
   productId: number,
 ): Promise<ReviewModel | null> {
-  const url: string =
-    backendEndpoint +
-    `/reviews/findByUserIdAndProductId?userId=${userId}&productId=${productId}`;
-  const responseData = await publicRequest(url);
-
-  return responseData;
+  const url: string = `${backendEndpoint}/reviews/findByUserIdAndProductId?userId=${userId}&productId=${productId}`;
+  try {
+    const response = await publicRequest(url);
+    if (response === null || response === undefined) {
+      return null;
+    }
+    return response as ReviewModel;
+  } catch (error) {
+    console.error('Lỗi khi lấy dữ liệu review theo người dùng', error);
+    return null;
+  }
 }
 
 export const deleteReview = async (reviewId: number, token: string) => {

@@ -4,8 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 
 export interface JwtPayload {
   id: number;
-  firstName: string;
-  lastName: string;
+  fullName: string;
   photo: string;
   roles: string[];
   enabled: boolean;
