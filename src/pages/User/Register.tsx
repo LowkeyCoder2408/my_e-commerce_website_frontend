@@ -11,6 +11,7 @@ import { backendEndpoint } from '../../utils/Service/Constant';
 import { toast } from 'react-toastify';
 import AuthenticationType from '../../models/AuthenticationType';
 import classNames from 'classnames/bind';
+import { useAuth } from '../../utils/Context/AuthContext';
 
 const cx = classNames.bind(styles);
 
@@ -37,61 +38,70 @@ function Register() {
   const [repeatPasswordError, setRepeatPasswordError] = useState<string>(
     'Chưa điền thông tin',
   );
-  const [authenticationType, setAuthenticationType] =
-    useState<AuthenticationType>(AuthenticationType.DATABASE);
 
   const [submitLoading, setSubmitLoading] = useState<boolean | null>(null);
 
   const jwtToken = localStorage.getItem('token');
-  // const { isLoggedIn } = useAuth();
+  const { isLoggedIn } = useAuth();
   const navigation = useNavigate();
 
-  // useEffect(() => {
-  //   if (isLoggedIn) {
-  //     navigation('/');
-  //   }
-  // });
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigation('/');
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    setEmailError('');
-    setFirstNameError('');
-    setPhoneNumberError('');
-    setPasswordError('');
-    setRepeatPasswordError('');
-    setAuthenticationType(AuthenticationType.DATABASE);
+    e.preventDefault();
     setSubmitLoading(true);
 
-    // Tránh tình trạng click liên tục
-    e.preventDefault();
     try {
       const endpoint = backendEndpoint + `/auth/register`;
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: email,
           firstName: firstName,
           lastName: lastName,
           phoneNumber: phoneNumber,
           password: password,
-          authenticationType: authenticationType,
-          createdTime: new Date(),
-          enabled: 0,
-          verificationCode: '',
         }),
       });
+
+      const data = await response.json();
+
       if (response.ok) {
-        toast.success(
-          'Đăng ký thành công, vui lòng kiểm tra email để kích hoạt',
-        );
-        setSubmitLoading(false);
+        if (data.status === 'success') {
+          toast.success(
+            data.message ||
+              'Đăng ký thành công, vui lòng kiểm tra email để kích hoạt',
+          );
+          setEmail('');
+          setFirstName('');
+          setLastName('');
+          setPhoneNumber('');
+          setPassword('');
+          setRepeatPassword('');
+          setEmailError('Chưa điền thông tin');
+          setFirstNameError('Chưa điền thông tin');
+          setLastNameError('Chưa điền thông tin');
+          setPhoneNumberError('Chưa điền thông tin');
+          setPasswordError('Chưa điền thông tin');
+          setRepeatPasswordError('Chưa điền thông tin');
+        } else {
+          toast.error(
+            data.message || 'Đã xảy ra lỗi trong quá trình đăng ký tài khoản',
+          );
+        }
       } else {
-        console.log(response.json());
-        toast.error('Đã xảy ra lỗi');
-        setSubmitLoading(false);
+        toast.error(
+          data.message || 'Đã xảy ra lỗi trong quá trình đăng ký tài khoản',
+        );
       }
     } catch (error) {
-      toast.error('Đã xảy ra lỗi');
+      toast.error('Đã xảy ra lỗi trong quá trình đăng ký tài khoản');
+    } finally {
       setSubmitLoading(false);
     }
   };
@@ -290,10 +300,6 @@ function Register() {
   if (jwtToken !== null) {
     return <></>;
   }
-
-  // if (submitLoading) {
-  //   return <Loader />;
-  // }
 
   return (
     <div className={`${cx('register__container')} container p-0`}>
@@ -503,19 +509,6 @@ function Register() {
                   </label>
                 </div>
               </div>
-              {/* <button
-                className={`container-fluid py-2 btn btn-primary ${
-                  canRegister ? '' : 'disabled'
-                }`}
-                type="submit"
-                style={{ fontSize: '1.6rem' }}
-              >
-                {submitLoading === null
-                  ? 'ĐĂNG KÝ'
-                  : submitLoading
-                  ? 'Dữ liệu đang được xử lý...'
-                  : 'ĐĂNG KÝ'}
-              </button> */}
               <button
                 className={`container-fluid py-2 btn btn-primary ${cx({ disabled: !canRegister || submitLoading })}`}
                 type="submit"
