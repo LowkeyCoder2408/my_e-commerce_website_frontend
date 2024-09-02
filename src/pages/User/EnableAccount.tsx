@@ -1,76 +1,77 @@
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
 import { backendEndpoint } from '../../utils/Service/Constant';
+import { useAuth } from '../../utils/Context/AuthContext';
 
 function EnableAccount() {
-  // const { isLoggedIn } = useAuth();
   const navigation = useNavigate();
+  const { isLoggedIn } = useAuth();
+  const { email, verificationCode } = useParams();
 
-  // useEffect(() => {
-  //   if (isLoggedIn) {
-  //     navigation('/');
-  //   }
-  // });
-
-  const { email } = useParams();
-  const { verificationCode } = useParams();
-  const [isEnabled, setIsEnabled] = useState(false);
   const [notification, setNotification] = useState('');
 
+  // Ref để theo dõi xem API đã được gọi chưa
+  const hasCalledEnable = useRef(false);
+
   useEffect(() => {
-    if (email && verificationCode) {
+    if (isLoggedIn) {
+      navigation('/');
+      return;
+    }
+    if (email && verificationCode && !hasCalledEnable.current) {
       handleEnable();
+      hasCalledEnable.current = true;
     }
   }, []);
 
   const handleEnable = async () => {
     try {
-      const endpoint: string =
-        backendEndpoint +
-        `/auth/enable?email=${email}&verificationCode=${verificationCode}`;
-      const response = await fetch(endpoint, {
-        method: 'GET',
-      });
+      const response = await fetch(
+        `${backendEndpoint}/auth/enable?email=${email}&verificationCode=${verificationCode}`,
+        {
+          method: 'GET',
+        },
+      );
+
+      const data = await response.json();
 
       if (response.ok) {
-        setIsEnabled(true);
+        if (data.status === 'success') {
+          setNotification(
+            data.message ||
+              'Kích hoạt tài khoản thành công, vui lòng đăng nhập để trải nghiệm nền tảng của chúng tôi',
+          );
+        } else {
+          setNotification(
+            data.message ||
+              'Đã xảy ra lỗi trong quá trình kích hoạt tài khoản, vui lòng liên hệ với quản trị viên để giải quyết sự cố',
+          );
+        }
       } else {
-        setNotification(response.text + '');
+        setNotification(
+          data.message ||
+            'Đã xảy ra lỗi trong quá trình kích hoạt tài khoản, vui lòng liên hệ với quản trị viên để giải quyết sự cố',
+        );
       }
     } catch (error) {
-      console.log('Lỗi kích hoạt: ' + error);
+      setNotification('Đã xảy ra lỗi kích hoạt: ' + error);
     }
   };
 
   return (
-    <div
-      className="container mt-5 bg-white text-center"
-      style={{ borderRadius: '10px', padding: '40px' }}
-    >
-      <div>
-        <h1 className="text-uppercase" style={{ fontWeight: 600 }}>
-          Kích hoạt tài khoản
-        </h1>
-        {isEnabled ? (
-          <p className="mt-4">
-            Tài khoản đã được kích hoạt thành công, vui lòng{' '}
-            <Link
-              to={'/login'}
-              className="text-uppercase"
-              style={{ fontWeight: 600 }}
-            >
-              đăng nhập
-            </Link>{' '}
-            để tiếp tục!
-          </p>
-        ) : (
-          <p className="mt-4">
-            Tài khoản kích hoạt thất bại. Có thể do bạn đã kích hoạt tài khoản
-            trước đó.
-          </p>
-        )}
-      </div>
-    </div>
+    <>
+      {!isLoggedIn ? (
+        <div
+          className="container mt-5 bg-white text-center"
+          style={{ borderRadius: '10px', padding: '40px' }}
+        >
+          <div>
+            <div className="default-title">Kích hoạt tài khoản</div>
+            <p className="mt-4">{notification}</p>
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }
 

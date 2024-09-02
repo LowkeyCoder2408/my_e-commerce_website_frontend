@@ -11,10 +11,12 @@ import Loader from '../../../utils/Loader';
 import FormatPrice from '../../../utils/Service/FormatPrice';
 import { getNewestProducts } from '../../../api/ProductAPI';
 import classNames from 'classnames/bind';
-import { getUserIdByToken } from '../../../utils/Service/JwtService';
+import {
+  getUserIdByToken,
+  isTokenExpired,
+} from '../../../utils/Service/JwtService';
 import { backendEndpoint } from '../../../utils/Service/Constant';
 import FavoriteProductModel from '../../../models/FavoriteProductModel';
-import { getAllFavoriteProductsByUserId } from '../../../api/FavoriteProductAPI';
 import { useFavoriteProducts } from '../../../utils/Context/FavoriteProductContext';
 import { useCartItems } from '../../../utils/Context/CartItemContext';
 import { useAuth } from '../../../utils/Context/AuthContext';
@@ -31,33 +33,32 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
   const token = localStorage.getItem('token');
   const location = useLocation();
   const navigation = useNavigate();
-  const { isLoggedIn } = useAuth();
 
-  const { fetchFavoriteProducts } = useFavoriteProducts();
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
+  const { favoriteProducts, fetchFavoriteProducts } = useFavoriteProducts();
   const { cartItems, fetchCartItems } = useCartItems();
+
   const [isFavoriteProduct, setIsFavoriteProduct] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const [isInNewestProducts, setIsInNewestProducts] = useState<boolean>(false);
+  const [isNewestProductProducts, setIsInNewestProducts] =
+    useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [newestResult, favoriteProducts] = await Promise.all([
-          getNewestProducts(12),
-          isLoggedIn ? getAllFavoriteProductsByUserId(userId ?? 0) : [],
-        ]);
+        const newestProducts = await getNewestProducts(12);
 
-        const isInNewest = newestResult.result.some(
+        const isNewestProduct = newestProducts.result.some(
           (product) => product.id === props.product.id,
         );
-        const isProductFavorite = favoriteProducts.some(
+
+        const isFavoriteProduct = favoriteProducts.some(
           (favorite: FavoriteProductModel) =>
-            favorite.productId === props.product?.id,
+            favorite.productId === props.product.id,
         );
-        setIsInNewestProducts(isInNewest);
-        setIsFavoriteProduct(isProductFavorite);
+        setIsInNewestProducts(isNewestProduct);
+        setIsFavoriteProduct(isFavoriteProduct);
       } catch (error) {
-        setLoading(false);
         console.log('Lấy danh sách sản phẩm mới không thành công: ', error);
       } finally {
         setLoading(false);
@@ -65,12 +66,20 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
     };
 
     fetchData();
-  }, [userId, props.product?.id]);
+  }, []);
 
   const handleAddAProductToCart = async (newProduct: ProductModel) => {
     const inStockQuantity = props.product.quantity || 0;
     if (!isLoggedIn) {
-      toast.error('Bạn cần đăng nhập để thêm vào giỏ hàng!');
+      toast.error('Bạn cần đăng nhập để thêm vào giỏ hàng');
+      navigation('/login', { state: { from: location } });
+      return;
+    }
+
+    if (isTokenExpired()) {
+      localStorage.removeItem('token');
+      setIsLoggedIn(false);
+      toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại');
       navigation('/login', { state: { from: location } });
       return;
     }
@@ -161,7 +170,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
     }
   };
 
-  const handleFavoriteProduct = async (newProduct: ProductModel) => {
+  const handleAddToFavoriteProducts = async (newProduct: ProductModel) => {
     if (!isLoggedIn) {
       toast.error('Bạn phải đăng nhập để yêu thích sản phẩm');
       navigation('/login', {
@@ -170,54 +179,79 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
       return;
     }
 
+    if (isTokenExpired()) {
+      localStorage.removeItem('token');
+      setIsLoggedIn(false);
+      toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại');
+      navigation('/login', { state: { from: location } });
+      return;
+    }
+
     if (!isFavoriteProduct) {
-      fetch(backendEndpoint + `/favorite-products/add-favorite-product`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'content-type': 'application/json',
+      const response = await fetch(
+        backendEndpoint + `/favorite-products/add-favorite-product`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify({
+            productId: props.product.id,
+            userId: userId,
+          }),
         },
-        body: JSON.stringify({
-          productId: props.product.id,
-          userId: userId,
-        }),
-      })
-        .then((response) => {
-          if (response.ok) {
-            toast.success('Đã thêm vào danh sách sản phẩm yêu thích!');
-            fetchFavoriteProducts();
-          } else {
-            toast.error(
-              'Thêm vào danh sách sản phẩm yêu thích không thành công!',
-            );
-          }
-        })
-        .catch((error) => {
-          console.error('Lỗi:', error);
-        });
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        if (data.status === 'success') {
+          toast.success(
+            data.message || 'Đã thêm sản phẩm vào danh sách yêu thích',
+          );
+          fetchFavoriteProducts();
+        } else {
+          toast.error(
+            data.message ||
+              'Đã xảy ra lỗi khi thêm sản phẩm vào danh sách yêu thích',
+          );
+        }
+      } else {
+        toast.error('Thêm vào danh sách sản phẩm yêu thích không thành công');
+      }
     } else {
-      fetch(backendEndpoint + `/favorite-products/delete-favorite-product`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'content-type': 'application/json',
+      const response = await fetch(
+        backendEndpoint + `/favorite-products/delete-favorite-product`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify({
+            productId: props.product.id,
+            userId: userId,
+          }),
         },
-        body: JSON.stringify({
-          productId: props.product.id,
-          userId: userId,
-        }),
-      })
-        .then((response) => {
-          if (response.ok) {
-            toast.success('Đã xóa khỏi danh sách sản phẩm yêu thích!');
-            fetchFavoriteProducts();
-          } else {
-            toast.error(
-              'Xóa khỏi danh sách sản phẩm yêu thích không thành công!',
-            );
-          }
-        })
-        .catch((error) => console.log(error));
+      );
+      const data = await response.json();
+
+      if (response.ok) {
+        if (data.status === 'success') {
+          toast.success(
+            data.message || 'Đã xóa sản phẩm khỏi danh sách yêu thích',
+          );
+          fetchFavoriteProducts();
+        } else {
+          toast.error(
+            data.message ||
+              'Đã xảy ra lỗi khi xóa sản phẩm khỏi danh sách yêu thích',
+          );
+        }
+      } else {
+        toast.error('Xóa sản phẩm khỏi danh sách yêu thích không thành công');
+      }
     }
     // Sau khi API call thành công, cập nhật lại danh sách sản phẩm yêu thích
     setIsFavoriteProduct(!isFavoriteProduct);
@@ -255,7 +289,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  handleFavoriteProduct(props.product);
+                  handleAddToFavoriteProducts(props.product);
                 }}
                 className={cx('product__item-quick-link-item')}
               >
@@ -288,7 +322,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
               </div>
             )}
 
-          {isInNewestProducts && (
+          {isNewestProductProducts && (
             <div className={cx('box-label-new')}>
               <img
                 src="https://res.cloudinary.com/dgdn13yur/image/upload/v1711558575/new_label_rizpn7.png"

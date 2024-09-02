@@ -1,8 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { getUserIdByToken, isToken } from '../Service/JwtService';
 import FavoriteProductModel from '../../models/FavoriteProductModel';
-import { getAllFavoriteProductsByUserId } from '../../api/FavoriteProductAPI';
-import { toast } from 'react-toastify';
+import { fetchFavoriteProductsByUserId } from '../../api/FavoriteProductAPI';
+import { isToken, isTokenExpired } from '../Service/JwtService';
 
 interface FavoriteProductsContextType {
   favoriteProducts: FavoriteProductModel[];
@@ -23,26 +22,24 @@ export const FavoriteProductsProvider: React.FC<
   const [favoriteProducts, setFavoriteProducts] = useState<
     FavoriteProductModel[]
   >([]);
-  const userId = getUserIdByToken();
 
-  const fetchFavoriteProducts = async () => {
-    try {
-      if (userId) {
-        const result = await getAllFavoriteProductsByUserId(userId);
-        setFavoriteProducts(result);
-      }
-    } catch (error) {
-      toast.error('Đã xảy ra lỗi khi lấy dữ liệu các sản phẩm yêu thích');
+  const fetchFavoriteProductsHandler = async () => {
+    if (isToken() && !isTokenExpired()) {
+      const data = await fetchFavoriteProductsByUserId();
+      setFavoriteProducts(data);
     }
   };
 
   useEffect(() => {
-    fetchFavoriteProducts();
+    fetchFavoriteProductsHandler();
   }, []);
 
   return (
     <FavoriteProductsContext.Provider
-      value={{ favoriteProducts, fetchFavoriteProducts }}
+      value={{
+        favoriteProducts,
+        fetchFavoriteProducts: fetchFavoriteProductsHandler,
+      }}
     >
       {props.children}
     </FavoriteProductsContext.Provider>

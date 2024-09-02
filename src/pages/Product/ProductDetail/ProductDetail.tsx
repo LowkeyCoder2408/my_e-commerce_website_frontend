@@ -19,7 +19,10 @@ import { toast } from 'react-toastify';
 import { useAuth } from '../../../utils/Context/AuthContext';
 import { useCartItems } from '../../../utils/Context/CartItemContext';
 import { backendEndpoint } from '../../../utils/Service/Constant';
-import { getUserIdByToken } from '../../../utils/Service/JwtService';
+import {
+  getUserIdByToken,
+  isTokenExpired,
+} from '../../../utils/Service/JwtService';
 
 const cx = classNames.bind(styles);
 
@@ -27,7 +30,7 @@ function ProductDetail() {
   const location = useLocation();
   const navigation = useNavigate();
   const token = localStorage.getItem('token');
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
   const { cartItems, fetchCartItems } = useCartItems();
 
   const queryParams = new URLSearchParams(location.search);
@@ -80,7 +83,15 @@ function ProductDetail() {
   const handleAddProductsToCart = async (newProduct: ProductModel) => {
     const inStockQuantity = product?.quantity || 0;
     if (!isLoggedIn) {
-      toast.error('Bạn cần đăng nhập để thêm vào giỏ hàng!');
+      toast.error('Bạn cần đăng nhập để thêm vào giỏ hàng');
+      navigation('/login', { state: { from: location } });
+      return;
+    }
+
+    if (isTokenExpired()) {
+      localStorage.removeItem('token');
+      setIsLoggedIn(false);
+      toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại');
       navigation('/login', { state: { from: location } });
       return;
     }

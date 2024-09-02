@@ -8,18 +8,20 @@ import { jwtDecode } from 'jwt-decode';
 import { JwtPayload } from '../../utils/AdminRequirement';
 import { useAuth } from '../../utils/Context/AuthContext';
 import { useFavoriteProducts } from '../../utils/Context/FavoriteProductContext';
+import { useCartItems } from '../../utils/Context/CartItemContext';
 
 const cx = classNames.bind(styles);
 
 function Login() {
   const location = useLocation();
   const navigation = useNavigate();
+
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
   const { fetchFavoriteProducts } = useFavoriteProducts();
+  const { fetchCartItems } = useCartItems();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { isLoggedIn, setIsLoggedIn } = useAuth();
-  // const { setTotalCart, setCartList } = useCartItem();
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -38,84 +40,37 @@ function Login() {
         body: JSON.stringify(loginRequest),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        const { jwt } = data;
-        const decodedToken = jwtDecode<JwtPayload>(jwt);
-        // Kiểm tra xem tài khoản kích hoạt chưa
-        if (decodedToken.enabled === false) {
-          toast.warning(
-            'Tài khoản của bạn chưa kích hoạt hoặc đã bị vô hiệu hoá',
-          );
-          return;
-        }
-        setIsLoggedIn(true); // Đã đăng nhập
-        localStorage.setItem('token', jwt);
-        const from = location.state?.from;
-        if (from) {
-          navigation(from);
+      const data = await response.json();
+
+      if (data.status === 'success') {
+        const token = data.token;
+
+        if (typeof token === 'string') {
+          // Đăng nhập thành công
+          setIsLoggedIn(true);
+          localStorage.setItem('token', token);
+
+          const from = location.state?.from;
+          if (from) {
+            navigation(from);
+          } else {
+            navigation('/');
+          }
+
+          fetchFavoriteProducts();
+          fetchCartItems();
+          toast.success(data.message || 'Đăng nhập thành công');
         } else {
-          navigation('/');
+          toast.error('Token không hợp lệ');
         }
-        fetchFavoriteProducts();
-
-        // const cartData: string | null = localStorage.getItem('cart');
-        // let cart: CartItemModel[] = cartData ? JSON.parse(cartData) : [];
-        // Khi đăng nhập thành công mà trước đó đã thêm sản phẩm vào giỏ hàng thì các sản phẩm đó sẽ được thêm vào db
-        // if (cart.length !== 0) {
-        //   cart = cart.map((c) => ({ ...c, idUser: decodedToken.id }));
-
-        //   const endpoint = backendEndpoint + '/cart-item/add-item';
-        //   fetch(endpoint, {
-        //     method: 'POST',
-        //     headers: {
-        //       Authorization: `Bearer ${jwt}`,
-        //       'content-type': 'application/json',
-        //     },
-        //     body: JSON.stringify(cart),
-        //   })
-        //     .then((response) => {
-        //       // Lấy giỏ hàng của user khi đăng nhâp thành công
-        //       async function getCart() {
-        //         const response = await getCartAllByIdUser();
-        //         // Xoá cart mà lúc chưa đăng nhập
-        //         localStorage.removeItem('cart');
-        //         cart = response;
-        //         // Thêm cart lúc đăng nhập
-        //         localStorage.setItem('cart', JSON.stringify(cart));
-        //         setTotalCart(cart.length);
-        //         setCartList(cart);
-        //       }
-        //       getCart();
-        //     })
-        //     .catch((err) => {
-        //       console.log(err);
-        //     });
-        // } else {
-        //   // Lấy giỏ hàng của user khi đăng nhâp thành công
-        //   const response = await getCartAllByIdUser();
-        //   // Xoá cart mà lúc chưa đăng nhập
-        //   localStorage.removeItem('cart');
-        //   cart = response;
-        //   // Thêm cart lúc đăng nhập
-        //   localStorage.setItem('cart', JSON.stringify(cart));
-        //   setTotalCart(cart.length);
-        //   setCartList(cart);
-        // }
-
-        // Kiểm tra role để chuyển về link
-        // if (!decodedToken.roles.includes('Khách hàng')) {
-        //   navigation('/admin/dashboard');
-        // } else {
-        //   navigation('/');
-        // }
-        toast.success('Đăng nhập thành công');
       } else {
-        toast.error('Đăng nhập thất bại');
+        toast.error(data.message || 'Đăng nhập thất bại');
       }
     } catch (error) {
       console.error('Đăng nhập thất bại: ', error);
-      toast.error('Đăng nhập thất bại');
+      toast.error(
+        'Đã xảy ra lỗi trong quá trình đăng nhập. Vui lòng thử lại sau',
+      );
     }
   };
 
@@ -126,7 +81,7 @@ function Login() {
   };
 
   if (isLoggedIn) {
-    return <></>;
+    return null;
   }
 
   return (
@@ -150,8 +105,8 @@ function Login() {
                       type="text"
                       id="email"
                       value={email}
-                      autoComplete="off"
                       onChange={(e) => setEmail(e.target.value)}
+                      autoComplete="email"
                       onKeyPress={handleKeyPress}
                     />
                     <span>Email</span>

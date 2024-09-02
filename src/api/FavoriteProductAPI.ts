@@ -1,13 +1,32 @@
-import FavoriteProductModel from '../models/FavoriteProductModel';
+import { toast } from 'react-toastify';
 import { backendEndpoint } from '../utils/Service/Constant';
-import { publicRequest } from './Request';
+import { getUserIdByToken } from '../utils/Service/JwtService';
+import FavoriteProductModel from '../models/FavoriteProductModel';
 
-export async function getAllFavoriteProductsByUserId(
-  userId: number,
-): Promise<FavoriteProductModel[]> {
-  const url =
-    backendEndpoint + `/favorite-products/findByUserId?userId=${userId}`;
-  const responseData = await publicRequest(url);
+export const fetchFavoriteProductsByUserId = async (): Promise<
+  FavoriteProductModel[]
+> => {
+  const userId = getUserIdByToken();
+  const token = localStorage.getItem('token');
 
-  return responseData;
-}
+  try {
+    const response = await fetch(
+      backendEndpoint + `/favorite-products/find-by-user?userId=${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    toast.error('Đã xảy ra lỗi khi lấy danh sách sản phẩm yêu thích');
+    return [];
+  }
+};

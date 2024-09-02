@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
 import FavoriteProductModel from '../../../models/FavoriteProductModel';
-import { getUserIdByToken } from '../../../utils/Service/JwtService';
 import ProductCard from '../ProductCard/ProductCard';
 import ProductModel from '../../../models/ProductModel';
 import { getProductById } from '../../../api/ProductAPI';
-import { useFavoriteProducts } from '../../../utils/Context/FavoriteProductContext';
 
 interface FavoriteProductCardProps {
   favoriteProduct: FavoriteProductModel;

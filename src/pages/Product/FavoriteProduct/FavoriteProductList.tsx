@@ -1,40 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import FavoriteProductModel from '../../../models/FavoriteProductModel';
-import { getUserIdByToken } from '../../../utils/Service/JwtService';
-import { getAllFavoriteProductsByUserId } from '../../../api/FavoriteProductAPI';
 import FavoriteProductCard from './FavoriteProductCard';
 import Loader from '../../../utils/Loader';
-import { toast } from 'react-toastify';
 import { useFavoriteProducts } from '../../../utils/Context/FavoriteProductContext';
 
 function FavoriteProductList() {
-  const userId = getUserIdByToken();
-
-  //   const { favoriteProducts, fetchFavoriteProducts } = useFavoriteProducts();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [favoriteProducts, setFavoriteProducts] = useState<
-    FavoriteProductModel[]
-  >([]);
-
-  useEffect(() => {
-    fetchFavoriteProducts();
-  }, []);
-
-  const fetchFavoriteProducts = async () => {
-    try {
-      if (userId) {
-        const result = await getAllFavoriteProductsByUserId(userId);
-        setFavoriteProducts(result);
-      }
-    } catch (error) {
-      toast.error('Đã xảy ra lỗi khi lấy dữ liệu các sản phẩm yêu thích');
-    }
-  };
-
-  if (isLoading) {
-    return <Loader />;
-  }
+  const { favoriteProducts } = useFavoriteProducts();
 
   return (
     <div className="container" style={{ marginTop: '50px' }}>

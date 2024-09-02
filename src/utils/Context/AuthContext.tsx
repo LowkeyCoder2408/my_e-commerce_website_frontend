@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState } from 'react';
-import { isToken } from '../Service/JwtService';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { isToken, isTokenExpired } from '../Service/JwtService';
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -15,6 +15,15 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(isToken());
+
+  useEffect(() => {
+    if (isToken() && !isTokenExpired()) {
+      setIsLoggedIn(true);
+    } else {
+      localStorage.removeItem('token');
+      setIsLoggedIn(false);
+    }
+  }, []);
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>

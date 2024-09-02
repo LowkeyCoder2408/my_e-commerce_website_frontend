@@ -1,8 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { getUserIdByToken } from '../Service/JwtService';
-import { toast } from 'react-toastify';
+import {
+  getUserIdByToken,
+  isToken,
+  isTokenExpired,
+} from '../Service/JwtService';
 import CartItemModel from '../../models/CartItemModel';
-import { getAllCartItemsByUserId } from '../../api/CartItemAPI';
+import { fetchCartItemsByUserId } from '../../api/CartItemAPI';
 
 interface CartItemsContextType {
   cartItems: CartItemModel[];
@@ -21,23 +24,21 @@ export const CartItemsProvider: React.FC<CartItemsProviderProps> = (props) => {
   const [cartItems, setCartItems] = useState<CartItemModel[]>([]);
   const userId = getUserIdByToken();
 
-  const fetchCartItems = async () => {
-    try {
-      if (userId) {
-        const result = await getAllCartItemsByUserId(userId);
-        setCartItems(result);
-      }
-    } catch (error) {
-      toast.error('Đã xảy ra lỗi khi lấy dữ liệu các sản phẩm trong giỏ hàng');
+  const fetchCartItemsHandler = async () => {
+    if (isToken() && !isTokenExpired()) {
+      const data = await fetchCartItemsByUserId();
+      setCartItems(data);
     }
   };
 
   useEffect(() => {
-    fetchCartItems();
+    fetchCartItemsHandler();
   }, []);
 
   return (
-    <CartItemsContext.Provider value={{ cartItems, fetchCartItems }}>
+    <CartItemsContext.Provider
+      value={{ cartItems, fetchCartItems: fetchCartItemsHandler }}
+    >
       {props.children}
     </CartItemsContext.Provider>
   );

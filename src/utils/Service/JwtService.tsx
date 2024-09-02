@@ -1,15 +1,21 @@
 import { jwtDecode } from 'jwt-decode';
 import { JwtPayload } from '../AdminRequirement';
 
-export function isTokenExpired(token: string) {
-  const decodedToken = jwtDecode(token);
+export function isTokenExpired() {
+  const token = localStorage.getItem('token') || '';
+  try {
+    const decodedToken: any = jwtDecode(token);
 
-  if (!decodedToken.exp) {
-    // Token không có thời gian hết hạn (exp)
-    return false;
+    if (!decodedToken.exp) {
+      return false;
+    }
+
+    const currentTime = Date.now() / 1000; // Thời gian hiện tại tính bằng giây
+    return currentTime >= decodedToken.exp;
+  } catch (error) {
+    // Nếu có lỗi khi giải mã token, coi như token không hợp lệ (cũng có thể đã hết hạn)
+    return true;
   }
-  const currentTime = Date.now() / 1000; // Thời gian hiện tại tính bằng giây
-  return currentTime < decodedToken.exp;
 }
 
 export function isToken() {

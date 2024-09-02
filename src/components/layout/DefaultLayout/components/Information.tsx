@@ -80,9 +80,9 @@ function Information() {
               <Link
                 to={'/shopping-cart'}
                 title="Giỏ hàng của bạn"
-                className={cx('information__cart')}
+                className={cx('information__info')}
               >
-                <div className={cx('information__cart-wrap')}>
+                <div className={cx('information__info-wrap')}>
                   <FontAwesomeIcon
                     style={{ color: '#fff', width: '20px', height: '20px' }}
                     className="me-3"
@@ -90,7 +90,7 @@ function Information() {
                   />
                   {cartItems.length > 0 && (
                     <span
-                      className={`${cx('information__cart-notice')} text-white`}
+                      className={`${cx('information__info-notice')} text-white`}
                     >
                       {cartItems.length}
                     </span>
@@ -100,9 +100,9 @@ function Information() {
               <Link
                 to={'/wish-list'}
                 title="Sản phẩm yêu thích"
-                className={cx('information__cart')}
+                className={cx('information__info')}
               >
-                <div className={cx('information__cart-wrap')}>
+                <div className={cx('information__info-wrap')}>
                   <FontAwesomeIcon
                     style={{ color: '#fff', width: '20px', height: '20px' }}
                     className="me-3"
@@ -110,7 +110,7 @@ function Information() {
                   />
                   {favoriteProducts.length > 0 && (
                     <span
-                      className={`${cx('information__cart-notice')} text-white`}
+                      className={`${cx('information__info-notice')} text-white`}
                     >
                       {favoriteProducts.length}
                     </span>
