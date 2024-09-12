@@ -1,4 +1,3 @@
-// Pages
 import AboutUs from '../pages/AboutUs/AboutUs';
 import ExchangeReturnRefundPolicy from '../pages/Privacy/components/ExchangeReturnRefundPolicy';
 import WarrantyPolicy from '../pages/Privacy/components/WarrantyPolicy';
@@ -15,6 +14,7 @@ import Register from '../pages/User/Register';
 import EnableAccount from '../pages/User/EnableAccount';
 import Login from '../pages/User/Login';
 import FavoriteProductList from '../pages/Product/FavoriteProduct/FavoriteProductList';
+import ShoppingCart from '../pages/ShoppingCart/ShoppingCart';
 
 const publicRoutes = [
   {
@@ -48,7 +48,9 @@ const publicRoutes = [
     component: FavoriteProductList,
     layout: 'default',
   },
+
   { path: '/product-detail', component: ProductDetail, layout: 'default' },
+  { path: '/shopping-cart', component: ShoppingCart, layout: 'default' },
   { path: '/about-us', component: AboutUs, layout: 'default' },
   { path: '/contact', component: Contact, layout: 'default' },
   { path: '/faq', component: FAQ, layout: 'default' },

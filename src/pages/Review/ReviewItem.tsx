@@ -51,22 +51,30 @@ function ReviewItem(props: ReviewItemProps) {
         .then(() => {
           if (isLoggedIn) {
             deleteReview(props.review.id, token!)
-              .then((response) => {
+              .then(async (response) => {
+                const data = await response.json();
+
                 if (response.ok) {
-                  toast.success('Xóa đánh giá thành công!');
-                  props.fetchReviews();
-                  getProductById(props.review.productId).then((result) => {
-                    props.setProduct(result);
-                  });
+                  if (data.status === 'success') {
+                    toast.success(data.message || 'Xóa đánh giá thành công');
+                    props.fetchReviews();
+                    getProductById(props.review.productId).then((result) => {
+                      props.setProduct(result);
+                    });
+                  } else {
+                    toast.error(
+                      data.message || 'Xóa đánh giá không thành công',
+                    );
+                  }
                 } else {
-                  toast.error('Gặp lỗi trong quá trình xóa đánh giá!');
+                  toast.error('Gặp lỗi trong quá trình xóa đánh giá');
                 }
               })
               .catch(() => {
-                toast.error('Gặp lỗi trong quá trình xóa đánh giá!');
+                toast.error('Gặp lỗi trong quá trình xóa đánh giá');
               });
           } else {
-            toast.error('Bạn cần đăng nhập để xóa đánh giá!');
+            toast.error('Bạn cần đăng nhập để xóa đánh giá');
           }
         })
         .catch(() => {});
@@ -89,7 +97,7 @@ function ReviewItem(props: ReviewItemProps) {
 
   const handleEditReview = () => {
     if (!isLoggedIn) {
-      toast.error('Bạn cần đăng nhập để chỉnh sửa đánh giá!');
+      toast.error('Bạn cần đăng nhập để chỉnh sửa đánh giá');
       return;
     }
     handleOpenModal();
@@ -111,7 +119,10 @@ function ReviewItem(props: ReviewItemProps) {
       <div className={cx('product-details__review__main')}>
         <div className="d-flex align-items-center">
           <img
-            src={props.review.userPhoto}
+            src={
+              props.review.userPhoto ||
+              'https://res.cloudinary.com/dgdn13yur/image/upload/v1710904428/avatar_sjugj8.png'
+            }
             alt="Avatar"
             className={cx('product-details__review__avatar')}
           />

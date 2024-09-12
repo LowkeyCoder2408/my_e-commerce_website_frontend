@@ -12,7 +12,7 @@ export async function adminRequest(endpoint: string) {
   const token = localStorage.getItem('token') || '';
 
   if (!token || !isTokenExpired()) {
-    throw new Error('Access token không tồn tại hoặc đã hết hạn!');
+    throw new Error('Access token không tồn tại hoặc đã hết hạn');
   }
   const response = await fetch(endpoint, {
     method: 'GET',

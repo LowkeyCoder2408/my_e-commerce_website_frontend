@@ -68,5 +68,4 @@ export function getRolesByToken() {
 export function logout(navigate: any) {
   navigate('/login');
   localStorage.removeItem('token');
-  localStorage.removeItem('cart');
 }

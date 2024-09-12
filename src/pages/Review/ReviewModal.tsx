@@ -6,7 +6,6 @@ import { getUserIdByToken } from '../../utils/Service/JwtService';
 import { backendEndpoint } from '../../utils/Service/Constant';
 import { TextareaAutosize } from '@mui/material';
 import { Rating } from 'react-simple-star-rating';
-import { getUserReviewByProduct } from '../../api/ReviewAPI';
 import { getProductById } from '../../api/ProductAPI';
 
 interface ReviewModalProps {
@@ -38,7 +37,7 @@ const ReviewModal: React.FC<ReviewModalProps> = (props) => {
       return;
     }
     if (content.trim() === '') {
-      toast.error('Nội dung đánh giá không được để trống!');
+      toast.error('Nội dung đánh giá không được để trống');
       return;
     }
 
@@ -64,22 +63,32 @@ const ReviewModal: React.FC<ReviewModalProps> = (props) => {
         }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        toast.success(
-          userReview
-            ? 'Chỉnh sửa đánh giá thành công'
-            : 'Đánh giá sản phẩm thành công',
-        );
+        if (userReview) {
+          if (data.status === 'success') {
+            toast.success(data.message || 'Chỉnh sửa đánh giá thành công');
+          } else {
+            toast.error(data.message || 'Chỉnh sửa đánh giá không thành công');
+          }
+        } else {
+          if (data.status === 'success') {
+            toast.success(data.message || 'Đánh giá sản phẩm thành công');
+          } else {
+            toast.error(data.message || 'Đánh giá sản phẩm không thành công');
+          }
+        }
         props.handleCloseModal(true);
         props.fetchReviews();
         getProductById(props.product?.id ?? 0).then((result) => {
           props.setProduct(result);
         });
       } else {
-        toast.error('Gặp lỗi trong quá trình đánh giá');
+        toast.error(data.message || 'Đã xảy ra lỗi');
       }
     } catch (error) {
-      toast.error('Gặp lỗi trong quá trình đánh giá');
+      toast.error('Đã xảy ra lỗi');
       console.error('Lỗi khi đánh giá:', error);
     }
   };
@@ -88,7 +97,7 @@ const ReviewModal: React.FC<ReviewModalProps> = (props) => {
     const fetchReview = async () => {
       if (userId && props.product?.id) {
         try {
-          const url = `${backendEndpoint}/reviews/findByUserIdAndProductId?userId=${userId}&productId=${props.product.id}`;
+          const url = `${backendEndpoint}/reviews/find-by-user-id-and-product-id?userId=${userId}&productId=${props.product.id}`;
           const response = await fetch(url);
 
           if (!response.ok) {

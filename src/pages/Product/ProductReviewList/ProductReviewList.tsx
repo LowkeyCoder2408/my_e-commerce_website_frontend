@@ -117,7 +117,7 @@ const ProductReviewList = (props: ProductReviewListProps) => {
           <div
             onClick={() => {
               if (!isLoggedIn) {
-                toast.error('Bạn cần đăng nhập để đánh giá!');
+                toast.error('Bạn cần đăng nhập để đánh giá');
                 navigation('/login', {
                   state: { from: location },
                 });

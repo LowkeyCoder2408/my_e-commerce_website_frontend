@@ -25,7 +25,7 @@ const DealProduct = () => {
       })
       .catch((error) => {
         setLoading(false);
-        toast.error('Đã xảy ra lỗi khi lấy dữ liệu!');
+        toast.error('Đã xảy ra lỗi khi lấy dữ liệu');
       });
   }, []);
 

@@ -17,7 +17,7 @@ export async function getUserReviewByProduct(
   userId: number,
   productId: number,
 ): Promise<ReviewModel | null> {
-  const url: string = `${backendEndpoint}/reviews/findByUserIdAndProductId?userId=${userId}&productId=${productId}`;
+  const url: string = `${backendEndpoint}/reviews/find-by-user-id-and-product-id?userId=${userId}&productId=${productId}`;
   try {
     const response = await publicRequest(url);
     if (response === null || response === undefined) {

@@ -66,7 +66,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
     };
 
     fetchData();
-  }, []);
+  }, [favoriteProducts]);
 
   const handleAddAProductToCart = async (newProduct: ProductModel) => {
     const inStockQuantity = props.product.quantity || 0;
@@ -79,7 +79,9 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
     if (isTokenExpired()) {
       localStorage.removeItem('token');
       setIsLoggedIn(false);
-      toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại');
+      toast.error(
+        'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
+      );
       navigation('/login', { state: { from: location } });
       return;
     }
@@ -182,7 +184,9 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
     if (isTokenExpired()) {
       localStorage.removeItem('token');
       setIsLoggedIn(false);
-      toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại');
+      toast.error(
+        'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
+      );
       navigation('/login', { state: { from: location } });
       return;
     }

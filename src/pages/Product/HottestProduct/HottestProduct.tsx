@@ -56,7 +56,7 @@ function HottestProduct() {
       })
       .catch((error) => {
         setLoading(false);
-        toast.error('Lấy danh sách sản phẩm hot không thành công!');
+        toast.error('Lấy danh sách sản phẩm hot không thành công');
       });
   }, []);
 

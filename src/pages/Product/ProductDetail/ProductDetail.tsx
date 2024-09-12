@@ -91,7 +91,9 @@ function ProductDetail() {
     if (isTokenExpired()) {
       localStorage.removeItem('token');
       setIsLoggedIn(false);
-      toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại');
+      toast.error(
+        'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
+      );
       navigation('/login', { state: { from: location } });
       return;
     }

@@ -56,7 +56,7 @@ function NewestProduct() {
       })
       .catch((error) => {
         setLoading(false);
-        toast.error('Lấy danh sách sản phẩm mới không thành công!');
+        toast.error('Lấy danh sách sản phẩm mới không thành công');
       });
   }, []);
 

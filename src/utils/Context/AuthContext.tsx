@@ -36,7 +36,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('AuthContext không tồn tại.');
+    throw new Error('AuthContext không tồn tại');
   }
   return context;
 };
