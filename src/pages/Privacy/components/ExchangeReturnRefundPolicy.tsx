@@ -8,11 +8,9 @@ function ExchangeReturnRefundPolicy() {
   return (
     <div className="container">
       <div className={`${cx('exchange-return-refund-policy')} bg-light border`}>
-        <h1
-          className={`${cx('exchange-return-refund-policy__title')} color-text mb-4`}
-        >
-          <strong>CHÍNH SÁCH ĐỔI/TRẢ/HOÀN TIỀN</strong>
-        </h1>
+        <div className="default-title mt-2 mb-4">
+          CHÍNH SÁCH ĐỔI/TRẢ/HOÀN TIỀN
+        </div>
         <p>
           Chào mừng bạn đến với <strong>Chính sách Đổi/Trả/Hoàn tiền</strong>{' '}
           của chúng tôi tại{' '}

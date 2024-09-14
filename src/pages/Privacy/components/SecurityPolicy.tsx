@@ -8,9 +8,7 @@ function SecurityPolicy() {
   return (
     <div className="container">
       <div className={`${cx('security-policy')} bg-light border`}>
-        <h1 className={`${cx('security-policy__title')} color-text mb-4`}>
-          <strong>CHÍNH SÁCH BẢO MẬT</strong>
-        </h1>
+        <div className="default-title mt-2 mb-4">CHÍNH SÁCH BẢO MẬT</div>
         <p>
           Chào mừng bạn đến với trang <strong>Chính sách Bảo mật</strong> của
           <Link to={'/'} className="text-primary">

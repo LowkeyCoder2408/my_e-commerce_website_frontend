@@ -200,7 +200,7 @@ const ProductCartCard: React.FC<ProductCartCardProps> = (props) => {
   return (
     <div
       className={`${cx('product-cart-item')} bg-white mb-3`}
-      style={{ borderRadius: '7px', width: '850px' }}
+      style={{ borderRadius: '7px', width: '864px' }}
     >
       {props.canChangeQuantity && (
         <FontAwesomeIcon
