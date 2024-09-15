@@ -1,4 +1,6 @@
-import AuthenticationType from './AuthenticationType';
+import AddressModel from './AddressModel';
+import FavoriteProductModel from './FavoriteProductModel';
+import ReviewModel from './ReviewModel';
 
 class UserModel {
   id: number;
@@ -6,13 +8,14 @@ class UserModel {
   firstName: string;
   lastName: string;
   phoneNumber: string;
-  photo: string;
-  verificationCode: string;
-  resetPasswordToken: string;
-  createdTime: Date;
-  enabled: boolean;
-  roles: string[];
-  authenticationType: AuthenticationType;
+  photo?: string;
+  addresses?: AddressModel;
+  createdTime?: Date;
+  enabled?: boolean;
+  roles?: string[];
+  reviews?: ReviewModel[];
+  favoriteProducts?: FavoriteProductModel[];
+  authenticationType?: string;
 
   constructor(
     id: number,
@@ -20,13 +23,14 @@ class UserModel {
     firstName: string,
     lastName: string,
     phoneNumber: string,
-    photo: string,
-    verificationCode: string,
-    resetPasswordToken: string,
-    createdTime: Date,
-    enabled: boolean,
-    roles: string[],
-    authenticationType: AuthenticationType,
+    photo?: string,
+    addresses?: AddressModel,
+    createdTime?: Date,
+    enabled?: boolean,
+    roles?: string[],
+    reviews?: ReviewModel[],
+    favoriteProducts?: FavoriteProductModel[],
+    authenticationType?: string,
   ) {
     this.id = id;
     this.email = email;
@@ -34,11 +38,12 @@ class UserModel {
     this.lastName = lastName;
     this.phoneNumber = phoneNumber;
     this.photo = photo;
-    this.verificationCode = verificationCode;
-    this.resetPasswordToken = resetPasswordToken;
+    this.addresses = addresses;
     this.createdTime = createdTime;
     this.enabled = enabled;
     this.roles = roles;
+    this.reviews = reviews;
+    this.favoriteProducts = favoriteProducts;
     this.authenticationType = authenticationType;
   }
 }

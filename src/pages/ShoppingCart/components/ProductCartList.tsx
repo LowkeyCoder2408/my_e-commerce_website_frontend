@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useCartItems } from '../../../utils/Context/CartItemContext';
 import { Link, useNavigate } from 'react-router-dom';
-import ProductCartCard from './ProductCartCard';
 import { useAuth } from '../../../utils/Context/AuthContext';
 import styles from '../scss/ProductCartList.module.scss';
 import classNames from 'classnames/bind';

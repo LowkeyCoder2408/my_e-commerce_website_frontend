@@ -21,12 +21,15 @@ import WardModel from '../../models/WardModel';
 import ProvinceModel from '../../models/ProvinceModel';
 import DistrictModel from '../../models/DistrictModel';
 import classNames from 'classnames/bind';
-import UserModel from '../../models/UserModel';
 import { CheckoutSuccess } from './components/CheckOutSuccess';
 import { getUserIdByToken } from '../../utils/Service/JwtService';
 import ConfirmedInformation from '../ShoppingCart/components/ConfirmedInformation';
 import CartItemList from '../ShoppingCart/components/CartItemList';
 import AddressModel from '../../models/AddressModel';
+import { getUserById } from '../../api/UserAPI';
+import { getAllProvinces } from '../../api/ProvinceAPI';
+import { getAllDistrictsByProvinceName } from '../../api/DistrictAPI';
+import { getAllWardsByProvinceAndDistrict } from '../../api/WardAPI';
 
 const cx = classNames.bind(styles);
 
@@ -39,41 +42,86 @@ interface CheckOutProps {
 }
 
 export const CheckOut: React.FC<CheckOutProps> = (props) => {
+  const userId = getUserIdByToken();
   // const { setCartList, setTotalCart } = useCartItem();
-  const [isSuccessPayment, setIsSuccessPayment] = useState(false);
 
-  // Xử lý phương thức thanh toán
-  const [payment, setPayment] = React.useState(1);
+  const navigation = useNavigate();
+
+  // Lấy dữ liệu của người dùng lên
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [email, setEmail] = useState('');
+
+  // Xử lý địa chỉ giao hàng
+  const [address, setAddress] = useState<AddressModel | null>(null);
   const [addressLine, setAddressLine] = useState('');
 
-  const [provinceList, setProvinceList] = useState<ProvinceModel[] | null>([]);
-  const [provinceId, setProvinceId] = useState<number | null>(null);
+  const [provinces, setProvinces] = useState<ProvinceModel[]>([]);
   const [provinceName, setProvinceName] = useState<string>('');
 
-  const [districtList, setDistrictList] = useState<DistrictModel[] | null>([]);
-  const [districtId, setDistrictId] = useState<number | null>(null);
+  const [districts, setDistricts] = useState<DistrictModel[]>([]);
   const [districtName, setDistrictName] = useState<string>('');
 
-  const [wardList, setWardList] = useState<WardModel[] | null>([]);
-  const [wardId, setWardId] = useState<number | null>(null);
+  const [wards, setWards] = useState<WardModel[]>([]);
   const [wardName, setWardName] = useState<string>('');
 
   const [isDefaultAddress, setIsDefaultAddress] = useState<boolean>(false);
   const [isUseDefaultAddress, setIsUseDefaultAddress] =
     useState<boolean>(false);
 
-  const [address, setAddress] = useState<AddressModel | null>(null);
+  // Xử lý phương thức thanh toán
+  const [isSuccessPayment, setIsSuccessPayment] = useState(false);
+  const [payment, setPayment] = React.useState(1);
 
+  // Xử lý ghi chú
   const [note, setNote] = useState('');
 
-  const navigation = useNavigate();
-  // Lấy dữ liệu của người dùng lên
-  const [user, setUser] = useState<UserModel>();
+  useEffect(() => {
+    console.log({ addressLine, provinceName, districtName, wardName });
+  }, [addressLine, provinceName, districtName, wardName]);
+
+  useEffect(() => {
+    Promise.all([getUserById(userId), getAllProvinces()])
+
+      .then(([userResult, provincesResult]) => {
+        // User handle
+        // setUser(result);
+        setFullName(userResult.firstName + ' ' + userResult.lastName);
+        setPhoneNumber(userResult.phoneNumber);
+        setEmail(userResult.email);
+        // Address handle
+        setProvinces(provincesResult);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (provinceName !== '') {
+      getAllDistrictsByProvinceName(provinceName)
+        .then((districtsResult) => {
+          setDistricts(districtsResult);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  }, [provinceName]);
+
+  useEffect(() => {
+    if (provinceName !== '' && districtName !== '') {
+      getAllWardsByProvinceAndDistrict(provinceName, districtName)
+        .then((wardsResult: WardModel[]) => {
+          setWards(wardsResult);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  }, [districtName]);
 
   // useEffect(() => {
-  //   const userId = getUserIdByToken();
   //   getDefaultAddressByIdUser(userId).then((result) => {
   //     console.log(result.address);
   //     setAddress(result.address);
@@ -127,36 +175,6 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
   //   fetchData();
   // }, [address, isDefaultAddress, isUseDefaultAddress]);
 
-  // useEffect(() => {
-  //   getAllProvince().then((result) => {
-  //     setProvinceList(result);
-  //   });
-  // }, []);
-
-  // useEffect(() => {
-  //   if (provinceId !== null) {
-  //     getAllDistrictsByProvinceId(provinceId)
-  //       .then((result) => {
-  //         setDistrictList(result);
-  //       })
-  //       .catch((error) => {
-  //         console.error(error);
-  //       });
-  //   }
-  // }, [provinceId]);
-
-  // useEffect(() => {
-  //   if (districtId !== null) {
-  //     getAllWardsByDistrictId(districtId)
-  //       .then((result) => {
-  //         setWardList(result);
-  //       })
-  //       .catch((error) => {
-  //         console.error(error);
-  //       });
-  //   }
-  // }, [districtId]);
-
   // Báo lỗi
   const [errorPhoneNumber, setErrorPhoneNumber] = useState('');
 
@@ -164,39 +182,15 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
     setPayment(parseInt((event.target as HTMLInputElement).value));
   };
 
-  // useEffect(() => {
-  //   const userId = getUserIdByToken();
-  //   getUserById(userId)
-  //     .then((response) => {
-  //       if (response !== undefined) {
-  //         setUser(response);
-  //         if (response.fullName !== undefined) {
-  //           setFullName(response.fullName);
-  //         }
-  //         if (response.phoneNumber !== undefined) {
-  //           setPhoneNumber(response.phoneNumber);
-  //         }
-  //         // setDeliveryAddress(response.);
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // }, []);
-
-  useEffect(() => {
-    console.log(provinceId, districtId, wardId);
-  }, [provinceId, districtId, wardId]);
-
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const token = localStorage.getItem('token');
 
     if (
-      addressLine === null ||
-      provinceId === null ||
-      districtId === null ||
-      wardId === null
+      addressLine === '' ||
+      provinceName === '' ||
+      districtName === '' ||
+      wardName === ''
     ) {
       toast.error('Bạn chưa điền đầy đủ thông thông tin!');
       return;
@@ -214,14 +208,14 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
       addressLine: addressLine,
       payment: payment,
       idPayment: payment,
-      districtId: districtId,
-      email: user?.email,
+      districtName: districtName,
+      // email: user?.email,
       fullName: fullName,
       note: note,
       phoneNumber: phoneNumber,
-      provinceId: provinceId,
+      provinceName: provinceName,
       total: props.totalPriceProduct,
-      wardId: wardId,
+      wardName: wardName,
       userId: getUserIdByToken(),
       product: productRequest,
       isDefaultAddress: isDefaultAddress,
@@ -367,10 +361,7 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
                       type="text"
                       variant="standard"
                       label="Email"
-                      // value={user?.email}
-                      value="Con cặc"
-                      // defaultValue="Con cặc"
-                      // defaultValue={user?.email}
+                      value={email}
                       className="input-field"
                       InputLabelProps={{
                         style: { fontSize: '1.5rem' },
@@ -386,54 +377,33 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
                   <div className="col col-xxl-12 col-12">
                     <div className="default-title mt-3">ĐỊA CHỈ NHẬN HÀNG</div>
                     <div className="row">
-                      {/* {address && (
-                      <div className="col col-6">
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={isUseDefaultAddress}
-                              onChange={() => {
-                                setIsUseDefaultAddress(!isUseDefaultAddress);
-                              }}
-                            />
-                          }
-                          label={`Sử dụng địa chỉ mặc định (${
-                            address?.addressLine +
-                            ', ' +
-                            wardName +
-                            ', ' +
-                            districtName +
-                            ', ' +
-                            provinceName +
-                            ')'
-                          }`}
-                        />
-                      </div>
-                    )} */}
+                      {address && (
+                        <div className="col col-6">
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={isUseDefaultAddress}
+                                onChange={() => {
+                                  setIsUseDefaultAddress(!isUseDefaultAddress);
+                                }}
+                              />
+                            }
+                            label={`Sử dụng địa chỉ mặc định (${
+                              address?.addressLine +
+                              ', ' +
+                              wardName +
+                              ', ' +
+                              districtName +
+                              ', ' +
+                              provinceName +
+                              ')'
+                            }`}
+                          />
+                        </div>
+                      )}
 
                       {isUseDefaultAddress === false && (
                         <>
-                          <div
-                            className={`mt-3 col ${address ? 'col-6' : 'col-12'}`}
-                          >
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  checked={isDefaultAddress}
-                                  onChange={() => {
-                                    console.log(!isDefaultAddress);
-                                    setIsDefaultAddress(!isDefaultAddress);
-                                  }}
-                                />
-                              }
-                              label="Đặt làm địa chỉ mặc định"
-                              sx={{
-                                '& .MuiFormControlLabel-label': {
-                                  fontSize: '1.4rem',
-                                },
-                              }}
-                            />
-                          </div>
                           <div className="mt-1 mb-4 col-12">
                             <TextField
                               required
@@ -457,7 +427,7 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
                               }}
                             />
                           </div>
-                          <div className="col col-xxl-4 col-xl-4 col-lg-6 col-md-4 col-12">
+                          <div className="col col-xxl-4 col-xl-4 col-lg-6 col-md-4 col-12 mt-3">
                             <FormControl fullWidth variant="standard">
                               <InputLabel
                                 id="demo-simple-select-standard-label"
@@ -470,12 +440,12 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
                                 labelId="demo-simple-select-standard-label"
                                 id="demo-simple-select-standard"
                                 variant="standard"
-                                value={provinceId}
+                                value={provinceName}
                                 onChange={(e) => {
-                                  setProvinceId(parseInt(e.target.value + ''));
-                                  setDistrictId(null);
-                                  setWardId(null);
-                                  setWardList(null);
+                                  setProvinceName(e.target.value + '');
+                                  setDistrictName('');
+                                  setWardName('');
+                                  setWards([]);
                                 }}
                                 sx={{
                                   '& .MuiSelect-select': {
@@ -484,13 +454,13 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
                                   },
                                 }}
                               >
-                                <MenuItem value="3">
-                                  <em>Tuyệt vời</em>
+                                <MenuItem value="Chưa chọn tỉnh/thành">
+                                  <em>Chưa chọn tỉnh/thành</em>
                                 </MenuItem>
-                                {provinceList?.map((province) => (
+                                {provinces.map((province) => (
                                   <MenuItem
                                     key={province.id}
-                                    value={province.id}
+                                    value={province.name}
                                   >
                                     {province.name}
                                   </MenuItem>
@@ -498,27 +468,24 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
                               </Select>
                             </FormControl>
                           </div>
-                          <div className="col col-xxl-4 col-xl-4 col-lg-6 col-md-4 col-12">
+                          <div className="col col-xxl-4 col-xl-4 col-lg-6 col-md-4 col-12 mt-3">
                             <FormControl fullWidth variant="standard">
                               <InputLabel
                                 id="demo-simple-select-standard-label"
                                 sx={{ fontSize: '1.5rem' }}
                               >
-                                Quận/Huyện
+                                Huyện/Quận
                               </InputLabel>
                               <Select
                                 required
                                 labelId="demo-simple-select-standard-label"
                                 id="demo-simple-select-standard"
-                                value={districtId}
-                                disabled={
-                                  !districtList || districtList.length === 0
-                                }
+                                value={districtName}
+                                disabled={!districts || districts.length === 0}
                                 onChange={(e) => {
-                                  setDistrictId(parseInt(e.target.value + ''));
-                                  setWardId(null);
+                                  setDistrictName(e.target.value + '');
+                                  setWardName('');
                                 }}
-                                // label="Tỉnh"
                                 sx={{
                                   '& .MuiSelect-select': {
                                     fontSize: '1.6rem',
@@ -526,13 +493,13 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
                                   },
                                 }}
                               >
-                                <MenuItem value="">
-                                  <em>None</em>
+                                <MenuItem value="Chưa chọn huyện/quận">
+                                  <em>Chưa chọn huyện/quận</em>
                                 </MenuItem>
-                                {districtList?.map((district) => (
+                                {districts.map((district) => (
                                   <MenuItem
                                     key={district.id}
-                                    value={district.id}
+                                    value={district.name}
                                   >
                                     {district.name}
                                   </MenuItem>
@@ -540,7 +507,7 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
                               </Select>
                             </FormControl>
                           </div>
-                          <div className="col col-xxl-4 col-xl-4 col-lg-6 col-md-4 col-12">
+                          <div className="col col-xxl-4 col-xl-4 col-lg-6 col-md-4 col-12 mt-3">
                             <FormControl fullWidth variant="standard">
                               <InputLabel
                                 id="demo-simple-select-standard-label"
@@ -548,16 +515,16 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
                                   fontSize: '1.5rem',
                                 }}
                               >
-                                Phường/Xã
+                                Xã/Phường
                               </InputLabel>
                               <Select
                                 required
                                 labelId="demo-simple-select-standard-label"
                                 id="demo-simple-select-standard"
-                                value={wardId}
-                                disabled={!wardList || wardList.length === 0}
+                                value={wardName}
+                                disabled={!wards || wards.length === 0}
                                 onChange={(e) =>
-                                  setWardId(parseInt(e.target.value + ''))
+                                  setWardName(e.target.value + '')
                                 }
                                 // label="Tỉnh"
                                 sx={{
@@ -567,25 +534,44 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
                                   },
                                 }}
                               >
-                                <MenuItem value="">
-                                  <em>None</em>
+                                <MenuItem value="Chưa chọn xã/phường">
+                                  <em>Chưa chọn xã/phường</em>
                                 </MenuItem>
-                                {wardList?.map((ward) => (
-                                  <MenuItem key={ward.id} value={ward.id}>
+                                {wards.map((ward) => (
+                                  <MenuItem key={ward.id} value={ward.name}>
                                     {ward.name}
                                   </MenuItem>
                                 ))}
                               </Select>
                             </FormControl>
                           </div>
+                          <div
+                            className={`mt-4 col ${address ? 'col-6' : 'col-12'}`}
+                          >
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  checked={isDefaultAddress}
+                                  onChange={() => {
+                                    console.log(!isDefaultAddress);
+                                    setIsDefaultAddress(!isDefaultAddress);
+                                  }}
+                                />
+                              }
+                              label="Đặt làm địa chỉ mặc định"
+                              sx={{
+                                '& .MuiFormControlLabel-label': {
+                                  fontSize: '1.4rem',
+                                },
+                              }}
+                            />
+                          </div>
                         </>
                       )}
                     </div>
                   </div>
                   <div className="col col-xxl-12 col-12 mt-4">
-                    <div className="default-title mt-3">
-                      PHƯƠNG THỨC THANH TOÁN
-                    </div>
+                    <div className="default-title">PHƯƠNG THỨC THANH TOÁN</div>
                     <FormControl>
                       <RadioGroup
                         aria-labelledby="demo-controlled-radio-buttons-group"
