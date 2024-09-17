@@ -420,3 +420,23 @@ button:hover {
   background-color: rgba(237, 237, 237, 0.7);
   border-radius: 50%;
 }
+
+.input-container {
+  width: 100%;
+  position: relative;
+}
+
+.mic-icon {
+  // background-color: #000;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 50%;
+  position: absolute;
+  right: 65px;
+  top: 50%;
+  transform: translateY(-50%);
+}

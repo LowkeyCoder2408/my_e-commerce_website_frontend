@@ -6,8 +6,12 @@ import classNames from 'classnames/bind';
 import styles from './scss/Header.module.scss';
 import { getAllCategories } from '../../../../api/CategoryAPI';
 import { frontendEndpoint } from '../../../../utils/Service/Constant';
+import { MicNone } from '@mui/icons-material';
 
 const cx = classNames.bind(styles);
+// Kiểm tra xem trình duyệt có hỗ trợ Web Speech API không
+const SpeechRecognition =
+  (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
 function Header() {
   const location = useLocation();
@@ -19,7 +23,7 @@ function Header() {
   const [isSearchClose, setIsSearchClose] = useState(true);
   const [isSidebarClose, setIsSidebarClose] = useState(true);
   const [keyword, setKeyword] = useState<string>('');
-  // const userRoles = getRoleByToken();
+  const [isListening, setIsListening] = useState<boolean>(false);
   const navLinksRef = useRef<HTMLDivElement>(null);
   const searchBoxRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -61,6 +65,54 @@ function Header() {
     setKeyword('');
   };
 
+  const handleSearchOnVoice = (transcript: string) => {
+    const queryParams = new URLSearchParams(location.search);
+
+    if (currentUrl.startsWith(`${frontendEndpoint}/product-list`)) {
+      if (transcript.trim() === '') {
+        queryParams.delete('keyword');
+      } else {
+        queryParams.set('keyword', encodeURIComponent(transcript));
+      }
+      const newUrl = `${location.pathname}?${queryParams}`;
+      navigate(newUrl);
+    } else {
+      if (transcript.trim() === '') {
+        navigate('/product-list');
+      } else {
+        navigate(`/product-list?keyword=${encodeURIComponent(transcript)}`);
+      }
+    }
+    setKeyword('');
+  };
+
+  const handleVoiceSearch = () => {
+    if (!SpeechRecognition) {
+      alert('Trình duyệt của bạn không hỗ trợ tìm kiếm bằng giọng nói.');
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'vi-VN';
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setKeyword(transcript);
+      handleSearchOnVoice(transcript);
+    };
+
+    recognition.start();
+  };
+
   useEffect(() => {
     setIsSidebarClose(true);
     setIsSearchClose(true);
@@ -80,10 +132,10 @@ function Header() {
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
-      // Kiểm tra nếu click không phải là search-box hoặc con của search-box thì đóng search-box
       if (
         searchBoxRef.current &&
-        !searchBoxRef.current.contains(event.target as Node)
+        !searchBoxRef.current.contains(event.target as Node) &&
+        isListening
       ) {
         setIsSearchClose(true);
       }
@@ -93,7 +145,6 @@ function Header() {
     document.addEventListener('mousedown', handleOutsideClick);
 
     return () => {
-      // Cleanup: loại bỏ sự kiện mousedown khi component bị unmount
       document.removeEventListener('mousedown', handleOutsideClick);
     };
   }, []);
@@ -208,14 +259,25 @@ function Header() {
                 onSubmit={handleSearch}
                 className={cx('input-box', { hide: isSearchClose })}
               >
-                <input
-                  className="form-control mr-sm-2"
-                  type="search"
-                  placeholder="Tìm kiếm sản phẩm tại đây..."
-                  aria-label="Search"
-                  onChange={onSearchInputChange}
-                  value={keyword}
-                />
+                <div className={cx('input-container')}>
+                  <input
+                    className="form-control mr-sm-2"
+                    type="search"
+                    placeholder={`${isListening ? 'Đang nghe...' : 'Tìm kiếm sản phẩm tại đây...'}`}
+                    aria-label="Search"
+                    onChange={onSearchInputChange}
+                    value={keyword}
+                  />
+                  <span onClick={handleVoiceSearch} className={cx('mic-icon')}>
+                    <MicNone
+                      style={{
+                        fontSize: '2rem',
+                        color: `${isListening ? 'red' : ''}`,
+                      }}
+                    />
+                  </span>
+                </div>
+
                 <button type="submit" className="">
                   <i className="bx bx-search text-white"></i>
                 </button>

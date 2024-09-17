@@ -184,7 +184,14 @@ function ProductDetail() {
     }
   };
 
-  const handleBuyNow = () => {};
+  const handleBuyNow = () => {
+    const buyNowProduct = {
+      buyNowProductId: product?.id,
+      quantityToBuy: quantity,
+    };
+    localStorage.setItem('buy_now_product', JSON.stringify(buyNowProduct));
+    navigation('/check-out');
+  };
 
   if (isLoading) {
     return <Loader />;

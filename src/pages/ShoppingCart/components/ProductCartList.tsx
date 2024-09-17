@@ -16,9 +16,9 @@ const ProductCartItems: React.FC<ProductCartItemsProps> = () => {
   const { isLoggedIn, setIsLoggedIn } = useAuth();
   const { cartItems } = useCartItems();
 
-  const [totalPriceProduct, setTotalPriceProduct] = useState(0);
-  // const [isCheckOut, setIsCheckOut] = useState<boolean>(false);
-  const [isCheckOut, setIsCheckOut] = useState<boolean>(true);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [isCheckOut, setIsCheckOut] = useState<boolean>(false);
+  // const [isCheckOut, setIsCheckOut] = useState<boolean>(true);
 
   const navigation = useNavigate();
 
@@ -29,7 +29,7 @@ const ProductCartItems: React.FC<ProductCartItemsProps> = () => {
       return totalPrice + itemQuantity * itemPrice;
     }, 0);
 
-    setTotalPriceProduct(total);
+    setTotalPrice(total);
   }, [cartItems]);
 
   return (
@@ -58,7 +58,7 @@ const ProductCartItems: React.FC<ProductCartItemsProps> = () => {
         </div>
       ) : (
         <>
-          {!isCheckOut ? (
+          {isCheckOut === false ? (
             <div>
               <div
                 className="row"
@@ -71,18 +71,12 @@ const ProductCartItems: React.FC<ProductCartItemsProps> = () => {
                 <CartItemList canChangeQuantity={true} />
                 <ConfirmedInformation
                   isCheckOut={isCheckOut}
-                  setIsCheckOut={setIsCheckOut}
-                  totalPriceProduct={totalPriceProduct}
+                  totalPrice={totalPrice}
                 />
               </div>
             </div>
           ) : (
-            <CheckOut
-              isCheckOut={isCheckOut}
-              setIsCheckOut={setIsCheckOut}
-              cartItems={cartItems}
-              totalPriceProduct={totalPriceProduct}
-            />
+            <CheckOut />
           )}
         </>
       )}

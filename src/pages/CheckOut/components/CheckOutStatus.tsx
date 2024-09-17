@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../utils/Context/AuthContext';
-import { CheckoutSuccess } from './CheckOutSuccess';
+import { CheckOutSuccess } from './CheckOutSuccess';
 import { CheckOutFail } from './CheckOutFail';
-const CheckoutStatus: React.FC = () => {
+
+const CheckOutStatus: React.FC = () => {
   const { isLoggedIn } = useAuth();
   const navigation = useNavigate();
 
@@ -11,7 +12,7 @@ const CheckoutStatus: React.FC = () => {
     if (!isLoggedIn) {
       navigation('/login');
     }
-  });
+  }, []);
 
   const location = useLocation();
   const [isSuccess, setIsSuccess] = useState(false);
@@ -39,7 +40,7 @@ const CheckoutStatus: React.FC = () => {
     }
   }, [location.search]);
 
-  return <>{isSuccess ? <CheckoutSuccess /> : <CheckOutFail />}</>;
+  return <>{isSuccess ? <CheckOutSuccess /> : <CheckOutFail />}</>;
 };
 
-export default CheckoutStatus;
+export default CheckOutStatus;

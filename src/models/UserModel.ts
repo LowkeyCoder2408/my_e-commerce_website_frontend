@@ -9,12 +9,12 @@ class UserModel {
   lastName: string;
   phoneNumber: string;
   photo?: string;
-  addresses?: AddressModel;
+  // addresses?: AddressModel;
   createdTime?: Date;
   enabled?: boolean;
   roles?: string[];
-  reviews?: ReviewModel[];
-  favoriteProducts?: FavoriteProductModel[];
+  // reviews?: ReviewModel[];
+  // favoriteProducts?: FavoriteProductModel[];
   authenticationType?: string;
 
   constructor(
@@ -24,12 +24,12 @@ class UserModel {
     lastName: string,
     phoneNumber: string,
     photo?: string,
-    addresses?: AddressModel,
+    // addresses?: AddressModel,
     createdTime?: Date,
     enabled?: boolean,
     roles?: string[],
-    reviews?: ReviewModel[],
-    favoriteProducts?: FavoriteProductModel[],
+    // reviews?: ReviewModel[],
+    // favoriteProducts?: FavoriteProductModel[],
     authenticationType?: string,
   ) {
     this.id = id;
@@ -38,12 +38,12 @@ class UserModel {
     this.lastName = lastName;
     this.phoneNumber = phoneNumber;
     this.photo = photo;
-    this.addresses = addresses;
+    // this.addresses = addresses;
     this.createdTime = createdTime;
     this.enabled = enabled;
     this.roles = roles;
-    this.reviews = reviews;
-    this.favoriteProducts = favoriteProducts;
+    // this.reviews = reviews;
+    // this.favoriteProducts = favoriteProducts;
     this.authenticationType = authenticationType;
   }
 }

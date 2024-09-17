@@ -5,7 +5,7 @@ class AddressModel {
   district?: string;
   ward?: string;
   userId?: number;
-  isDefaultAddress?: boolean;
+  defaultAddress?: boolean;
 
   constructor(
     id: number,
@@ -14,7 +14,7 @@ class AddressModel {
     district: string,
     ward: string,
     userId: number,
-    isDefaultAddress: boolean,
+    defaultAddress: boolean,
   ) {
     this.id = id;
     this.addressLine = addressLine;
@@ -22,7 +22,7 @@ class AddressModel {
     this.district = district;
     this.ward = ward;
     this.userId = userId;
-    this.isDefaultAddress = isDefaultAddress;
+    this.defaultAddress = defaultAddress;
   }
 }
 

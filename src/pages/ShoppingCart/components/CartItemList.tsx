@@ -15,7 +15,7 @@ const CartItemList = (props: CartItemListProps) => {
   return (
     <>
       <div className="container col col-xxl-8 col-xl-8 col-12">
-        <div className="default-title mt-5">CÁC SẢN PHẨM TRONG GIỎ HÀNG</div>
+        <div className="default-title mt-2">CÁC SẢN PHẨM TRONG GIỎ HÀNG</div>
         <div className={`${cx('cart-items-container')} mt-4 overflow-x-scroll`}>
           {cartItems.map((cartItem) => {
             return (

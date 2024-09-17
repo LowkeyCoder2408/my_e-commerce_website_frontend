@@ -1,8 +1,6 @@
-import { Button } from '@mui/material';
-import React from 'react';
 import { Link } from 'react-router-dom';
 
-export const CheckoutSuccess = () => {
+export const CheckOutSuccess = () => {
   return (
     <div className="container" style={{ marginTop: '60px' }}>
       <div className="d-flex align-items-center justify-content-center flex-column p-5">
@@ -22,9 +20,7 @@ export const CheckoutSuccess = () => {
           <div
             className="btn btn-dark py-2 px-4"
             style={{ fontSize: '16px', fontWeight: '450' }}
-          >
-            TIẾP TỤC MUA SẮM
-          </div>
+          ></div>
         </Link>
       </div>
     </div>

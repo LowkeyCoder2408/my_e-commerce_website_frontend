@@ -15,6 +15,8 @@ import EnableAccount from '../pages/User/EnableAccount';
 import Login from '../pages/User/Login';
 import FavoriteProductList from '../pages/Product/FavoriteProduct/FavoriteProductList';
 import ShoppingCart from '../pages/ShoppingCart/ShoppingCart';
+import CheckOutStatus from '../pages/CheckOut/components/CheckOutStatus';
+import { CheckOut } from '../pages/CheckOut/CheckOut';
 
 const publicRoutes = [
   {
@@ -51,6 +53,16 @@ const publicRoutes = [
 
   { path: '/product-detail', component: ProductDetail, layout: 'default' },
   { path: '/shopping-cart', component: ShoppingCart, layout: 'default' },
+  {
+    path: '/check-out',
+    component: CheckOut,
+    layout: 'default',
+  },
+  {
+    path: '/check-out/status',
+    component: CheckOutStatus,
+    layout: 'default',
+  },
   { path: '/about-us', component: AboutUs, layout: 'default' },
   { path: '/contact', component: Contact, layout: 'default' },
   { path: '/faq', component: FAQ, layout: 'default' },

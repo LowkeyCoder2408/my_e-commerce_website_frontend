@@ -380,6 +380,17 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
           <div
             title="Mua và thanh toán ngay"
             className={`${cx('btn-cart')} btn btn-dark`}
+            onClick={() => {
+              const buyNowProduct = {
+                buyNowProductId: props.product.id,
+                quantityToBuy: 1,
+              };
+              localStorage.setItem(
+                'buy_now_product',
+                JSON.stringify(buyNowProduct),
+              );
+              navigation('/check-out');
+            }}
           >
             <span>Mua ngay</span>
           </div>

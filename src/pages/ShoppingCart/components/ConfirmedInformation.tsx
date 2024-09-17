@@ -9,9 +9,9 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 const cx = classNames.bind(styles);
 
 interface ConfirmedInformationProps {
-  setIsCheckOut: any;
-  isCheckOut: boolean;
-  totalPriceProduct: number;
+  isCheckOut?: any;
+  setIsCheckOut?: any;
+  totalPrice: number;
 }
 
 const ConfirmedInformation = (props: ConfirmedInformationProps) => {
@@ -23,24 +23,20 @@ const ConfirmedInformation = (props: ConfirmedInformationProps) => {
         className="col col-xxl-4 col-xl-4 col-12"
         style={{ height: 'fit-content' }}
       >
-        <div className="default-title mt-5">THÔNG TIN XÁC NHẬN</div>
+        <div className="default-title mt-2">THÔNG TIN XÁC NHẬN</div>
         <div className={`${cx('confirm-information')} mt-4 bg-white px-4 py-5`}>
           <div className="d-flex align-items-center justify-content-between">
             <span>Thành tiền:</span>
             <span>
               <strong>
-                {props.totalPriceProduct && (
-                  <FormatPrice price={props.totalPriceProduct} />
-                )}
+                {props.totalPrice && <FormatPrice price={props.totalPrice} />}
               </strong>
             </span>
           </div>
           <div className="d-flex align-items-center justify-content-between mt-3">
             <span>Phí giao hàng:</span>
             <span>
-              <strong>
-                {props.totalPriceProduct && <FormatPrice price={0} />}
-              </strong>
+              <strong>{props.totalPrice && <FormatPrice price={0} />}</strong>
             </span>
           </div>
           <hr className="my-3" />
@@ -50,9 +46,7 @@ const ConfirmedInformation = (props: ConfirmedInformationProps) => {
             </span>
             <span className="text-danger">
               <strong>
-                {props.totalPriceProduct && (
-                  <FormatPrice price={props.totalPriceProduct} />
-                )}
+                {props.totalPrice && <FormatPrice price={props.totalPrice} />}
               </strong>
             </span>
           </div>
@@ -66,7 +60,8 @@ const ConfirmedInformation = (props: ConfirmedInformationProps) => {
               }}
               onClick={() => {
                 if (isToken()) {
-                  props.setIsCheckOut(true);
+                  navigation('/check-out');
+                  props.setIsCheckOut && props.setIsCheckOut(true);
                 } else {
                   toast.warning('Bạn cần đăng nhập để thực hiện chức năng này');
                   navigation('/login');
@@ -100,7 +95,7 @@ const ConfirmedInformation = (props: ConfirmedInformationProps) => {
               <div className="col d-flex align-items-center mt-4">
                 <span
                   style={{ cursor: 'pointer' }}
-                  onClick={() => props.setIsCheckOut(false)}
+                  onClick={() => navigation('/shopping-cart')}
                 >
                   <ArrowBackIcon />
                   <strong className="ms-2">Quay về giỏ hàng</strong>
