@@ -2,45 +2,71 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../utils/Context/AuthContext';
 import { CheckOutSuccess } from './CheckOutSuccess';
-import { CheckOutFail } from './CheckOutFail';
+import { CheckOutFailure } from './CheckOutFailure';
+import Loader from '../../../utils/Loader';
+import { backendEndpoint } from '../../../utils/Service/Constant';
 
 const CheckOutStatus: React.FC = () => {
   const { isLoggedIn } = useAuth();
-  const navigation = useNavigate();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isSuccess, setIsSuccess] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (!isLoggedIn) {
-      navigation('/login');
+      navigate('/login');
+      return;
+    }
+
+    const searchParams = new URLSearchParams(location.search);
+    const vnpResponseCode = searchParams.get('vnp_ResponseCode') as String;
+
+    if (vnpResponseCode) {
+      const checkPaymentStatus = async () => {
+        try {
+          const response = await fetch(
+            backendEndpoint +
+              `/vn-pay/payment-result?vnp_ResponseCode=${vnpResponseCode}`,
+          );
+          if (!response.ok) {
+            throw new Error(`HTTP error: ${response.status}`);
+          }
+          const data = await response.json();
+
+          if (data.result === 'success') {
+            setIsSuccess(true);
+          } else {
+            setIsSuccess(false);
+          }
+        } catch (error) {
+          console.error('Error checking payment status:', error);
+          setIsSuccess(false);
+        }
+      };
+
+      checkPaymentStatus();
     }
   }, []);
 
-  const location = useLocation();
-  const [isSuccess, setIsSuccess] = useState(false);
+  if (isSuccess === null) {
+    return (
+      <div
+        className="container mt-5 bg-white text-center"
+        style={{ borderRadius: '10px', padding: '40px' }}
+      >
+        <div>
+          <h1 className="default-title">Không Có Giao Dịch</h1>
+          <p className="mt-4">
+            Chúng tôi không tìm thấy giao dịch nào với mã bạn cung cấp (hoặc mã
+            bị trống). Vui lòng kiểm tra lại thông tin hoặc liên hệ với hỗ trợ
+            khách hàng nếu cần thêm sự trợ giúp.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const vnpResponseCode = searchParams.get('vnp_ResponseCode');
-
-    if (vnpResponseCode === '00') {
-      setIsSuccess(true);
-    } else {
-      //   const token = localStorage.getItem('token');
-      //   fetch(backendEndpoint + '/order/cancel-order', {
-      //     method: 'PUT',
-      //     headers: {
-      //       Authorization: `Bearer ${token}`,
-      //       'content-type': 'application/json',
-      //     },
-      //     body: JSON.stringify({
-      //       idUser: getUserIdByToken(),
-      //     }),
-      //   }).catch((error) => {
-      //     console.log(error);
-      //   });
-    }
-  }, [location.search]);
-
-  return <>{isSuccess ? <CheckOutSuccess /> : <CheckOutFail />}</>;
+  return <>{isSuccess ? <CheckOutSuccess /> : <CheckOutFailure />}</>;
 };
 
 export default CheckOutStatus;

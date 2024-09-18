@@ -20,7 +20,9 @@ export const CheckOutSuccess = () => {
           <div
             className="btn btn-dark py-2 px-4"
             style={{ fontSize: '16px', fontWeight: '450' }}
-          ></div>
+          >
+            TIẾP TỤC MUA SẮM
+          </div>
         </Link>
       </div>
     </div>

@@ -14,7 +14,7 @@ const cx = classNames.bind(styles);
 
 function Login() {
   const location = useLocation();
-  const navigation = useNavigate();
+  const navigate = useNavigate();
 
   const { isLoggedIn, setIsLoggedIn } = useAuth();
   const { fetchFavoriteProducts } = useFavoriteProducts();
@@ -25,7 +25,7 @@ function Login() {
 
   useEffect(() => {
     if (isLoggedIn) {
-      navigation('/');
+      navigate('/');
     }
   }, []);
 
@@ -52,9 +52,9 @@ function Login() {
 
           const from = location.state?.from;
           if (from) {
-            navigation(from);
+            navigate(from);
           } else {
-            navigation('/');
+            navigate('/');
           }
 
           fetchFavoriteProducts();

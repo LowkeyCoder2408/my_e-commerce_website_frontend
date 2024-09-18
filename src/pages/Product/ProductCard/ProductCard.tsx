@@ -32,7 +32,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
   const userId = getUserIdByToken();
   const token = localStorage.getItem('token');
   const location = useLocation();
-  const navigation = useNavigate();
+  const navigate = useNavigate();
 
   const { isLoggedIn, setIsLoggedIn } = useAuth();
   const { favoriteProducts, fetchFavoriteProducts } = useFavoriteProducts();
@@ -72,7 +72,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
     const inStockQuantity = props.product.quantity || 0;
     if (!isLoggedIn) {
       toast.error('Bạn cần đăng nhập để thêm vào giỏ hàng');
-      navigation('/login', { state: { from: location } });
+      navigate('/login', { state: { from: location } });
       return;
     }
 
@@ -82,7 +82,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
       toast.error(
         'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
       );
-      navigation('/login', { state: { from: location } });
+      navigate('/login', { state: { from: location } });
       return;
     }
 
@@ -175,7 +175,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
   const handleAddToFavoriteProducts = async (newProduct: ProductModel) => {
     if (!isLoggedIn) {
       toast.error('Bạn phải đăng nhập để yêu thích sản phẩm');
-      navigation('/login', {
+      navigate('/login', {
         state: { from: location },
       });
       return;
@@ -187,7 +187,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
       toast.error(
         'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
       );
-      navigation('/login', { state: { from: location } });
+      navigate('/login', { state: { from: location } });
       return;
     }
 
@@ -389,7 +389,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
                 'buy_now_product',
                 JSON.stringify(buyNowProduct),
               );
-              navigation('/check-out');
+              navigate('/check-out');
             }}
           >
             <span>Mua ngay</span>

@@ -2,7 +2,7 @@ import { Button } from '@mui/material';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-export const CheckOutFail = () => {
+export const CheckOutFailure = () => {
   return (
     <div className="container" style={{ marginTop: '60px' }}>
       <div className="d-flex align-items-center justify-content-center flex-column p-5">

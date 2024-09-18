@@ -29,7 +29,7 @@ const SelectQuantity: React.FC<SelectQuantityProps> = (props) => {
   const { isLoggedIn, setIsLoggedIn } = useAuth();
   const { cartItems, fetchCartItems } = useCartItems();
 
-  const navigation = useNavigate();
+  const navigate = useNavigate();
   const location = useLocation();
 
   // Xử lý khi thay đổi input quantity bằng bàn phím
@@ -40,7 +40,7 @@ const SelectQuantity: React.FC<SelectQuantityProps> = (props) => {
     e.stopPropagation();
     if (!isLoggedIn) {
       toast.error('Bạn cần đăng nhập để thực hiện chức năng này');
-      navigation('/login', { state: { from: location } });
+      navigate('/login', { state: { from: location } });
       return;
     }
 
@@ -50,7 +50,7 @@ const SelectQuantity: React.FC<SelectQuantityProps> = (props) => {
       toast.error(
         'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
       );
-      navigation('/login', { state: { from: location } });
+      navigate('/login', { state: { from: location } });
       return;
     }
 

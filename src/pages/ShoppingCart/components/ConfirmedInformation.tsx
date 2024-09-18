@@ -5,17 +5,20 @@ import { useNavigate } from 'react-router-dom';
 import styles from '../scss/ConfirmedInformation.module.scss';
 import classNames from 'classnames/bind';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useState } from 'react';
 
 const cx = classNames.bind(styles);
 
 interface ConfirmedInformationProps {
   isCheckOut?: any;
   setIsCheckOut?: any;
-  totalPrice: number;
+  totalPriceProduct: number;
+  deliveryFee?: number;
 }
 
 const ConfirmedInformation = (props: ConfirmedInformationProps) => {
-  const navigation = useNavigate();
+  const navigate = useNavigate();
+  const totalPrice = props.totalPriceProduct + (props.deliveryFee || 0);
 
   return (
     <>
@@ -26,17 +29,23 @@ const ConfirmedInformation = (props: ConfirmedInformationProps) => {
         <div className="default-title mt-2">THÔNG TIN XÁC NHẬN</div>
         <div className={`${cx('confirm-information')} mt-4 bg-white px-4 py-5`}>
           <div className="d-flex align-items-center justify-content-between">
-            <span>Thành tiền:</span>
+            <span>Thành tiền (chỉ tính sản phẩm):</span>
             <span>
               <strong>
-                {props.totalPrice && <FormatPrice price={props.totalPrice} />}
+                <FormatPrice price={props.totalPriceProduct} />
               </strong>
             </span>
           </div>
           <div className="d-flex align-items-center justify-content-between mt-3">
             <span>Phí giao hàng:</span>
             <span>
-              <strong>{props.totalPrice && <FormatPrice price={0} />}</strong>
+              <strong>
+                {props.deliveryFee ? (
+                  <FormatPrice price={props.deliveryFee} />
+                ) : (
+                  <>Chưa xác định</>
+                )}
+              </strong>
             </span>
           </div>
           <hr className="my-3" />
@@ -46,7 +55,7 @@ const ConfirmedInformation = (props: ConfirmedInformationProps) => {
             </span>
             <span className="text-danger">
               <strong>
-                {props.totalPrice && <FormatPrice price={props.totalPrice} />}
+                <FormatPrice price={totalPrice} />
               </strong>
             </span>
           </div>
@@ -60,11 +69,11 @@ const ConfirmedInformation = (props: ConfirmedInformationProps) => {
               }}
               onClick={() => {
                 if (isToken()) {
-                  navigation('/check-out');
+                  navigate('/check-out');
                   props.setIsCheckOut && props.setIsCheckOut(true);
                 } else {
                   toast.warning('Bạn cần đăng nhập để thực hiện chức năng này');
-                  navigation('/login');
+                  navigate('/login');
                 }
               }}
             >
@@ -95,7 +104,7 @@ const ConfirmedInformation = (props: ConfirmedInformationProps) => {
               <div className="col d-flex align-items-center mt-4">
                 <span
                   style={{ cursor: 'pointer' }}
-                  onClick={() => navigation('/shopping-cart')}
+                  onClick={() => navigate('/shopping-cart')}
                 >
                   <ArrowBackIcon />
                   <strong className="ms-2">Quay về giỏ hàng</strong>

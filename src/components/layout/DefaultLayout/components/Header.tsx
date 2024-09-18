@@ -249,7 +249,9 @@ function Header() {
               ) : (
                 <i
                   onClick={() => {
-                    setIsSearchClose(true);
+                    if (!isListening) {
+                      setIsSearchClose(true);
+                    }
                   }}
                   className={`${cx('btn-show')} bx bx-x`}
                 ></i>

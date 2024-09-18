@@ -22,7 +22,7 @@ interface ProductReviewListProps {
 
 const ProductReviewList = (props: ProductReviewListProps) => {
   const { isLoggedIn } = useAuth();
-  const navigation = useNavigate();
+  const navigate = useNavigate();
   const location = useLocation();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -118,7 +118,7 @@ const ProductReviewList = (props: ProductReviewListProps) => {
             onClick={() => {
               if (!isLoggedIn) {
                 toast.error('Bạn cần đăng nhập để đánh giá');
-                navigation('/login', {
+                navigate('/login', {
                   state: { from: location },
                 });
                 return;

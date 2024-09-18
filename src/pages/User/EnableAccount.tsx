@@ -4,7 +4,7 @@ import { backendEndpoint } from '../../utils/Service/Constant';
 import { useAuth } from '../../utils/Context/AuthContext';
 
 function EnableAccount() {
-  const navigation = useNavigate();
+  const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
   const { email, verificationCode } = useParams();
 
@@ -15,7 +15,7 @@ function EnableAccount() {
 
   useEffect(() => {
     if (isLoggedIn) {
-      navigation('/');
+      navigate('/');
       return;
     }
     if (email && verificationCode && !hasCalledEnable.current) {

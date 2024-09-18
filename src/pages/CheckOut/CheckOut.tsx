@@ -32,6 +32,9 @@ import ProductModel from '../../models/ProductModel';
 import { useAuth } from '../../utils/Context/AuthContext';
 import { getProductById } from '../../api/ProductAPI';
 import BuyNowProductInformation from './components/BuyNowProductInformation';
+import DeliveryMethodModel from '../../models/DeliveryMethodModel';
+import { getAllDeliveryMethods } from '../../api/DeliveryMethodAPI';
+import FormatPrice from '../../utils/Service/FormatPrice';
 
 const cx = classNames.bind(styles);
 
@@ -48,7 +51,7 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
   const storedProduct = localStorage.getItem('buy_now_product');
 
   const userId = getUserIdByToken();
-  const navigation = useNavigate();
+  const navigate = useNavigate();
 
   const { cartItems } = useCartItems();
   const { isLoggedIn } = useAuth();
@@ -82,7 +85,12 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
 
   // Xử lý phương thức thanh toán
   // const [isSuccessPayment, setIsSuccessPayment] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<number>(1);
+  const [paymentMethod, setPaymentMethod] = useState<string>('COD');
+  const [totalPriceProduct, setTotalPriceProduct] = useState(0);
+  const [deliveryMethods, setDeliveryMethods] = useState<DeliveryMethodModel[]>(
+    [],
+  );
+  const [deliveryFee, setDeliveryFee] = useState<number>(0);
 
   // Xử lý ghi chú
   const [note, setNote] = useState('');
@@ -93,21 +101,19 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
   const [errorEmail, setErrorEmail] = useState('');
   const [errorAddressLine, setErrorAddressLine] = useState('');
 
-  const [totalPrice, setTotalPrice] = useState(0);
-
   useEffect(() => {
     let total;
     if (buyNowProduct) {
       total = (buyNowProduct.currentPrice || 0) * (buyNowProduct.quantity ?? 1);
     } else {
-      total = cartItems.reduce((totalPrice, cartItem) => {
+      total = cartItems.reduce((price, cartItem) => {
         const itemQuantity = cartItem.quantity ?? 0;
         const itemPrice = cartItem.product?.currentPrice ?? 0;
-        return totalPrice + itemQuantity * itemPrice;
+        return price + itemQuantity * itemPrice;
       }, 0);
     }
 
-    setTotalPrice(total);
+    setTotalPriceProduct(total);
   }, [cartItems, buyNowProduct]);
 
   useEffect(() => {
@@ -122,6 +128,8 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
       isSetDefaultAddress,
       paymentMethod,
       note,
+      totalPriceProduct,
+      deliveryFee,
       buyNowProduct,
     });
   }, [
@@ -135,12 +143,14 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
     isSetDefaultAddress,
     paymentMethod,
     note,
+    totalPriceProduct,
+    deliveryFee,
     buyNowProduct,
   ]);
 
   useEffect(() => {
     if (!isLoggedIn) {
-      navigation('/login');
+      navigate('/login');
     } else {
       if (userId) {
         Promise.all([
@@ -150,7 +160,6 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
           storedProduct &&
             getProductById(JSON.parse(storedProduct).buyNowProductId),
         ])
-
           .then(
             ([
               userResult,
@@ -184,6 +193,17 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
               }
             },
           )
+          .catch((error) => {
+            console.log(error);
+          });
+
+        getAllDeliveryMethods()
+          .then((result) => {
+            setDeliveryMethods(result);
+            if (result.length > 0) {
+              setDeliveryFee(result[0].deliveryFee);
+            }
+          })
           .catch((error) => {
             console.log(error);
           });
@@ -305,21 +325,26 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
       isSetDefaultAddress: isSetDefaultAddress,
       paymentMethod: paymentMethod,
       note: note,
-      totalPrice: totalPrice,
+      totalPriceProduct: totalPriceProduct,
+      deliveryFee: deliveryFee,
+      totalPrice: totalPriceProduct + deliveryFee,
       userId: userId,
       ...(buyNowProduct ? { buyNowProductId: buyNowProduct.id } : {}),
+      ...(buyNowProduct
+        ? { buyNowProductQuantity: buyNowProduct.quantity }
+        : {}),
       ...(!buyNowProduct
         ? { cartItemIds: cartItems.map((item) => item.id) }
         : {}),
     };
 
-    console.log(request);
+    console.log('Request: ', request, paymentMethod);
 
-    // Khi thanh toán bằng VNPay
-    if (paymentMethod === 2) {
+    if (paymentMethod === 'VNPay') {
       try {
         const response = await fetch(
-          backendEndpoint + '/payment/create-payment?amount=' + totalPrice,
+          backendEndpoint +
+            `/vn-pay/create-payment?amount=${totalPriceProduct + deliveryFee}`,
           {
             method: 'POST',
             headers: {
@@ -332,17 +357,18 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
           throw new Error(`HTTP error is: ${response.status}`);
         }
         const paymentUrl = await response.text();
+        console.log(paymentUrl);
 
-        window.location.replace(paymentUrl);
+        window.location.href = paymentUrl;
         // Lưu order vào DB ngay khi thanh toán thành công
         const isPayNow = true;
-        handleSaveOrder(request, isPayNow);
+        // handleSaveOrder(request, isPayNow);
       } catch (error) {
         console.log(error);
       }
     } else {
       // Khi admin cập nhật trạng thái nhận hàng sẽ thêm vào DB
-      handleSaveOrder(request);
+      // handleSaveOrder(request);
     }
   }
 
@@ -658,19 +684,51 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
                   </div>
                 </div>
                 <div className="col col-xxl-12 col-12 mt-4">
+                  <div className="default-title">HÌNH THỨC GIAO HÀNG</div>
+                  <div className="row">
+                    {deliveryMethods.map((deliveryMethod, index) => (
+                      <div
+                        key={index}
+                        className="col col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-12 mt-4"
+                      >
+                        <Button
+                          fullWidth
+                          variant="contained"
+                          onClick={() => {
+                            setDeliveryFee(deliveryMethod.deliveryFee);
+                          }}
+                          style={{
+                            textTransform: 'none',
+                            backgroundColor: '#fff',
+                            color: 'rgb(15, 98, 172)',
+                            fontSize: '1.3rem',
+                            border:
+                              deliveryFee === deliveryMethod.deliveryFee
+                                ? '2px solid rgb(15, 98, 172)'
+                                : '2px solid #fff',
+                          }}
+                        >
+                          {deliveryMethod.name.toUpperCase()} (
+                          {deliveryMethod.deliveryFee.toLocaleString('vi-VN')}đ)
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="col col-xxl-12 col-12 mt-4">
                   <div className="default-title">PHƯƠNG THỨC THANH TOÁN</div>
                   <div className="row">
                     <div className="col col-xxl-6 col-xl-6 col-lg-6 col-md-6 col-12 mt-4">
                       <Button
                         fullWidth
                         variant="contained"
-                        onClick={() => setPaymentMethod(1)}
+                        onClick={() => setPaymentMethod('COD')}
                         style={{
                           backgroundColor: '#fff',
                           color: 'rgb(15, 98, 172)',
                           fontSize: '1.3rem',
                           border:
-                            paymentMethod === 1
+                            paymentMethod === 'COD'
                               ? '2px solid rgb(15, 98, 172)'
                               : '2px solid #fff',
                         }}
@@ -689,13 +747,13 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
                             style={{ width: '35px', height: '13px' }}
                           />
                         }
-                        onClick={() => setPaymentMethod(2)}
+                        onClick={() => setPaymentMethod('VNPay')}
                         style={{
                           backgroundColor: '#fff',
                           color: 'rgb(15, 98, 172)',
                           fontSize: '1.3rem',
                           border:
-                            paymentMethod === 2
+                            paymentMethod === 'VNPay'
                               ? '2px solid rgb(15, 98, 172)'
                               : '2px solid #fff',
                         }}
@@ -728,7 +786,6 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
                 fullWidth
                 variant="contained"
                 type="submit"
-                onClick={() => setPaymentMethod(1)}
                 disabled={
                   errorFullName.length > 0 ||
                   errorPhoneNumber.length > 0 ||
@@ -737,23 +794,29 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
                   provinceName.trim() === '' ||
                   districtName.trim() === '' ||
                   wardName.trim() === '' ||
-                  (paymentMethod !== 1 && paymentMethod !== 2)
+                  deliveryFee === 0 ||
+                  (paymentMethod !== 'COD' && paymentMethod !== 'VNPay') ||
+                  note.length > 300
                 }
                 style={{
                   fontSize: '1.4rem',
                 }}
               >
-                {paymentMethod === 1 ? (
+                {paymentMethod === 'COD' ? (
                   <>Thiết lập đơn hàng</>
                 ) : (
-                  <>Thiết lập đơn hàng và thanh toán</>
+                  <>Thanh toán và thiết lập đơn hàng</>
                 )}
               </Button>
             </div>
           </div>
           <div className="container mt-5 rounded-3 p-0">
             <div className="row">
-              <ConfirmedInformation totalPrice={totalPrice} isCheckOut={true} />
+              <ConfirmedInformation
+                totalPriceProduct={totalPriceProduct}
+                deliveryFee={deliveryFee}
+                isCheckOut={true}
+              />
               {!buyNowProduct ? (
                 <CartItemList canChangeQuantity={false} />
               ) : (

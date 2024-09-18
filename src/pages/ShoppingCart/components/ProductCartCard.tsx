@@ -29,7 +29,7 @@ const ProductCartCard: React.FC<ProductCartCardProps> = (props) => {
   const { isLoggedIn, setIsLoggedIn } = useAuth();
   const { cartItems, fetchCartItems } = useCartItems();
 
-  const navigation = useNavigate();
+  const navigate = useNavigate();
   const location = useLocation();
 
   const [quantity, setQuantity] = useState(
@@ -44,7 +44,7 @@ const ProductCartCard: React.FC<ProductCartCardProps> = (props) => {
   function handleDeleteCartItem() {
     if (!isLoggedIn) {
       toast.error('Bạn cần đăng nhập để xóa sản phẩm trong giỏ hàng');
-      navigation('/login', { state: { from: location } });
+      navigate('/login', { state: { from: location } });
       return;
     }
 
@@ -54,7 +54,7 @@ const ProductCartCard: React.FC<ProductCartCardProps> = (props) => {
       toast.error(
         'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
       );
-      navigation('/login', { state: { from: location } });
+      navigate('/login', { state: { from: location } });
       return;
     }
 
@@ -107,7 +107,7 @@ const ProductCartCard: React.FC<ProductCartCardProps> = (props) => {
   const add = () => {
     if (!isLoggedIn) {
       toast.error('Bạn cần đăng nhập để chỉnh sửa số lượng trong giỏ hàng');
-      navigation('/login', { state: { from: location } });
+      navigate('/login', { state: { from: location } });
       return;
     }
 
@@ -117,7 +117,7 @@ const ProductCartCard: React.FC<ProductCartCardProps> = (props) => {
       toast.error(
         'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
       );
-      navigation('/login', { state: { from: location } });
+      navigate('/login', { state: { from: location } });
       return;
     }
 
@@ -135,7 +135,7 @@ const ProductCartCard: React.FC<ProductCartCardProps> = (props) => {
   const reduce = () => {
     if (!isLoggedIn) {
       toast.error('Bạn cần đăng nhập để chỉnh sửa số lượng trong giỏ hàng');
-      navigation('/login', { state: { from: location } });
+      navigate('/login', { state: { from: location } });
       return;
     }
 
@@ -145,7 +145,7 @@ const ProductCartCard: React.FC<ProductCartCardProps> = (props) => {
       toast.error(
         'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
       );
-      navigation('/login', { state: { from: location } });
+      navigate('/login', { state: { from: location } });
       return;
     }
 

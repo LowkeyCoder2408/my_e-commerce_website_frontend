@@ -43,11 +43,11 @@ function Register() {
 
   const jwtToken = localStorage.getItem('token');
   const { isLoggedIn } = useAuth();
-  const navigation = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isLoggedIn) {
-      navigation('/');
+      navigate('/');
     }
   }, []);
 
