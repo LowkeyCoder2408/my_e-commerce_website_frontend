@@ -34,7 +34,7 @@ import { getProductById } from '../../api/ProductAPI';
 import BuyNowProductInformation from './components/BuyNowProductInformation';
 import DeliveryMethodModel from '../../models/DeliveryMethodModel';
 import { getAllDeliveryMethods } from '../../api/DeliveryMethodAPI';
-import FormatPrice from '../../utils/Service/FormatPrice';
+import VNPayBankCard from './components/VNPayBankCard';
 
 const cx = classNames.bind(styles);
 
@@ -357,10 +357,8 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
           throw new Error(`HTTP error is: ${response.status}`);
         }
         const paymentUrl = await response.text();
-        console.log(paymentUrl);
 
         window.location.href = paymentUrl;
-        // Lưu order vào DB ngay khi thanh toán thành công
         const isPayNow = true;
         // handleSaveOrder(request, isPayNow);
       } catch (error) {
@@ -758,10 +756,11 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
                               : '2px solid #fff',
                         }}
                       >
-                        Thanh toán bằng ví điện tử
+                        Thanh toán thông qua ví điện tử
                       </Button>
                     </div>
                   </div>
+                  {paymentMethod === 'VNPay' && <VNPayBankCard />}
                 </div>
               </div>
             </div>

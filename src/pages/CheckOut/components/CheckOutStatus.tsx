@@ -3,8 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../utils/Context/AuthContext';
 import { CheckOutSuccess } from './CheckOutSuccess';
 import { CheckOutFailure } from './CheckOutFailure';
-import Loader from '../../../utils/Loader';
 import { backendEndpoint } from '../../../utils/Service/Constant';
+import Loader from '../../../utils/Loader';
 
 const CheckOutStatus: React.FC = () => {
   const { isLoggedIn } = useAuth();
@@ -49,21 +49,7 @@ const CheckOutStatus: React.FC = () => {
   }, []);
 
   if (isSuccess === null) {
-    return (
-      <div
-        className="container mt-5 bg-white text-center"
-        style={{ borderRadius: '10px', padding: '40px' }}
-      >
-        <div>
-          <h1 className="default-title">Không Có Giao Dịch</h1>
-          <p className="mt-4">
-            Chúng tôi không tìm thấy giao dịch nào với mã bạn cung cấp (hoặc mã
-            bị trống). Vui lòng kiểm tra lại thông tin hoặc liên hệ với hỗ trợ
-            khách hàng nếu cần thêm sự trợ giúp.
-          </p>
-        </div>
-      </div>
-    );
+    return <Loader />;
   }
 
   return <>{isSuccess ? <CheckOutSuccess /> : <CheckOutFailure />}</>;
