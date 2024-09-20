@@ -6,9 +6,9 @@ import {
   TextareaAutosize,
 } from '@mui/material';
 
-import React, { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import styles from './scss/CheckOut.module.scss';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -35,18 +35,24 @@ import BuyNowProductInformation from './components/BuyNowProductInformation';
 import DeliveryMethodModel from '../../models/DeliveryMethodModel';
 import { getAllDeliveryMethods } from '../../api/DeliveryMethodAPI';
 import VNPayBankCard from './components/VNPayBankCard';
+import CheckOutStatus from './components/CheckOutStatus';
+import { toast } from 'react-toastify';
+import { handleSaveOrder } from '../../api/OrderAPI';
 
 const cx = classNames.bind(styles);
-
-interface CheckOutProps {
-  isBuyNow?: boolean;
-}
 
 const SpeechRecognition =
   (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 console.log(SpeechRecognition);
 
-export const CheckOut: React.FC<CheckOutProps> = (props) => {
+export const CheckOut = () => {
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const isFormRender =
+    (location.pathname === '/check-out' ||
+      location.pathname === '/check-out/') &&
+    !searchParams.toString();
+
   const token = localStorage.getItem('token');
   const storedProduct = localStorage.getItem('buy_now_product');
 
@@ -287,34 +293,12 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
     }
   };
 
-  const handleSaveOrder = (request: any, isPayNow?: boolean) => {
-    fetch(backendEndpoint + '/order/add-order', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify(request),
-    })
-      .then((response) => {
-        if (!isPayNow) {
-          // setIsSuccessPayment(true);
-        }
-        if (!props.isBuyNow) {
-          // setCartList([]);
-          // setTotalCart(0);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
   async function handleSubmitForm(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     event.stopPropagation();
 
     const request = {
+      userId: userId,
       fullName: fullName,
       phoneNumber: phoneNumber,
       email: email,
@@ -328,7 +312,6 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
       totalPriceProduct: totalPriceProduct,
       deliveryFee: deliveryFee,
       totalPrice: totalPriceProduct + deliveryFee,
-      userId: userId,
       ...(buyNowProduct ? { buyNowProductId: buyNowProduct.id } : {}),
       ...(buyNowProduct
         ? { buyNowProductQuantity: buyNowProduct.quantity }
@@ -359,139 +342,307 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
         const paymentUrl = await response.text();
 
         window.location.href = paymentUrl;
-        const isPayNow = true;
-        // handleSaveOrder(request, isPayNow);
+        localStorage.setItem('order_request', JSON.stringify(request));
       } catch (error) {
         console.log(error);
       }
     } else {
-      // Khi admin cập nhật trạng thái nhận hàng sẽ thêm vào DB
-      // handleSaveOrder(request);
+      handleSaveOrder(request);
     }
   }
 
   return (
     <>
-      {/* {!isSuccessPayment ? ( */}
-      <>
-        <form onSubmit={handleSubmitForm} className="container mt-5">
-          <div className="bg-white rounded-4 p-5">
-            <div className="container p-0">
-              <div className="default-title mb-3">THÔNG TIN GIAO HÀNG</div>
+      <form onSubmit={handleSubmitForm} className="container mt-5">
+        <div className="bg-white rounded-4 p-5">
+          <div className="container p-0">
+            <div className="default-title mb-3">THÔNG TIN GIAO HÀNG</div>
 
-              <div className="row">
-                <div className="mb-4 col-xxl-4 col-xl-4 col-lg-4 col-12">
-                  <TextField
-                    required
-                    fullWidth
-                    helperText={errorFullName}
-                    type="text"
-                    id="standard-required"
-                    label="Họ và tên"
-                    value={fullName}
-                    error={errorFullName.length > 0}
-                    variant="standard"
-                    onChange={(e) => setFullName(e.target.value)}
-                    onBlur={(e: any) => {
-                      checkEmpty(setErrorFullName, e.target.value);
-                    }}
-                    className="input-field"
-                    InputLabelProps={{
-                      style: { fontSize: '1.5rem' },
-                    }}
-                    sx={{
-                      '& .MuiInputBase-input': {
-                        fontSize: '1.6rem',
-                        fontWeight: '500',
-                      },
-                      '& .MuiFormHelperText-root': {
-                        fontSize: '1rem',
-                      },
-                    }}
-                  />
-                </div>
-                <div className="mb-4 col-xxl-4 col-xl-4 col-lg-4 col-12">
-                  <TextField
-                    error={errorPhoneNumber.length > 0}
-                    helperText={errorPhoneNumber}
-                    required={true}
-                    fullWidth
-                    type="text"
-                    label="Số điện thoại"
-                    variant="standard"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    onBlur={(e: any) => {
-                      checkPhoneNumber(setErrorPhoneNumber, e.target.value);
-                    }}
-                    className="input-field"
-                    InputLabelProps={{
-                      style: { fontSize: '1.5rem' },
-                    }}
-                    sx={{
-                      '& .MuiInputBase-input': {
-                        fontSize: '1.6rem',
-                        fontWeight: '500',
-                      },
-                      '& .MuiFormHelperText-root': {
-                        fontSize: '1rem',
-                      },
-                    }}
-                  />
-                </div>
-                <div className="mb-4 col-xxl-4 col-xl-4 col-lg-4 col-12">
-                  <TextField
-                    disabled
-                    fullWidth
-                    helperText={errorEmail}
-                    type="text"
-                    variant="standard"
-                    label="Email"
-                    value={email}
-                    className="input-field"
-                    error={errorEmail.length > 0}
-                    onBlur={(e: any) => {
-                      checkEmail(setErrorEmail, e.target.value);
-                    }}
-                    InputLabelProps={{
-                      style: { fontSize: '1.5rem' },
-                    }}
-                    sx={{
-                      '& .MuiInputBase-input': {
-                        fontSize: '1.6rem',
-                        fontWeight: '500',
-                      },
-                      '& .MuiFormHelperText-root': {
-                        fontSize: '1rem',
-                      },
-                    }}
-                  />
-                </div>
-                <div className="col col-xxl-12 col-12">
-                  <div className="default-title mt-3">ĐỊA CHỈ NHẬN HÀNG</div>
-                  <div className="row">
-                    {defaultAddress && (
-                      <div className="col col-12">
+            <div className="row">
+              <div className="mb-4 col-xxl-4 col-xl-4 col-lg-4 col-12">
+                <TextField
+                  required
+                  fullWidth
+                  helperText={errorFullName}
+                  type="text"
+                  id="standard-required"
+                  label="Họ và tên"
+                  value={fullName}
+                  error={errorFullName.length > 0}
+                  variant="standard"
+                  onChange={(e) => setFullName(e.target.value)}
+                  onBlur={(e: any) => {
+                    checkEmpty(setErrorFullName, e.target.value);
+                  }}
+                  className="input-field"
+                  InputLabelProps={{
+                    style: { fontSize: '1.5rem' },
+                  }}
+                  sx={{
+                    '& .MuiInputBase-input': {
+                      fontSize: '1.6rem',
+                      fontWeight: '500',
+                    },
+                    '& .MuiFormHelperText-root': {
+                      fontSize: '1rem',
+                    },
+                  }}
+                />
+              </div>
+              <div className="mb-4 col-xxl-4 col-xl-4 col-lg-4 col-12">
+                <TextField
+                  error={errorPhoneNumber.length > 0}
+                  helperText={errorPhoneNumber}
+                  required={true}
+                  fullWidth
+                  type="text"
+                  label="Số điện thoại"
+                  variant="standard"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  onBlur={(e: any) => {
+                    checkPhoneNumber(setErrorPhoneNumber, e.target.value);
+                  }}
+                  className="input-field"
+                  InputLabelProps={{
+                    style: { fontSize: '1.5rem' },
+                  }}
+                  sx={{
+                    '& .MuiInputBase-input': {
+                      fontSize: '1.6rem',
+                      fontWeight: '500',
+                    },
+                    '& .MuiFormHelperText-root': {
+                      fontSize: '1rem',
+                    },
+                  }}
+                />
+              </div>
+              <div className="mb-4 col-xxl-4 col-xl-4 col-lg-4 col-12">
+                <TextField
+                  disabled
+                  fullWidth
+                  helperText={errorEmail}
+                  type="text"
+                  variant="standard"
+                  label="Email"
+                  value={email}
+                  className="input-field"
+                  error={errorEmail.length > 0}
+                  onBlur={(e: any) => {
+                    checkEmail(setErrorEmail, e.target.value);
+                  }}
+                  InputLabelProps={{
+                    style: { fontSize: '1.5rem' },
+                  }}
+                  sx={{
+                    '& .MuiInputBase-input': {
+                      fontSize: '1.6rem',
+                      fontWeight: '500',
+                    },
+                    '& .MuiFormHelperText-root': {
+                      fontSize: '1rem',
+                    },
+                  }}
+                />
+              </div>
+              <div className="col col-xxl-12 col-12">
+                <div className="default-title mt-3">ĐỊA CHỈ NHẬN HÀNG</div>
+                <div className="row">
+                  {defaultAddress && (
+                    <div className="col col-12">
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={isUseDefaultAddress}
+                            onChange={() => {
+                              setIsUseDefaultAddress(!isUseDefaultAddress);
+                              setIsSetDefaultAddress(false);
+                            }}
+                          />
+                        }
+                        label={`Sử dụng địa chỉ mặc định (${
+                          defaultAddress?.addressLine +
+                          ', ' +
+                          defaultAddress.ward +
+                          ', ' +
+                          defaultAddress.district +
+                          ', ' +
+                          defaultAddress.province +
+                          ')'
+                        }`}
+                        sx={{
+                          '& .MuiFormControlLabel-label': {
+                            fontSize: '1.4rem',
+                          },
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {isUseDefaultAddress === false && (
+                    <>
+                      <div className="mt-1 mb-4 col-12">
+                        <TextField
+                          required
+                          fullWidth
+                          helperText={errorAddressLine}
+                          error={errorAddressLine.length > 0}
+                          type="text"
+                          id="standard-required"
+                          label="Địa chỉ cụ thể/Số nhà"
+                          value={addressLine}
+                          variant="standard"
+                          onChange={(e) => setAddressLine(e.target.value)}
+                          className="input-field"
+                          onBlur={() =>
+                            checkEmpty(setErrorAddressLine, addressLine)
+                          }
+                          InputLabelProps={{
+                            style: { fontSize: '1.5rem' },
+                          }}
+                          sx={{
+                            '& .MuiInputBase-input': {
+                              fontSize: '1.6rem',
+                              fontWeight: '500',
+                            },
+                            '& .MuiFormHelperText-root': {
+                              fontSize: '1rem',
+                            },
+                          }}
+                        />
+                      </div>
+                      <div className="col col-xxl-4 col-xl-4 col-lg-6 col-md-4 col-12 mt-3">
+                        <FormControl fullWidth variant="standard">
+                          <InputLabel
+                            id="demo-simple-select-standard-label"
+                            sx={{ fontSize: '1.5rem' }}
+                          >
+                            Tỉnh/Thành phố
+                          </InputLabel>
+                          <Select
+                            required
+                            labelId="demo-simple-select-standard-label"
+                            id="demo-simple-select-standard"
+                            variant="standard"
+                            value={provinceName}
+                            onChange={(e) => {
+                              setProvinceName(e.target.value + '');
+                              setDistrictName('');
+                              setWardName('');
+                              setWards([]);
+                            }}
+                            sx={{
+                              '& .MuiSelect-select': {
+                                fontSize: '1.6rem',
+                                fontWeight: '500',
+                              },
+                            }}
+                          >
+                            <MenuItem value="">
+                              <em>Chưa chọn tỉnh/thành</em>
+                            </MenuItem>
+                            {provinces.map((province) => (
+                              <MenuItem key={province.id} value={province.name}>
+                                {province.name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </div>
+                      <div className="col col-xxl-4 col-xl-4 col-lg-6 col-md-4 col-12 mt-3">
+                        <FormControl fullWidth variant="standard">
+                          <InputLabel
+                            id="demo-simple-select-standard-label"
+                            sx={{ fontSize: '1.5rem' }}
+                          >
+                            Huyện/Quận
+                          </InputLabel>
+                          <Select
+                            required
+                            labelId="demo-simple-select-standard-label"
+                            id="demo-simple-select-standard"
+                            value={
+                              districts.find(
+                                (district) => district.name === districtName,
+                              )
+                                ? districtName
+                                : ''
+                            }
+                            disabled={!districts || districts.length === 0}
+                            onChange={(e) => {
+                              setDistrictName(e.target.value + '');
+                              setWardName('');
+                            }}
+                            sx={{
+                              '& .MuiSelect-select': {
+                                fontSize: '1.6rem',
+                                fontWeight: '500',
+                              },
+                            }}
+                          >
+                            <MenuItem value="">
+                              <em>Chưa chọn huyện/quận</em>
+                            </MenuItem>
+                            {districts.map((district) => (
+                              <MenuItem key={district.id} value={district.name}>
+                                {district.name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </div>
+                      <div className="col col-xxl-4 col-xl-4 col-lg-6 col-md-4 col-12 mt-3">
+                        <FormControl fullWidth variant="standard">
+                          <InputLabel
+                            id="demo-simple-select-standard-label"
+                            sx={{
+                              fontSize: '1.5rem',
+                            }}
+                          >
+                            Xã/Phường
+                          </InputLabel>
+                          <Select
+                            required
+                            labelId="demo-simple-select-standard-label"
+                            id="demo-simple-select-standard"
+                            value={
+                              wards.find((ward) => ward.name === wardName)
+                                ? wardName
+                                : ''
+                            }
+                            disabled={!wards || wards.length === 0}
+                            onChange={(e) => setWardName(e.target.value + '')}
+                            // label="Tỉnh"
+                            sx={{
+                              '& .MuiSelect-select': {
+                                fontSize: '1.6rem',
+                                fontWeight: '500',
+                              },
+                            }}
+                          >
+                            <MenuItem value="">
+                              <em>Chưa chọn xã/phường</em>
+                            </MenuItem>
+                            {wards.map((ward) => (
+                              <MenuItem key={ward.id} value={ward.name}>
+                                {ward.name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </div>
+                      <div className={`mt-4 col col-12}`}>
                         <FormControlLabel
                           control={
                             <Checkbox
-                              checked={isUseDefaultAddress}
+                              checked={isSetDefaultAddress}
                               onChange={() => {
-                                setIsUseDefaultAddress(!isUseDefaultAddress);
-                                setIsSetDefaultAddress(false);
+                                setIsSetDefaultAddress(!isSetDefaultAddress);
                               }}
                             />
                           }
-                          label={`Sử dụng địa chỉ mặc định (${
-                            defaultAddress?.addressLine +
-                            ', ' +
-                            defaultAddress.ward +
-                            ', ' +
-                            defaultAddress.district +
-                            ', ' +
-                            defaultAddress.province +
-                            ')'
-                          }`}
+                          label="Đặt làm địa chỉ mặc định"
                           sx={{
                             '& .MuiFormControlLabel-label': {
                               fontSize: '1.4rem',
@@ -499,335 +650,154 @@ export const CheckOut: React.FC<CheckOutProps> = (props) => {
                           }}
                         />
                       </div>
-                    )}
-
-                    {isUseDefaultAddress === false && (
-                      <>
-                        <div className="mt-1 mb-4 col-12">
-                          <TextField
-                            required
-                            fullWidth
-                            helperText={errorAddressLine}
-                            error={errorAddressLine.length > 0}
-                            type="text"
-                            id="standard-required"
-                            label="Địa chỉ cụ thể/Số nhà"
-                            value={addressLine}
-                            variant="standard"
-                            onChange={(e) => setAddressLine(e.target.value)}
-                            className="input-field"
-                            onBlur={() =>
-                              checkEmpty(setErrorAddressLine, addressLine)
-                            }
-                            InputLabelProps={{
-                              style: { fontSize: '1.5rem' },
-                            }}
-                            sx={{
-                              '& .MuiInputBase-input': {
-                                fontSize: '1.6rem',
-                                fontWeight: '500',
-                              },
-                              '& .MuiFormHelperText-root': {
-                                fontSize: '1rem',
-                              },
-                            }}
-                          />
-                        </div>
-                        <div className="col col-xxl-4 col-xl-4 col-lg-6 col-md-4 col-12 mt-3">
-                          <FormControl fullWidth variant="standard">
-                            <InputLabel
-                              id="demo-simple-select-standard-label"
-                              sx={{ fontSize: '1.5rem' }}
-                            >
-                              Tỉnh/Thành phố
-                            </InputLabel>
-                            <Select
-                              required
-                              labelId="demo-simple-select-standard-label"
-                              id="demo-simple-select-standard"
-                              variant="standard"
-                              value={provinceName}
-                              onChange={(e) => {
-                                setProvinceName(e.target.value + '');
-                                setDistrictName('');
-                                setWardName('');
-                                setWards([]);
-                              }}
-                              sx={{
-                                '& .MuiSelect-select': {
-                                  fontSize: '1.6rem',
-                                  fontWeight: '500',
-                                },
-                              }}
-                            >
-                              <MenuItem value="">
-                                <em>Chưa chọn tỉnh/thành</em>
-                              </MenuItem>
-                              {provinces.map((province) => (
-                                <MenuItem
-                                  key={province.id}
-                                  value={province.name}
-                                >
-                                  {province.name}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                        </div>
-                        <div className="col col-xxl-4 col-xl-4 col-lg-6 col-md-4 col-12 mt-3">
-                          <FormControl fullWidth variant="standard">
-                            <InputLabel
-                              id="demo-simple-select-standard-label"
-                              sx={{ fontSize: '1.5rem' }}
-                            >
-                              Huyện/Quận
-                            </InputLabel>
-                            <Select
-                              required
-                              labelId="demo-simple-select-standard-label"
-                              id="demo-simple-select-standard"
-                              value={
-                                districts.find(
-                                  (district) => district.name === districtName,
-                                )
-                                  ? districtName
-                                  : ''
-                              }
-                              disabled={!districts || districts.length === 0}
-                              onChange={(e) => {
-                                setDistrictName(e.target.value + '');
-                                setWardName('');
-                              }}
-                              sx={{
-                                '& .MuiSelect-select': {
-                                  fontSize: '1.6rem',
-                                  fontWeight: '500',
-                                },
-                              }}
-                            >
-                              <MenuItem value="">
-                                <em>Chưa chọn huyện/quận</em>
-                              </MenuItem>
-                              {districts.map((district) => (
-                                <MenuItem
-                                  key={district.id}
-                                  value={district.name}
-                                >
-                                  {district.name}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                        </div>
-                        <div className="col col-xxl-4 col-xl-4 col-lg-6 col-md-4 col-12 mt-3">
-                          <FormControl fullWidth variant="standard">
-                            <InputLabel
-                              id="demo-simple-select-standard-label"
-                              sx={{
-                                fontSize: '1.5rem',
-                              }}
-                            >
-                              Xã/Phường
-                            </InputLabel>
-                            <Select
-                              required
-                              labelId="demo-simple-select-standard-label"
-                              id="demo-simple-select-standard"
-                              value={
-                                wards.find((ward) => ward.name === wardName)
-                                  ? wardName
-                                  : ''
-                              }
-                              disabled={!wards || wards.length === 0}
-                              onChange={(e) => setWardName(e.target.value + '')}
-                              // label="Tỉnh"
-                              sx={{
-                                '& .MuiSelect-select': {
-                                  fontSize: '1.6rem',
-                                  fontWeight: '500',
-                                },
-                              }}
-                            >
-                              <MenuItem value="">
-                                <em>Chưa chọn xã/phường</em>
-                              </MenuItem>
-                              {wards.map((ward) => (
-                                <MenuItem key={ward.id} value={ward.name}>
-                                  {ward.name}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                        </div>
-                        <div className={`mt-4 col col-12}`}>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={isSetDefaultAddress}
-                                onChange={() => {
-                                  setIsSetDefaultAddress(!isSetDefaultAddress);
-                                }}
-                              />
-                            }
-                            label="Đặt làm địa chỉ mặc định"
-                            sx={{
-                              '& .MuiFormControlLabel-label': {
-                                fontSize: '1.4rem',
-                              },
-                            }}
-                          />
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-                <div className="col col-xxl-12 col-12 mt-4">
-                  <div className="default-title">HÌNH THỨC GIAO HÀNG</div>
-                  <div className="row">
-                    {deliveryMethods.map((deliveryMethod, index) => (
-                      <div
-                        key={index}
-                        className="col col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-12 mt-4"
-                      >
-                        <Button
-                          fullWidth
-                          variant="contained"
-                          onClick={() => {
-                            setDeliveryFee(deliveryMethod.deliveryFee);
-                          }}
-                          style={{
-                            textTransform: 'none',
-                            backgroundColor: '#fff',
-                            color: 'rgb(15, 98, 172)',
-                            fontSize: '1.3rem',
-                            border:
-                              deliveryFee === deliveryMethod.deliveryFee
-                                ? '2px solid rgb(15, 98, 172)'
-                                : '2px solid #fff',
-                          }}
-                        >
-                          {deliveryMethod.name.toUpperCase()} (
-                          {deliveryMethod.deliveryFee.toLocaleString('vi-VN')}đ)
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="col col-xxl-12 col-12 mt-4">
-                  <div className="default-title">PHƯƠNG THỨC THANH TOÁN</div>
-                  <div className="row">
-                    <div className="col col-xxl-6 col-xl-6 col-lg-6 col-md-6 col-12 mt-4">
-                      <Button
-                        fullWidth
-                        variant="contained"
-                        onClick={() => setPaymentMethod('COD')}
-                        style={{
-                          backgroundColor: '#fff',
-                          color: 'rgb(15, 98, 172)',
-                          fontSize: '1.3rem',
-                          border:
-                            paymentMethod === 'COD'
-                              ? '2px solid rgb(15, 98, 172)'
-                              : '2px solid #fff',
-                        }}
-                      >
-                        Thanh toán khi nhận hàng
-                      </Button>
-                    </div>
-                    <div className="col col-xxl-6 col-xl-6 col-lg-6 col-md-6 col-12 mt-4">
-                      <Button
-                        fullWidth
-                        variant="contained"
-                        endIcon={
-                          <img
-                            src="https://res.cloudinary.com/dgdn13yur/image/upload/v1726507527/zfc3ehtwo9x4eesh9x8s.png"
-                            alt="delete"
-                            style={{ width: '35px', height: '13px' }}
-                          />
-                        }
-                        onClick={() => setPaymentMethod('VNPay')}
-                        style={{
-                          backgroundColor: '#fff',
-                          color: 'rgb(15, 98, 172)',
-                          fontSize: '1.3rem',
-                          border:
-                            paymentMethod === 'VNPay'
-                              ? '2px solid rgb(15, 98, 172)'
-                              : '2px solid #fff',
-                        }}
-                      >
-                        Thanh toán thông qua ví điện tử
-                      </Button>
-                    </div>
-                  </div>
-                  {paymentMethod === 'VNPay' && <VNPayBankCard />}
+                    </>
+                  )}
                 </div>
               </div>
-            </div>
-            <div className="mt-5 col-12">
-              <TextareaAutosize
-                className="w-100"
-                id="standard-basic"
-                placeholder="Ghi chú"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                maxLength={300}
-                style={{
-                  width: '100%',
-                  minHeight: '80px',
-                  padding: '20px',
-                  borderRadius: '5px',
-                }}
-              />
-            </div>
-            <div className="mt-4">
-              <Button
-                fullWidth
-                variant="contained"
-                type="submit"
-                disabled={
-                  errorFullName.length > 0 ||
-                  errorPhoneNumber.length > 0 ||
-                  errorEmail.length > 0 ||
-                  errorAddressLine.length > 0 ||
-                  provinceName.trim() === '' ||
-                  districtName.trim() === '' ||
-                  wardName.trim() === '' ||
-                  deliveryFee === 0 ||
-                  (paymentMethod !== 'COD' && paymentMethod !== 'VNPay') ||
-                  note.length > 300
-                }
-                style={{
-                  fontSize: '1.4rem',
-                }}
-              >
-                {paymentMethod === 'COD' ? (
-                  <>Thiết lập đơn hàng</>
-                ) : (
-                  <>Thanh toán và thiết lập đơn hàng</>
-                )}
-              </Button>
+              <div className="col col-xxl-12 col-12 mt-4">
+                <div className="default-title">HÌNH THỨC GIAO HÀNG</div>
+                <div className="row">
+                  {deliveryMethods.map((deliveryMethod, index) => (
+                    <div
+                      key={index}
+                      className="col col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-12 mt-4"
+                    >
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        onClick={() => {
+                          setDeliveryFee(deliveryMethod.deliveryFee);
+                        }}
+                        style={{
+                          textTransform: 'none',
+                          backgroundColor: '#fff',
+                          color: 'rgb(15, 98, 172)',
+                          fontSize: '1.3rem',
+                          border:
+                            deliveryFee === deliveryMethod.deliveryFee
+                              ? '2px solid rgb(15, 98, 172)'
+                              : '2px solid #fff',
+                        }}
+                      >
+                        {deliveryMethod.name.toUpperCase()} (
+                        {deliveryMethod.deliveryFee.toLocaleString('vi-VN')}
+                        đ)
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="col col-xxl-12 col-12 mt-4">
+                <div className="default-title">PHƯƠNG THỨC THANH TOÁN</div>
+                <div className="row">
+                  <div className="col col-xxl-6 col-xl-6 col-lg-6 col-md-6 col-12 mt-4">
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      onClick={() => setPaymentMethod('COD')}
+                      style={{
+                        backgroundColor: '#fff',
+                        color: 'rgb(15, 98, 172)',
+                        fontSize: '1.3rem',
+                        border:
+                          paymentMethod === 'COD'
+                            ? '2px solid rgb(15, 98, 172)'
+                            : '2px solid #fff',
+                      }}
+                    >
+                      Thanh toán khi nhận hàng
+                    </Button>
+                  </div>
+                  <div className="col col-xxl-6 col-xl-6 col-lg-6 col-md-6 col-12 mt-4">
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      endIcon={
+                        <img
+                          src="https://res.cloudinary.com/dgdn13yur/image/upload/v1726507527/zfc3ehtwo9x4eesh9x8s.png"
+                          alt="delete"
+                          style={{ width: '35px', height: '13px' }}
+                        />
+                      }
+                      onClick={() => setPaymentMethod('VNPay')}
+                      style={{
+                        backgroundColor: '#fff',
+                        color: 'rgb(15, 98, 172)',
+                        fontSize: '1.3rem',
+                        border:
+                          paymentMethod === 'VNPay'
+                            ? '2px solid rgb(15, 98, 172)'
+                            : '2px solid #fff',
+                      }}
+                    >
+                      Thanh toán thông qua ví điện tử
+                    </Button>
+                  </div>
+                </div>
+                {paymentMethod === 'VNPay' && <VNPayBankCard />}
+              </div>
             </div>
           </div>
-          <div className="container mt-5 rounded-3 p-0">
-            <div className="row">
-              <ConfirmedInformation
-                totalPriceProduct={totalPriceProduct}
-                deliveryFee={deliveryFee}
-                isCheckOut={true}
-              />
-              {!buyNowProduct ? (
-                <CartItemList canChangeQuantity={false} />
+          <div className="mt-5 col-12">
+            <TextareaAutosize
+              className="w-100"
+              id="standard-basic"
+              placeholder="Ghi chú"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              maxLength={300}
+              style={{
+                width: '100%',
+                minHeight: '80px',
+                padding: '20px',
+                borderRadius: '5px',
+              }}
+            />
+          </div>
+          <div className="mt-4">
+            <Button
+              fullWidth
+              variant="contained"
+              type="submit"
+              disabled={
+                errorFullName.length > 0 ||
+                errorPhoneNumber.length > 0 ||
+                errorEmail.length > 0 ||
+                errorAddressLine.length > 0 ||
+                provinceName.trim() === '' ||
+                districtName.trim() === '' ||
+                wardName.trim() === '' ||
+                deliveryFee === 0 ||
+                (paymentMethod !== 'COD' && paymentMethod !== 'VNPay') ||
+                note.length > 300
+              }
+              style={{
+                fontSize: '1.4rem',
+              }}
+            >
+              {paymentMethod === 'COD' ? (
+                <>Thiết lập đơn hàng</>
               ) : (
-                <BuyNowProductInformation product={buyNowProduct} />
+                <>Thanh toán và thiết lập đơn hàng</>
               )}
-            </div>
+            </Button>
           </div>
-        </form>
-      </>
-      {/* ) : ( */}
-      {/* <CheckOutSuccess /> */}
-      {/* )} */}
+        </div>
+        <div className="container mt-5 rounded-3 p-0">
+          <div className="row">
+            <ConfirmedInformation
+              totalPriceProduct={totalPriceProduct}
+              deliveryFee={deliveryFee}
+              isCheckOut={true}
+            />
+            {!buyNowProduct ? (
+              <CartItemList canChangeQuantity={false} />
+            ) : (
+              <BuyNowProductInformation product={buyNowProduct} />
+            )}
+          </div>
+        </div>
+      </form>
     </>
   );
 };
