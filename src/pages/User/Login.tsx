@@ -43,6 +43,7 @@ function Login() {
       const data = await response.json();
 
       if (data.status === 'success') {
+        window.location.reload();
         const token = data.token;
 
         if (typeof token === 'string') {
@@ -59,7 +60,7 @@ function Login() {
 
           fetchFavoriteProducts();
           fetchCartItems();
-          toast.success(data.message || 'Đăng nhập thành công');
+          // toast.success(data.message || 'Đăng nhập thành công');
         } else {
           toast.error('Token không hợp lệ');
         }

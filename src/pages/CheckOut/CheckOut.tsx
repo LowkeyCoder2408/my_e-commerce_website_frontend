@@ -7,7 +7,6 @@ import {
 } from '@mui/material';
 
 import { FormEvent, useEffect, useState } from 'react';
-import styles from './scss/CheckOut.module.scss';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -17,8 +16,10 @@ import { backendEndpoint } from '../../utils/Service/Constant';
 import WardModel from '../../models/WardModel';
 import ProvinceModel from '../../models/ProvinceModel';
 import DistrictModel from '../../models/DistrictModel';
-import classNames from 'classnames/bind';
-import { getUserIdByToken } from '../../utils/Service/JwtService';
+import {
+  getUserIdByToken,
+  isTokenExpired,
+} from '../../utils/Service/JwtService';
 import ConfirmedInformation from '../ShoppingCart/components/ConfirmedInformation';
 import CartItemList from '../ShoppingCart/components/CartItemList';
 import AddressModel from '../../models/AddressModel';
@@ -35,11 +36,8 @@ import BuyNowProductInformation from './components/BuyNowProductInformation';
 import DeliveryMethodModel from '../../models/DeliveryMethodModel';
 import { getAllDeliveryMethods } from '../../api/DeliveryMethodAPI';
 import VNPayBankCard from './components/VNPayBankCard';
-import CheckOutStatus from './components/CheckOutStatus';
 import { toast } from 'react-toastify';
 import { handleSaveOrder } from '../../api/OrderAPI';
-
-const cx = classNames.bind(styles);
 
 const SpeechRecognition =
   (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -47,11 +45,6 @@ console.log(SpeechRecognition);
 
 export const CheckOut = () => {
   const location = useLocation();
-  const [searchParams] = useSearchParams();
-  const isFormRender =
-    (location.pathname === '/check-out' ||
-      location.pathname === '/check-out/') &&
-    !searchParams.toString();
 
   const token = localStorage.getItem('token');
   const storedProduct = localStorage.getItem('buy_now_product');
@@ -59,8 +52,8 @@ export const CheckOut = () => {
   const userId = getUserIdByToken();
   const navigate = useNavigate();
 
-  const { cartItems } = useCartItems();
-  const { isLoggedIn } = useAuth();
+  const { cartItems, fetchCartItems } = useCartItems();
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
 
   const [buyNowProduct, setBuyNowProduct] = useState<ProductModel | null>(null);
 
@@ -97,6 +90,7 @@ export const CheckOut = () => {
     [],
   );
   const [deliveryFee, setDeliveryFee] = useState<number>(0);
+  const [deliveryMethod, setDeliveryMethod] = useState<string>('');
 
   // Xử lý ghi chú
   const [note, setNote] = useState('');
@@ -208,6 +202,7 @@ export const CheckOut = () => {
             setDeliveryMethods(result);
             if (result.length > 0) {
               setDeliveryFee(result[0].deliveryFee);
+              setDeliveryMethod(result[0].name);
             }
           })
           .catch((error) => {
@@ -297,6 +292,22 @@ export const CheckOut = () => {
     event.preventDefault();
     event.stopPropagation();
 
+    if (!isLoggedIn) {
+      toast.error('Bạn cần đăng nhập để thêm vào giỏ hàng');
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
+    if (isTokenExpired()) {
+      localStorage.removeItem('token');
+      setIsLoggedIn(false);
+      toast.error(
+        'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
+      );
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
     const request = {
       userId: userId,
       fullName: fullName,
@@ -307,11 +318,10 @@ export const CheckOut = () => {
       districtName: districtName,
       wardName: wardName,
       isSetDefaultAddress: isSetDefaultAddress,
+      deliveryMethod: deliveryMethod,
+      deliveryFee: deliveryFee,
       paymentMethod: paymentMethod,
       note: note,
-      totalPriceProduct: totalPriceProduct,
-      deliveryFee: deliveryFee,
-      totalPrice: totalPriceProduct + deliveryFee,
       ...(buyNowProduct ? { buyNowProductId: buyNowProduct.id } : {}),
       ...(buyNowProduct
         ? { buyNowProductQuantity: buyNowProduct.quantity }
@@ -342,12 +352,14 @@ export const CheckOut = () => {
         const paymentUrl = await response.text();
 
         window.location.href = paymentUrl;
+        localStorage.removeItem('order_request');
         localStorage.setItem('order_request', JSON.stringify(request));
       } catch (error) {
         console.log(error);
       }
     } else {
-      handleSaveOrder(request);
+      localStorage.removeItem('order_request');
+      handleSaveOrder(request, fetchCartItems);
     }
   }
 
@@ -667,6 +679,7 @@ export const CheckOut = () => {
                         variant="contained"
                         onClick={() => {
                           setDeliveryFee(deliveryMethod.deliveryFee);
+                          setDeliveryMethod(deliveryMethod.name);
                         }}
                         style={{
                           textTransform: 'none',

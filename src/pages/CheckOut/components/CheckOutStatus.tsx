@@ -14,10 +14,13 @@ import Loader from '../../../utils/Loader';
 import { handleSaveOrder } from '../../../api/OrderAPI';
 import { toast } from 'react-toastify';
 import { backendEndpoint } from '../../../utils/Service/Constant';
+import { useCartItems } from '../../../utils/Context/CartItemContext';
 
 const CheckOutStatus: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const { fetchCartItems } = useCartItems();
   const { isLoggedIn } = useAuth();
   const params = new URLSearchParams(location.search);
 
@@ -36,30 +39,30 @@ const CheckOutStatus: React.FC = () => {
     const request = JSON.parse(requestString || '{}');
 
     if (responseCode) {
-      if (requestString) {
-        fetch(
-          backendEndpoint +
-            `/vn-pay/payment-result?vnp_ResponseCode=${responseCode}`,
-        )
-          .then(async (response) => {
-            if (!response.ok) {
-              throw new Error('Không thể lấy kết quả thanh toán');
-            }
-            const data = await response.json();
+      fetch(
+        backendEndpoint +
+          `/vn-pay/payment-result?vnp_ResponseCode=${responseCode}`,
+      )
+        .then(async (response) => {
+          if (!response.ok) {
+            throw new Error('Không thể lấy kết quả thanh toán');
+          }
+          const data = await response.json();
 
-            if (data.result === 'success') {
-              await handleSaveOrder(request);
-              setIsSuccessPayment(true);
-            } else {
-              setIsSuccessPayment(false);
+          if (data.result === 'success') {
+            if (requestString) {
+              await handleSaveOrder(request, fetchCartItems);
             }
-          })
-          .catch((error) => {
-            console.error(error);
-            toast.error('Có lỗi xảy ra khi xử lý thanh toán');
+            setIsSuccessPayment(true);
+          } else {
             setIsSuccessPayment(false);
-          });
-      }
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error('Có lỗi xảy ra khi xử lý thanh toán');
+          setIsSuccessPayment(false);
+        });
     }
 
     return () => {
