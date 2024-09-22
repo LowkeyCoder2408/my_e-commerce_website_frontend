@@ -1,9 +1,14 @@
 import { toast } from 'react-toastify';
 import { backendEndpoint } from '../utils/Service/Constant';
+import { Dispatch, SetStateAction } from 'react';
 
 const token = localStorage.getItem('token');
 
-export const handleSaveOrder = (request: any, fetchCartItems: () => void) => {
+export const handleSaveOrder = (
+  request: any,
+  fetchCartItems: () => void,
+  setIsSuccessPayment?: Dispatch<SetStateAction<boolean>>,
+) => {
   fetch(backendEndpoint + '/orders/add-order', {
     method: 'POST',
     headers: {
@@ -18,6 +23,7 @@ export const handleSaveOrder = (request: any, fetchCartItems: () => void) => {
         if (data.status === 'success') {
           toast.success(data.message || 'Thêm đơn hàng mới thành công');
           fetchCartItems();
+          setIsSuccessPayment && setIsSuccessPayment(true);
         } else {
           toast.error(data.message || 'Thêm đơn hàng mới không thành công');
         }

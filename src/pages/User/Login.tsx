@@ -60,6 +60,7 @@ function Login() {
 
           fetchFavoriteProducts();
           fetchCartItems();
+          window.location.reload();
           // toast.success(data.message || 'Đăng nhập thành công');
         } else {
           toast.error('Token không hợp lệ');
