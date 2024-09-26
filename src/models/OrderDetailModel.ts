@@ -1,9 +1,11 @@
+import ProductModel from './ProductModel';
+
 class OrderDetailModel {
   id: number;
   quantity: number;
   productPriceAtOrderTime: number;
   subtotal: number;
-  productId: number;
+  product: ProductModel;
   orderId: number;
 
   constructor(
@@ -11,14 +13,14 @@ class OrderDetailModel {
     quantity: number,
     productPriceAtOrderTime: number,
     subtotal: number,
-    productId: number,
+    product: ProductModel,
     orderId: number,
   ) {
     this.id = id;
     this.quantity = quantity;
     this.productPriceAtOrderTime = productPriceAtOrderTime;
     this.subtotal = subtotal;
-    this.productId = productId;
+    this.product = product;
     this.orderId = orderId;
   }
 }

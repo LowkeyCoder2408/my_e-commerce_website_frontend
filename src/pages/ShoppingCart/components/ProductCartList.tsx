@@ -2,25 +2,25 @@ import { useEffect, useState } from 'react';
 import { useCartItems } from '../../../utils/Context/CartItemContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../utils/Context/AuthContext';
-import styles from '../scss/ProductCartList.module.scss';
-import classNames from 'classnames/bind';
 import { CheckOut } from '../../CheckOut/CheckOut';
 import ConfirmedInformation from './ConfirmedInformation';
 import CartItemList from './CartItemList';
+import Loader from '../../../utils/Loader';
 
-const cx = classNames.bind(styles);
-
-interface ProductCartItemsProps {}
-
-const ProductCartItems: React.FC<ProductCartItemsProps> = () => {
-  const { isLoggedIn, setIsLoggedIn } = useAuth();
-  const { cartItems } = useCartItems();
+const ProductCartItems = () => {
+  const { isLoggedIn } = useAuth();
+  const { cartItems, isLoading } = useCartItems();
 
   const [totalPriceProduct, setTotalPrice] = useState(0);
   const [isCheckOut, setIsCheckOut] = useState<boolean>(false);
-  // const [isCheckOut, setIsCheckOut] = useState<boolean>(true);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/login');
+    }
+  }, [isLoggedIn, navigate]);
 
   useEffect(() => {
     const total = cartItems.reduce((totalPriceProduct, cartItem) => {
@@ -32,6 +32,10 @@ const ProductCartItems: React.FC<ProductCartItemsProps> = () => {
     setTotalPrice(total);
   }, [cartItems]);
 
+  if (isLoading) {
+    return <Loader />;
+  }
+
   return (
     <div className="container" style={{ marginTop: '50px' }}>
       {cartItems.length === 0 ? (
@@ -41,7 +45,7 @@ const ProductCartItems: React.FC<ProductCartItemsProps> = () => {
         >
           <img
             src="https://res.cloudinary.com/dgdn13yur/image/upload/v1713619417/cart_empty_hxwhlc.png"
-            alt=""
+            alt="Empty cart"
             width="30%"
           />
           <h2 className="mt-5 text-center" style={{ fontWeight: '550' }}>
@@ -60,14 +64,7 @@ const ProductCartItems: React.FC<ProductCartItemsProps> = () => {
         <>
           {isCheckOut === false ? (
             <div>
-              <div
-                className="row"
-                style={
-                  cartItems.length === 0
-                    ? { display: 'none' }
-                    : { display: 'flex' }
-                }
-              >
+              <div className="row">
                 <CartItemList canChangeQuantity={true} />
                 <ConfirmedInformation
                   isCheckOut={isCheckOut}

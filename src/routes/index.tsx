@@ -17,6 +17,7 @@ import FavoriteProductList from '../pages/Product/FavoriteProduct/FavoriteProduc
 import ShoppingCart from '../pages/ShoppingCart/ShoppingCart';
 import CheckOutStatus from '../pages/CheckOut/components/CheckOutStatus';
 import { CheckOut } from '../pages/CheckOut/CheckOut';
+import MyOrder from '../pages/Order/MyOrders';
 
 const publicRoutes = [
   {
@@ -61,6 +62,11 @@ const publicRoutes = [
   {
     path: '/check-out/status',
     component: CheckOutStatus,
+    layout: 'default',
+  },
+  {
+    path: '/my-order',
+    component: MyOrder,
     layout: 'default',
   },
   { path: '/about-us', component: AboutUs, layout: 'default' },

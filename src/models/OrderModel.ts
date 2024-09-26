@@ -1,4 +1,5 @@
 import OrderDetailModel from './OrderDetailModel';
+import OrderTrackModel from './OrderTrackModel';
 
 class OrderModel {
   id: number;
@@ -16,6 +17,7 @@ class OrderModel {
   status?: string;
   note?: string;
   orderDetails?: OrderDetailModel[];
+  orderTracks?: OrderTrackModel[];
   userId?: number;
   paymentMethodName?: string;
   deliveryMethodName?: string;
@@ -36,6 +38,7 @@ class OrderModel {
     status?: string,
     note?: string,
     orderDetails?: OrderDetailModel[],
+    orderTracks?: OrderTrackModel[],
     userId?: number,
     paymentMethodName?: string,
     deliveryMethodName?: string,
@@ -55,6 +58,7 @@ class OrderModel {
     this.status = status;
     this.note = note;
     this.orderDetails = orderDetails;
+    this.orderTracks = orderTracks;
     this.userId = userId;
     this.paymentMethodName = paymentMethodName;
     this.deliveryMethodName = deliveryMethodName;

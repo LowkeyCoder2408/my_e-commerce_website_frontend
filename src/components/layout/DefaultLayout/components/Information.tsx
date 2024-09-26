@@ -1,12 +1,11 @@
-import { Link, useNavigate } from 'react-router-dom';
 import styles from './scss/Information.module.scss';
+import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCartShopping,
   faExchange,
   faHeart,
-  faList,
-  faMoneyBill,
+  faReceipt,
   faSignOut,
   faUser,
 } from '@fortawesome/free-solid-svg-icons';
@@ -17,7 +16,6 @@ import classNames from 'classnames/bind';
 import {
   getFullNameByToken,
   getPhotoByToken,
-  getUserIdByToken,
   logout,
 } from '../../../../utils/Service/JwtService';
 import { Avatar } from '@mui/material';
@@ -31,7 +29,6 @@ function Information() {
   const { isLoggedIn, setIsLoggedIn } = useAuth();
   const navigate = useNavigate();
   const confirm = useConfirm();
-  //   const { cartList } = useCartItem();
   const { favoriteProducts } = useFavoriteProducts();
   const { cartItems } = useCartItems();
 
@@ -150,27 +147,6 @@ function Information() {
                       Thông tin cá nhân
                     </button>
                   </li>
-
-                  <li
-                    style={{
-                      fontSize: '15px',
-                      padding: '4px 6px',
-                      color: '#666',
-                    }}
-                  >
-                    <Link to={'/wish-list'}>
-                      <button
-                        className="dropdown-item d-flex gap-3 align-items-center"
-                        type="button"
-                      >
-                        <FontAwesomeIcon
-                          style={{ width: '12px', height: '12px' }}
-                          icon={faList as IconProp}
-                        />
-                        Sản phẩm yêu thích
-                      </button>
-                    </Link>
-                  </li>
                   <li
                     style={{
                       fontSize: '15px',
@@ -185,7 +161,7 @@ function Information() {
                       >
                         <FontAwesomeIcon
                           style={{ width: '12px', height: '12px' }}
-                          icon={faMoneyBill as IconProp}
+                          icon={faReceipt as IconProp}
                         />
                         Đơn hàng của tôi
                       </button>
