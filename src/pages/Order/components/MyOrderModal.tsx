@@ -16,12 +16,20 @@ import Grid from '@mui/material/Grid';
 import OrderStatus from './OrderStatus';
 import { format } from 'date-fns';
 import { Button, IconButton, Tooltip } from '@mui/material';
-import { Print } from '@mui/icons-material';
+import { AssignmentReturn, Print } from '@mui/icons-material';
+import { useEffect, useState } from 'react';
+import { backendEndpoint } from '../../../utils/Service/Constant';
+import Loader from '../../../utils/Loader';
+import { toast } from 'react-toastify';
+import { confirm } from 'material-ui-confirm';
+import { isTokenExpired } from '../../../utils/Service/JwtService';
+import { useAuth } from '../../../utils/Context/AuthContext';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
 interface OrderModalProps {
-  order: OrderModel;
+  orderId: number;
 }
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -31,9 +39,112 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 const MyOrderModal = (props: OrderModalProps) => {
+  const token = localStorage.getItem('token');
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [order, setOrder] = useState<OrderModel | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const fetchOrder = async () => {
+    try {
+      const response = await fetch(
+        `${backendEndpoint}/orders/find-by-id/${props.orderId}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        setIsLoading(false);
+        throw new Error('Network response was not ok');
+      }
+
+      setIsLoading(false);
+      const result = await response.json();
+      setOrder(result);
+    } catch (error) {
+      console.log('Lỗi khi lấy đơn hàng: ', error);
+    }
+  };
+
+  useEffect(() => {
+    if (props.orderId !== 0) {
+      fetchOrder();
+    }
+  }, []);
+
   const handlePrint = () => {
     window.print();
   };
+
+  const handleReturnRequest = () => {
+    if (!isLoggedIn) {
+      toast.error('Bạn cần đăng nhập để thêm vào giỏ hàng');
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
+    if (isTokenExpired()) {
+      localStorage.removeItem('token');
+      setIsLoggedIn(false);
+      toast.error(
+        'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
+      );
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
+    confirm({
+      title: <div className="default-title">GỬI YÊU CẦU TRẢ HÀNG</div>,
+      description: (
+        <span style={{ fontSize: '16px' }}>
+          Bạn có chắc chắn rằng sẽ trả hàng?
+        </span>
+      ),
+      confirmationText: <span style={{ fontSize: '15px' }}>Đồng ý</span>,
+      cancellationText: <span style={{ fontSize: '15px' }}>Huỷ</span>,
+    })
+      .then(() => {
+        if (isLoggedIn) {
+          fetch(backendEndpoint + `/orders/return-request/${props.orderId}`, {
+            method: 'PUT',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+            .then(async (response) => {
+              const data = await response.json();
+              if (response.ok && data.status === 'success') {
+                toast.success(
+                  data.message || 'Gửi yêu cầu trả hàng thành công',
+                );
+                fetchOrder();
+              } else {
+                toast.error(
+                  data.message ||
+                    'Gặp lỗi trong quá trình gửi yêu cầu trả hàng',
+                );
+              }
+            })
+            .catch((error) => {
+              console.error(error);
+              toast.error('Có lỗi xảy ra, vui lòng thử lại sau.');
+            });
+        } else {
+          toast.error('Bạn cần đăng nhập để gửi yêu cầu trả hàng');
+        }
+      })
+      .catch(() => {});
+  };
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <Box>
@@ -49,7 +160,7 @@ const MyOrderModal = (props: OrderModalProps) => {
             <>
               <ul style={{ fontSize: '1.4rem' }}>
                 LỊCH SỬ THAY ĐỔI:
-                {props.order.orderTracks?.map((orderTrack, index) => (
+                {order?.orderTracks?.map((orderTrack, index) => (
                   <li key={index}>
                     -{' '}
                     <strong>
@@ -84,35 +195,37 @@ const MyOrderModal = (props: OrderModalProps) => {
           </IconButton>
         </Tooltip>
       </Box>
-      <div className="my-5">
-        <OrderStatus order={props.order} />
-      </div>
+      <div className="my-5">{order && <OrderStatus order={order} />}</div>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           <Typography
             color="primary"
             sx={{ fontWeight: 'bold', fontSize: '2rem', marginBottom: '10px' }}
           >
-            CHI TIẾT ĐƠN HÀNG ORD-{props.order.id}
+            CHI TIẾT ĐƠN HÀNG ORD-{order?.id}
           </Typography>
           <Typography sx={{ marginY: '6px', fontSize: '1.5rem' }}>
             <strong>Ngày đặt hàng:</strong>{' '}
             {format(
-              new Date(props.order.createdTime || 0),
+              new Date(order?.createdTime || 0),
               "dd/MM/yyyy, 'lúc' HH:mm:ss",
             )}
           </Typography>
           <Typography sx={{ marginY: '6px', fontSize: '1.5rem' }}>
-            <strong>Phương thức thanh toán:</strong>{' '}
-            {props.order.paymentMethodName}
+            <strong>Phương thức thanh toán:</strong> {order?.paymentMethodName}
           </Typography>
           <Typography sx={{ marginY: '6px', fontSize: '1.5rem' }}>
-            <strong>Hình thức vận chuyển:</strong>{' '}
-            {props.order.deliveryMethodName}
+            <strong>Thời gian thanh toán:</strong>{' '}
+            {order?.paidTime
+              ? format(new Date(order?.paidTime), "dd/MM/yyyy, 'lúc' HH:mm:ss")
+              : 'Chưa thanh toán'}
+          </Typography>
+          <Typography sx={{ marginY: '6px', fontSize: '1.5rem' }}>
+            <strong>Hình thức vận chuyển:</strong> {order?.deliveryMethodName}
           </Typography>
           <Typography sx={{ marginY: '6px', fontSize: '1.5rem' }}>
             <strong>Ghi chú:</strong>{' '}
-            {props.order.note ? `${props.order.note}` : 'Không có'}
+            {order?.note ? `${order?.note}` : 'Không có'}
           </Typography>
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -124,17 +237,26 @@ const MyOrderModal = (props: OrderModalProps) => {
           </Typography>
           <Typography sx={{ marginY: '6px', fontSize: '1.5rem' }}>
             <strong>Tên khách hàng (ghi trong hóa đơn):</strong>{' '}
-            {props.order.fullName}
+            {order?.fullName}
           </Typography>
           <Typography sx={{ marginY: '6px', fontSize: '1.5rem' }}>
-            <strong>Email:</strong> {props.order.email}
+            <strong>Email:</strong> {order?.email}
           </Typography>
           <Typography sx={{ marginY: '6px', fontSize: '1.5rem' }}>
-            <strong>Số điện thoại:</strong> {props.order.phoneNumber}
+            <strong>Số điện thoại:</strong> {order?.phoneNumber}
           </Typography>
           <Typography sx={{ marginY: '6px', fontSize: '1.5rem' }}>
-            <strong>Địa chỉ nhận hàng:</strong> {props.order.addressLine},{' '}
-            {props.order.ward}, {props.order.district}, {props.order.province}
+            <strong>Địa chỉ nhận hàng:</strong> {order?.addressLine},{' '}
+            {order?.ward}, {order?.district}, {order?.province}
+          </Typography>
+          <Typography sx={{ marginY: '6px', fontSize: '1.5rem' }}>
+            <strong>Thời gian giao hàng:</strong>{' '}
+            {order?.deliveredTime
+              ? format(
+                  new Date(order?.deliveredTime),
+                  "dd/MM/yyyy, 'lúc' HH:mm:ss",
+                )
+              : 'Chưa giao'}
           </Typography>
         </Grid>
       </Grid>
@@ -160,7 +282,7 @@ const MyOrderModal = (props: OrderModalProps) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {props.order.orderDetails?.map((item, index) => (
+            {order?.orderDetails?.map((item, index) => (
               <TableRow key={index}>
                 <TableCell
                   sx={{
@@ -218,7 +340,7 @@ const MyOrderModal = (props: OrderModalProps) => {
                 Tổng phụ
               </TableCell>
               <TableCell sx={{ fontSize: '1.6rem', fontWeight: '550' }}>
-                {props.order.totalPriceProduct?.toLocaleString('vi-VN')} ₫
+                {order?.totalPriceProduct?.toLocaleString('vi-VN')} ₫
               </TableCell>
             </TableRow>
             <TableRow>
@@ -233,7 +355,7 @@ const MyOrderModal = (props: OrderModalProps) => {
                 Phí vận chuyển
               </TableCell>
               <TableCell sx={{ fontSize: '1.6rem', fontWeight: '550' }}>
-                {props.order.deliveryFee?.toLocaleString('vi-VN')} ₫
+                {order?.deliveryFee?.toLocaleString('vi-VN')} ₫
               </TableCell>
             </TableRow>
             <TableRow>
@@ -250,13 +372,27 @@ const MyOrderModal = (props: OrderModalProps) => {
               <TableCell
                 sx={{ fontSize: '1.6rem', fontWeight: '550', color: 'red' }}
               >
-                {props.order.totalPrice?.toLocaleString('vi-VN')} ₫
+                {order?.totalPrice?.toLocaleString('vi-VN')} ₫
               </TableCell>
             </TableRow>
           </TableBody>
         </Table>
       </TableContainer>
-      <Box display="flex" marginTop={3} justifyContent="flex-end">
+      <Box display="flex" gap={2} marginTop={3} justifyContent="flex-end">
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: '#f44336',
+            '&:hover': {
+              backgroundColor: '#d32f2f',
+            },
+            fontSize: '1.4rem',
+          }}
+          startIcon={<AssignmentReturn />}
+          onClick={handleReturnRequest}
+        >
+          Yêu cầu trả hàng
+        </Button>
         <Button
           variant="contained"
           color="primary"

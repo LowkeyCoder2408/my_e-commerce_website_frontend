@@ -7,9 +7,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { faEye, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { FadeModal } from '../../utils/FadeModal';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import MyOrderModal from './components/MyOrderModal';
-import { getUserIdByToken } from '../../utils/Service/JwtService';
+import {
+  getUserIdByToken,
+  isTokenExpired,
+} from '../../utils/Service/JwtService';
 import { backendEndpoint } from '../../utils/Service/Constant';
 import { DataTable } from '../../utils/DataTable';
 import Loader from '../../utils/Loader';
@@ -20,24 +23,74 @@ import { toast } from 'react-toastify';
 const MyOrders = () => {
   const userId = getUserIdByToken();
   const token = localStorage.getItem('token');
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation;
 
-  // Tạo biến để lấy tất cả orders đơn hàng
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const [orders, setOrders] = useState<OrderModel[]>([]);
   // Xử lý order table
   const [orderId, setOrderId] = useState<number>(0);
-  const [order, setOrder] = useState<OrderModel | null>(null);
   const [openOrderModal, setOpenOrderModal] = useState<boolean>(false);
 
-  const handleOpenOrderModal = () => setOpenOrderModal(true);
-  const handleCloseOrderModal = () => setOpenOrderModal(false);
+  const fetchOrders = () => {
+    if (userId) {
+      fetch(backendEndpoint + `/orders/find-by-user?userId=${userId}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data: OrderModel[]) => {
+          setIsLoading(false);
+          const orders: OrderModel[] = data.map((order: OrderModel) => ({
+            ...order,
+          }));
 
-  const handleOpenCancelOrder = (id: number) => {
+          const ordersSort = orders.sort(
+            (order1: OrderModel, order2: OrderModel) => order2.id - order1.id,
+          );
+
+          setOrders(ordersSort);
+        })
+        .catch((error) => console.log(error));
+    }
+  };
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/login');
+    }
+    fetchOrders();
+  }, []);
+
+  const handleOpenOrderModal = () => setOpenOrderModal(true);
+  const handleCloseOrderModal = () => {
+    setOrderId(0);
+    setOpenOrderModal(false);
+  };
+
+  const handleCancelAnOrder = (orderId: number) => {
+    if (!isLoggedIn) {
+      toast.error('Bạn cần đăng nhập để thêm vào giỏ hàng');
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
+    if (isTokenExpired()) {
+      localStorage.removeItem('token');
+      setIsLoggedIn(false);
+      toast.error(
+        'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
+      );
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
     confirm({
-      title: <div className="default-title">HỦY ĐƠN HÀNG</div>,
+      title: <div className="default-title">HỦY ĐƠN HÀNG ORD-{orderId}</div>,
       description: (
         <span style={{ fontSize: '16px' }}>
           Bạn có chắc chắn rằng sẽ hủy đơn hàng này?
@@ -48,27 +101,28 @@ const MyOrders = () => {
     })
       .then(() => {
         if (isLoggedIn) {
-          toast.success(id);
-          // deleteReview(props.review.id, token!)
-          //   .then(async (response) => {
-          //     const data = await response.json();
-          //     if (response.ok) {
-          //       if (data.status === 'success') {
-          //         toast.success(data.message || 'Xóa đánh giá thành công');
-          //         props.fetchReviews();
-          //         getProductById(props.review.productId).then((result) => {
-          //           props.setProduct(result);
-          //         });
-          //       } else {
-          //         toast.error(data.message || 'Xóa đánh giá không thành công');
-          //       }
-          //     } else {
-          //       toast.error('Gặp lỗi trong quá trình xóa đánh giá');
-          //     }
-          //   })
-          //   .catch(() => {
-          //     toast.error('Gặp lỗi trong quá trình xóa đánh giá');
-          //   });
+          fetch(backendEndpoint + `/orders/cancel-order/${orderId}`, {
+            method: 'PUT',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+            .then(async (response) => {
+              const data = await response.json();
+              if (response.ok && data.status === 'success') {
+                toast.success(data.message || 'Hủy đơn hàng thành công');
+                fetchOrders();
+                setOrderId(0);
+              } else {
+                toast.error(
+                  data.message || 'Gặp lỗi trong quá trình hủy đơn hàng',
+                );
+              }
+            })
+            .catch((error) => {
+              console.error(error);
+              toast.error('Có lỗi xảy ra, vui lòng thử lại sau.');
+            });
         } else {
           toast.error('Bạn cần đăng nhập để hủy đơn hàng');
         }
@@ -85,7 +139,7 @@ const MyOrders = () => {
         return <div className="text-center">{params.value}</div>;
       },
     },
-    { field: 'userName', headerName: 'Tên khách hàng', width: 170 },
+    { field: 'fullName', headerName: 'Tên khách hàng', width: 170 },
     {
       field: 'createdTime',
       headerName: 'Thời gian khởi tạo',
@@ -160,6 +214,12 @@ const MyOrders = () => {
             break;
           case 'Đã thanh toán':
             color = 'rgb(200, 173, 0)';
+            break;
+          case 'Yêu cầu hoàn trả':
+            color = 'rgb(180, 56, 84)';
+            break;
+          case 'Đã hoàn trả':
+            color = 'rgb(62, 158, 178)';
             break;
           default:
             color = '#000';
@@ -239,7 +299,7 @@ const MyOrders = () => {
                 title="Hủy đơn hàng"
                 onClick={() => {
                   setOrderId(Number(item.id));
-                  handleOpenCancelOrder(Number(item.id));
+                  handleCancelAnOrder(Number(item.id));
                 }}
                 icon={faTimesCircle as IconProp}
               />
@@ -249,66 +309,6 @@ const MyOrders = () => {
       },
     },
   ];
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      navigate('/login');
-    }
-
-    if (userId) {
-      fetch(backendEndpoint + `/orders/find-by-user?userId=${userId}`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data: OrderModel[]) => {
-          setIsLoading(false);
-          const orders: OrderModel[] = data.map((order: OrderModel) => ({
-            ...order,
-            id: order.id,
-            userName: order.fullName,
-          }));
-
-          const ordersSort = orders.sort(
-            (order1: OrderModel, order2: OrderModel) => order2.id - order1.id,
-          );
-
-          setOrders(ordersSort);
-        })
-        .catch((error) => console.log(error));
-    }
-  }, []);
-
-  useEffect(() => {
-    if (orderId !== 0) {
-      const fetchOrder = async () => {
-        try {
-          const response = await fetch(
-            `${backendEndpoint}/orders/find-by-id/${orderId}`,
-            {
-              method: 'GET',
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            },
-          );
-
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-
-          const result = await response.json();
-          setOrder(result);
-        } catch (error) {
-          console.log('Lỗi khi lấy đơn hàng: ', error);
-        }
-      };
-
-      fetchOrder();
-    }
-  }, [orderId]);
 
   if (isLoading) {
     return <Loader />;
@@ -324,7 +324,7 @@ const MyOrders = () => {
             handleOpen={handleOpenOrderModal}
             handleClose={handleCloseOrderModal}
           >
-            {order && <MyOrderModal order={order} />}
+            <MyOrderModal orderId={orderId} />
           </FadeModal>
         </>
       ) : (

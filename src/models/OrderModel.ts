@@ -4,6 +4,8 @@ import OrderTrackModel from './OrderTrackModel';
 class OrderModel {
   id: number;
   createdTime?: Date;
+  paidTime?: Date;
+  deliveredTime?: Date;
   addressLine?: string;
   province?: string;
   district?: string;
@@ -25,6 +27,8 @@ class OrderModel {
   constructor(
     id: number,
     createdTime?: Date,
+    paidTime?: Date,
+    deliveredTime?: Date,
     addressLine?: string,
     province?: string,
     district?: string,
@@ -45,6 +49,8 @@ class OrderModel {
   ) {
     this.id = id;
     this.createdTime = createdTime;
+    this.paidTime = paidTime;
+    this.deliveredTime = deliveredTime;
     this.addressLine = addressLine;
     this.province = province;
     this.district = district;
