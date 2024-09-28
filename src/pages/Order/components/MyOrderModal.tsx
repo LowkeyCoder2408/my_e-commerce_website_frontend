@@ -30,6 +30,7 @@ const cx = classNames.bind(styles);
 
 interface OrderModalProps {
   orderId: number;
+  fetchOrders: any;
 }
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -124,6 +125,7 @@ const MyOrderModal = (props: OrderModalProps) => {
                   data.message || 'Gửi yêu cầu trả hàng thành công',
                 );
                 fetchOrder();
+                props.fetchOrders();
               } else {
                 toast.error(
                   data.message ||

@@ -306,8 +306,6 @@ export const CheckOut = () => {
         : {}),
     };
 
-    console.log(request);
-
     if (paymentMethod === 'VNPay') {
       try {
         const response = await fetch(

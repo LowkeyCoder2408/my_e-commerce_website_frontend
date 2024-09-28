@@ -174,16 +174,18 @@ function Information() {
                       color: '#666',
                     }}
                   >
-                    <button
-                      className="dropdown-item d-flex gap-3 align-items-center"
-                      type="button"
-                    >
-                      <FontAwesomeIcon
-                        style={{ width: '12px', height: '12px' }}
-                        icon={faExchange as IconProp}
-                      />
-                      Đổi mật khẩu
-                    </button>
+                    <Link to={'/change-password'}>
+                      <button
+                        className="dropdown-item d-flex gap-3 align-items-center"
+                        type="button"
+                      >
+                        <FontAwesomeIcon
+                          style={{ width: '12px', height: '12px' }}
+                          icon={faExchange as IconProp}
+                        />
+                        Đổi mật khẩu
+                      </button>
+                    </Link>
                   </li>
                   <li>
                     <hr className="dropdown-divider" />

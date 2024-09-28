@@ -18,6 +18,9 @@ import ShoppingCart from '../pages/ShoppingCart/ShoppingCart';
 import CheckOutStatus from '../pages/CheckOut/components/CheckOutStatus';
 import { CheckOut } from '../pages/CheckOut/CheckOut';
 import MyOrder from '../pages/Order/MyOrders';
+import ForgotPassword from '../pages/User/ForgotPassword';
+import ChangePassword from '../pages/User/ChangePassword';
+import ResetPassword from '../pages/User/ResetPassword';
 
 const publicRoutes = [
   {
@@ -33,6 +36,21 @@ const publicRoutes = [
   {
     path: '/register',
     component: Register,
+    layout: 'default',
+  },
+  {
+    path: '/forgot-password',
+    component: ForgotPassword,
+    layout: 'default',
+  },
+  {
+    path: '/reset-password',
+    component: ResetPassword,
+    layout: 'default',
+  },
+  {
+    path: '/change-password',
+    component: ChangePassword,
     layout: 'default',
   },
   {

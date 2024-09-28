@@ -9,7 +9,6 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { Link, useNavigate } from 'react-router-dom';
 import { backendEndpoint } from '../../utils/Service/Constant';
 import { toast } from 'react-toastify';
-import AuthenticationType from '../../models/AuthenticationType';
 import classNames from 'classnames/bind';
 import { useAuth } from '../../utils/Context/AuthContext';
 
@@ -289,7 +288,7 @@ function Register() {
     checkValidRepeatPassword(repeatPassword);
   }, [password, repeatPassword]);
 
-  const canRegister =
+  const canSubmit =
     emailError === '' &&
     firstNameError === '' &&
     lastNameError === '' &&
@@ -510,10 +509,10 @@ function Register() {
                 </div>
               </div>
               <button
-                className={`container-fluid py-2 btn btn-primary ${cx({ disabled: !canRegister || submitLoading })}`}
+                className={`container-fluid py-2 btn btn-primary ${cx({ disabled: !canSubmit || submitLoading })}`}
                 type="submit"
                 style={{ fontSize: '1.6rem' }}
-                disabled={(!canRegister || submitLoading) ?? false}
+                disabled={(!canSubmit || submitLoading) ?? false}
               >
                 {submitLoading === null
                   ? 'ĐĂNG KÝ'

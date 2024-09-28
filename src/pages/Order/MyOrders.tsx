@@ -324,7 +324,7 @@ const MyOrders = () => {
             handleOpen={handleOpenOrderModal}
             handleClose={handleCloseOrderModal}
           >
-            <MyOrderModal orderId={orderId} />
+            <MyOrderModal orderId={orderId} fetchOrders={fetchOrders} />
           </FadeModal>
         </>
       ) : (

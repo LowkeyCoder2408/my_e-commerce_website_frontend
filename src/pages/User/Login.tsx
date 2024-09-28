@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { backendEndpoint } from '../../utils/Service/Constant';
 import classNames from 'classnames/bind';
-import { jwtDecode } from 'jwt-decode';
-import { JwtPayload } from '../../utils/AdminRequirement';
 import { useAuth } from '../../utils/Context/AuthContext';
 import { useFavoriteProducts } from '../../utils/Context/FavoriteProductContext';
 import { useCartItems } from '../../utils/Context/CartItemContext';
@@ -129,10 +127,15 @@ function Login() {
                   </div>
                 </div>
               </div>
-              <label htmlFor="remember-me" className="d-flex gap-2 mt-3">
-                <input id="remember-me" type="checkbox" value="remember-me" />
-                Ghi nhớ tài khoản
-              </label>
+              <div className="d-flex justify-content-between">
+                <label htmlFor="remember-me" className="d-flex gap-2 mt-3">
+                  <input id="remember-me" type="checkbox" value="remember-me" />
+                  Ghi nhớ tài khoản
+                </label>
+                <Link to={'/forgot-password'} className="mt-3">
+                  <strong>Quên mật khẩu</strong>
+                </Link>
+              </div>
               <button
                 className="container-fluid py-2 btn btn-primary mt-3"
                 type="button"
