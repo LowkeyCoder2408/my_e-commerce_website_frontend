@@ -11,10 +11,13 @@ import { backendEndpoint } from '../../utils/Service/Constant';
 import { toast } from 'react-toastify';
 import classNames from 'classnames/bind';
 import { useAuth } from '../../utils/Context/AuthContext';
+import LoadingButton from '@mui/lab/LoadingButton';
+import { AppRegistrationOutlined } from '@mui/icons-material';
 
 const cx = classNames.bind(styles);
 
 function Register() {
+  const [canSubmit, setCanSubmit] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
@@ -38,7 +41,7 @@ function Register() {
     'Chưa điền thông tin',
   );
 
-  const [submitLoading, setSubmitLoading] = useState<boolean | null>(null);
+  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 
   const jwtToken = localStorage.getItem('token');
   const { isLoggedIn } = useAuth();
@@ -288,13 +291,25 @@ function Register() {
     checkValidRepeatPassword(repeatPassword);
   }, [password, repeatPassword]);
 
-  const canSubmit =
-    emailError === '' &&
-    firstNameError === '' &&
-    lastNameError === '' &&
-    phoneNumberError === '' &&
-    passwordError === '' &&
-    repeatPasswordError === '';
+  useEffect(() => {
+    setCanSubmit(
+      emailError === '' &&
+        firstNameError === '' &&
+        lastNameError === '' &&
+        phoneNumberError === '' &&
+        passwordError === '' &&
+        repeatPasswordError === ''
+        ? true
+        : false,
+    );
+  }, [
+    firstNameError,
+    lastNameError,
+    emailError,
+    passwordError,
+    phoneNumberError,
+    repeatPasswordError,
+  ]);
 
   if (jwtToken !== null) {
     return <></>;
@@ -508,18 +523,33 @@ function Register() {
                   </label>
                 </div>
               </div>
-              <button
-                className={`container-fluid py-2 btn btn-primary ${cx({ disabled: !canSubmit || submitLoading })}`}
-                type="submit"
-                style={{ fontSize: '1.6rem' }}
-                disabled={(!canSubmit || submitLoading) ?? false}
+              <LoadingButton
+                disabled={!canSubmit || submitLoading}
+                fullWidth
+                onClick={handleSubmit}
+                loading={submitLoading}
+                loadingPosition="start"
+                startIcon={<AppRegistrationOutlined />}
+                sx={{
+                  marginTop: '7px',
+                  padding: '3px 0',
+                  color: '#fff',
+                  backgroundColor: 'primary.light',
+                  '&:hover': {
+                    backgroundColor: 'primary.dark',
+                  },
+                  '& svg': {
+                    color: 'white',
+                  },
+                  border: 'none',
+                  opacity: !canSubmit || submitLoading ? 0.5 : 1,
+                  transition: 'opacity 0.3s ease',
+                }}
               >
-                {submitLoading === null
-                  ? 'ĐĂNG KÝ'
-                  : submitLoading
-                    ? 'Dữ liệu đang được xử lý...'
-                    : 'ĐĂNG KÝ'}
-              </button>
+                <div className="text-white" style={{ fontSize: '1.6rem' }}>
+                  ĐĂNG KÝ
+                </div>
+              </LoadingButton>
               <div className={`${cx('register__transfer')} mb-4`}>
                 <span>
                   Bạn đã có tài khoản? Vui lòng chọn{' '}

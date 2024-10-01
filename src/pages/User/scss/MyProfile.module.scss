@@ -1,0 +1,23 @@
+.my-profile__avatar {
+  display: flex;
+  justify-content: center;
+}
+
+.my-profile__information {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  position: relative;
+}
+
+.my-profile__save {
+  position: absolute !important;
+  right: 35px !important;
+  bottom: 35px !important;
+  // background-color: #1976d2 !important; // Màu nền của nút
+  // color: #fff !important;
+
+  // &:hover {
+  //   background-color: darken(#1976d2, 10%) !important; // Màu đậm hơn khi hover
+  // }
+}

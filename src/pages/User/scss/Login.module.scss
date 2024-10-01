@@ -21,7 +21,8 @@
 }
 
 .login__error,
-.login__success {
+.login__success,
+.login__input-box-eye {
   height: 100%;
   position: absolute;
   display: flex;
@@ -29,9 +30,13 @@
   top: 0;
   right: 0;
   padding: 10px 15px;
-  pointer-events: none;
   font-size: 1.3rem;
   transition: 0.8s;
+}
+
+.login__input-box-eye {
+  cursor: pointer;
+  right: 25px;
 }
 
 .login__error svg {

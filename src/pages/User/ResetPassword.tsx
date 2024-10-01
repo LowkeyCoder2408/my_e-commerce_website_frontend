@@ -10,11 +10,13 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { backendEndpoint } from '../../utils/Service/Constant';
+import LoadingButton from '@mui/lab/LoadingButton';
+import { ChangeCircleOutlined } from '@mui/icons-material';
 
 const cx = classNames.bind(styles);
 
 const ResetPassword = () => {
-  const [submitLoading, setSubmitLoading] = useState<boolean | null>(null);
+  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
   const [passwordError, setPasswordError] = useState<string>(
@@ -155,7 +157,7 @@ const ResetPassword = () => {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && canSubmit) {
       e.preventDefault();
       const form = e.currentTarget.form;
       if (form) {
@@ -247,18 +249,33 @@ const ResetPassword = () => {
                   </div>
                 </div>
               </div>
-              <button
-                className={`container-fluid py-2 mt-4 btn btn-primary ${cx({ disabled: !canSubmit || submitLoading })}`}
-                type="submit"
-                style={{ fontSize: '1.6rem' }}
+              <LoadingButton
                 disabled={(!canSubmit || submitLoading) ?? false}
+                fullWidth
+                type="submit"
+                loading={submitLoading}
+                loadingPosition="start"
+                startIcon={<ChangeCircleOutlined />}
+                sx={{
+                  marginTop: '7px',
+                  padding: '3px 0',
+                  color: '#fff',
+                  backgroundColor: 'primary.light',
+                  '&:hover': {
+                    backgroundColor: 'primary.dark',
+                  },
+                  '& svg': {
+                    color: 'white',
+                  },
+                  border: 'none',
+                  opacity: !canSubmit || submitLoading ? 0.5 : 1,
+                  transition: 'opacity 0.3s ease',
+                }}
               >
-                {submitLoading === null
-                  ? 'ĐẶT LẠI MẬT KHẨU'
-                  : submitLoading
-                    ? 'Dữ liệu đang được xử lý...'
-                    : 'ĐẶT LẠI MẬT KHẨU'}
-              </button>
+                <div className="text-white" style={{ fontSize: '1.6rem' }}>
+                  ĐẶT LẠI MẬT KHẨU
+                </div>
+              </LoadingButton>
             </form>
           </div>
         </div>

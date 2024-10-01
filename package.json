@@ -41,6 +41,7 @@
     "react-scripts": "^5.0.1",
     "react-simple-star-rating": "^5.1.7",
     "react-toastify": "^10.0.5",
+    "recharts": "^2.12.7",
     "sas": "^3.0.4",
     "save-dev": "^0.0.1-security",
     "schema-utils": "^4.2.0",

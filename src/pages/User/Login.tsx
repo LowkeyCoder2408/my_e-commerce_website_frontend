@@ -1,12 +1,21 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './scss/Login.module.scss';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { backendEndpoint } from '../../utils/Service/Constant';
 import classNames from 'classnames/bind';
 import { useAuth } from '../../utils/Context/AuthContext';
 import { useFavoriteProducts } from '../../utils/Context/FavoriteProductContext';
 import { useCartItems } from '../../utils/Context/CartItemContext';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCircleCheck,
+  faTriangleExclamation,
+} from '@fortawesome/free-solid-svg-icons';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import LoadingButton from '@mui/lab/LoadingButton';
+import { LoginOutlined } from '@mui/icons-material';
 
 const cx = classNames.bind(styles);
 
@@ -18,8 +27,13 @@ function Login() {
   const { fetchFavoriteProducts } = useFavoriteProducts();
   const { fetchCartItems } = useCartItems();
 
+  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [emailError, setEmailError] = useState<string>('Chưa điền thông tin');
+  const [passwordError, setPasswordError] = useState<boolean>(true);
+
+  const [isHidePassword, setIsHidePassword] = useState<boolean>(true);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -27,7 +41,39 @@ function Login() {
     }
   }, []);
 
+  const checkValidEmail = (email: string) => {
+    if (email.trim() === '') {
+      setEmailError('Chưa điền thông tin');
+      return false;
+    } else {
+      setEmailError('');
+      return true;
+    }
+  };
+
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const email = e.target.value;
+    setEmail(email);
+    checkValidEmail(email);
+  };
+
+  const checkValidPassword = (password: string) => {
+    if (password.trim() === '') {
+      setPasswordError(true);
+    } else {
+      setPasswordError(false);
+    }
+  };
+
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const password = e.target.value;
+    setPassword(password);
+    checkValidPassword(password);
+  };
+
   const handleLogin = async () => {
+    setSubmitLoading(true);
+
     try {
       const loginRequest = { email, password };
       const response = await fetch(`${backendEndpoint}/auth/login`, {
@@ -71,6 +117,8 @@ function Login() {
       toast.error(
         'Đã xảy ra lỗi trong quá trình đăng nhập. Vui lòng thử lại sau',
       );
+    } finally {
+      setSubmitLoading(false);
     }
   };
 
@@ -105,25 +153,61 @@ function Login() {
                       type="text"
                       id="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={handleEmailChange}
                       autoComplete="email"
                       onKeyPress={handleKeyPress}
                     />
                     <span>Email</span>
+                    <div className="d-flex">
+                      {emailError ? (
+                        <div className={cx('login__error')}>
+                          {emailError}
+                          <FontAwesomeIcon
+                            icon={faTriangleExclamation as IconProp}
+                          />
+                        </div>
+                      ) : (
+                        <div className={cx('login__success')}>
+                          <FontAwesomeIcon icon={faCircleCheck as IconProp} />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className={`${cx('login__input-box__field')} col col-12`}>
-                  <div className={cx('login__input-box')}>
+                  <div className={`${cx('login__input-box')} d-flex`}>
                     <input
                       required
-                      type="password"
+                      type={`${isHidePassword ? 'password' : 'text'}`}
                       id="password"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={handlePasswordChange}
                       autoComplete="new-password"
                       onKeyPress={handleKeyPress}
                     />
                     <span>Mật khẩu</span>
+                    <div className="d-flex">
+                      {passwordError ? (
+                        <div className={cx('login__error')}>
+                          {passwordError}
+                          <FontAwesomeIcon
+                            icon={faTriangleExclamation as IconProp}
+                          />
+                        </div>
+                      ) : (
+                        <div className={cx('login__success')}>
+                          <FontAwesomeIcon icon={faCircleCheck as IconProp} />
+                        </div>
+                      )}
+                    </div>
+                    <div
+                      className={`${cx('login__input-box-eye')} cursor-pointer`}
+                      onClick={() => {
+                        setIsHidePassword(!isHidePassword);
+                      }}
+                    >
+                      {!isHidePassword ? <FaEye /> : <FaEyeSlash />}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -132,18 +216,40 @@ function Login() {
                   <input id="remember-me" type="checkbox" value="remember-me" />
                   Ghi nhớ tài khoản
                 </label>
-                <Link to={'/forgot-password'} className="mt-3">
-                  <strong>Quên mật khẩu</strong>
-                </Link>
+                <div className={`${cx('login__transfer')}`}>
+                  <Link to={'/forgot-password'} className="mt-3">
+                    <strong>Quên mật khẩu</strong>
+                  </Link>
+                </div>
               </div>
-              <button
-                className="container-fluid py-2 btn btn-primary mt-3"
-                type="button"
+              <LoadingButton
+                disabled={emailError !== '' || passwordError}
+                fullWidth
                 onClick={handleLogin}
-                style={{ fontSize: '1.6rem' }}
+                loading={submitLoading}
+                loadingPosition="start"
+                startIcon={<LoginOutlined />}
+                sx={{
+                  marginTop: '7px',
+                  padding: '3px 0',
+                  color: '#fff',
+                  backgroundColor: 'primary.light',
+                  '&:hover': {
+                    backgroundColor: 'primary.dark',
+                  },
+                  '& svg': {
+                    color: 'white',
+                  },
+                  border: 'none',
+                  opacity: emailError !== '' || passwordError ? 0.5 : 1,
+                  transition: 'opacity 0.3s ease',
+                }}
               >
-                ĐĂNG NHẬP
-              </button>
+                <div className="text-white" style={{ fontSize: '1.6rem' }}>
+                  ĐĂNG NHẬP
+                </div>
+              </LoadingButton>
+
               <div className={`${cx('login__transfer')} mb-4`}>
                 <span>
                   Bạn chưa có tài khoản? Vui lòng chọn{' '}

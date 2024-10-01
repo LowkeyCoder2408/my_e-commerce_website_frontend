@@ -21,6 +21,7 @@ import MyOrder from '../pages/Order/MyOrders';
 import ForgotPassword from '../pages/User/ForgotPassword';
 import ChangePassword from '../pages/User/ChangePassword';
 import ResetPassword from '../pages/User/ResetPassword';
+import MyProfile from '../pages/User/MyProfile';
 
 const publicRoutes = [
   {
@@ -58,6 +59,7 @@ const publicRoutes = [
     component: EnableAccount,
     layout: 'default',
   },
+  { path: '/my-profile', component: MyProfile, layout: 'default' },
   { path: '/product-list', component: ProductList, layout: 'default' },
   {
     path: '/product-list/:categoryAlias',

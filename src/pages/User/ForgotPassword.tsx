@@ -1,10 +1,18 @@
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../utils/Context/AuthContext';
 import { toast } from 'react-toastify';
 import { backendEndpoint } from '../../utils/Service/Constant';
 import styles from './scss/ForgotPassword.module.scss';
 import classNames from 'classnames/bind';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCircleCheck,
+  faTriangleExclamation,
+} from '@fortawesome/free-solid-svg-icons';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import LoadingButton from '@mui/lab/LoadingButton';
+import { Send } from '@mui/icons-material';
 
 const cx = classNames.bind(styles);
 
@@ -12,6 +20,8 @@ const ForgotPassword = () => {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState<string>('Chưa điền thông tin');
+  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -19,35 +29,52 @@ const ForgotPassword = () => {
     }
   }, []);
 
+  const checkValidEmail = (email: string) => {
+    if (email.trim() === '') {
+      setEmailError('Chưa điền thông tin');
+      return false;
+    } else {
+      setEmailError('');
+      return true;
+    }
+  };
+
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const email = e.target.value;
+    setEmail(email);
+    checkValidEmail(email);
+  };
+
   const handleSubmit = async () => {
-    toast.promise(
-      fetch(backendEndpoint + '/users/forgot-password', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
+    setSubmitLoading(true);
+
+    fetch(backendEndpoint + '/users/forgot-password', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    })
+      .then(async (response) => {
+        const data = await response.json();
+        if (response.ok && data.status === 'success') {
+          toast.success(
+            data.message ||
+              'Gửi email thành công, vui lòng kiểm tra email để lấy lại mật khẩu',
+          );
+          setEmail('');
+          setEmailError('Chưa điền thông tin');
+        } else {
+          toast.error(
+            data.message || 'Gặp lỗi trong quá trình lấy lại mật khẩu',
+          );
+        }
       })
-        .then(async (response) => {
-          const data = await response.json();
-          if (response.ok && data.status === 'success') {
-            toast.success(
-              data.message ||
-                'Gửi email thành công, vui lòng kiểm tra email để lấy lại mật khẩu',
-            );
-            setEmail('');
-          } else {
-            toast.error(
-              data.message || 'Gặp lỗi trong quá trình lấy lại mật khẩu',
-            );
-          }
-        })
-        .catch((error) => {
-          toast.error('Yêu cầu lấy lại mật khẩu không thành công');
-          console.log(error);
-        }),
-      { pending: 'Đang trong quá trình xử lý ...' },
-    );
+      .catch((error) => {
+        toast.error('Yêu cầu lấy lại mật khẩu không thành công');
+        console.log(error);
+      })
+      .finally(() => setSubmitLoading(false));
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -71,6 +98,10 @@ const ForgotPassword = () => {
           >
             <strong>QUÊN MẬT KHẨU</strong>
           </h1>
+          <p className="text-center mt-3">
+            Vui lòng nhập địa chỉ email của bạn. Sau ghi nhập email, chúng tôi
+            sẽ gửi một liên kết để giúp bạn đặt lại mật khẩu.
+          </p>
           <div className="mt-3 mb-5">
             <form className="form" autoComplete="off">
               <div className="row mb-0">
@@ -83,22 +114,55 @@ const ForgotPassword = () => {
                       type="text"
                       id="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={handleEmailChange}
                       autoComplete="email"
                       onKeyPress={handleKeyPress}
                     />
                     <span>Email</span>
+                    <div className="d-flex">
+                      {emailError ? (
+                        <div className={cx('forgot-password__error')}>
+                          {emailError}
+                          <FontAwesomeIcon
+                            icon={faTriangleExclamation as IconProp}
+                          />
+                        </div>
+                      ) : (
+                        <div className={cx('forgot-password__success')}>
+                          <FontAwesomeIcon icon={faCircleCheck as IconProp} />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-              <button
-                className="container-fluid py-2 btn btn-primary mt-4"
-                type="button"
+              <LoadingButton
+                disabled={emailError !== ''}
+                fullWidth
                 onClick={handleSubmit}
-                style={{ fontSize: '1.6rem' }}
+                loading={submitLoading}
+                loadingPosition="start"
+                startIcon={<Send />}
+                sx={{
+                  marginTop: '7px',
+                  padding: '3px 0',
+                  color: '#fff',
+                  backgroundColor: 'primary.light',
+                  '&:hover': {
+                    backgroundColor: 'primary.dark',
+                  },
+                  '& svg': {
+                    color: 'white',
+                  },
+                  border: 'none',
+                  opacity: emailError !== '' || submitLoading ? 0.5 : 1,
+                  transition: 'opacity 0.3s ease',
+                }}
               >
-                LẤY LẠI MẬT KHẨU
-              </button>
+                <div className="text-white" style={{ fontSize: '1.6rem' }}>
+                  GỬI YÊU CẦU
+                </div>
+              </LoadingButton>
             </form>
           </div>
         </div>

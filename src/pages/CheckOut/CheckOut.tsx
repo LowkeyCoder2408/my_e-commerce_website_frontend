@@ -139,7 +139,7 @@ export const CheckOut = () => {
               productResult,
             ]) => {
               // User handle
-              setFullName(userResult.firstName + ' ' + userResult.lastName);
+              setFullName(userResult.lastName + ' ' + userResult.firstName);
               setPhoneNumber(userResult.phoneNumber);
               setEmail(userResult.email);
               setDefaultAddress(defaultAddressResult);
@@ -218,9 +218,6 @@ export const CheckOut = () => {
       setWardName(defaultAddress?.ward || '');
     }
   }, [isUseDefaultAddress]);
-
-  // Reset form
-  const resetForm = () => {};
 
   // Hàm check có đúng định dạng không
   const checkEmpty = (setErrorFunction: any, content: string) => {

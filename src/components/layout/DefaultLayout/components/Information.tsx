@@ -117,7 +117,10 @@ function Information() {
               <div>Hi, {`${getFullNameByToken()}`}</div>
               <Avatar
                 alt={`"Ảnh của" ${getFullNameByToken()}`}
-                src={getPhotoByToken()}
+                src={
+                  getPhotoByToken() ||
+                  'https://res.cloudinary.com/dgdn13yur/image/upload/v1710904428/avatar_sjugj8.png'
+                }
                 sx={{ width: 30, height: 30 }}
               />
               <div className={`${cx('btn-group')} btn-group`}>
@@ -136,16 +139,18 @@ function Information() {
                       color: '#666',
                     }}
                   >
-                    <button
-                      className="dropdown-item d-flex gap-3 align-items-center"
-                      type="button"
-                    >
-                      <FontAwesomeIcon
-                        style={{ width: '12px', height: '12px' }}
-                        icon={faUser as IconProp}
-                      />
-                      Thông tin cá nhân
-                    </button>
+                    <Link to={'/my-profile'}>
+                      <button
+                        className="dropdown-item d-flex gap-3 align-items-center"
+                        type="button"
+                      >
+                        <FontAwesomeIcon
+                          style={{ width: '12px', height: '12px' }}
+                          icon={faUser as IconProp}
+                        />
+                        Thông tin cá nhân
+                      </button>
+                    </Link>
                   </li>
                   <li
                     style={{
