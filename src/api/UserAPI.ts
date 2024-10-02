@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import UserModel from '../models/UserModel';
 import { backendEndpoint } from '../utils/Service/Constant';
 
@@ -32,10 +33,40 @@ export async function getUserById(userId: any): Promise<UserModel> {
     createdTime: responseUser.createdTime,
     enabled: responseUser.enabled,
     roles: responseUser.roles,
-    // reviews: responseUser.reviews,
-    // favoriteProducts: responseUser.favoriteProducts,
+    reviews: responseUser.reviews,
+    favoriteProducts: responseUser.favoriteProducts,
     authenticationType: responseUser.authenticationType,
   };
 
   return user;
+}
+
+export async function changeAvatar(avatar: File | null, userId: number) {
+  const formData = new FormData();
+
+  avatar && formData.append('avatar', avatar);
+  if (userId !== undefined) {
+    formData.append('userId', userId.toString());
+  } else {
+    throw new Error('Mã người dùng không hợp lệ');
+  }
+
+  try {
+    const response = await fetch(`${backendEndpoint}/users/change-avatar`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to change avatar');
+    }
+    return response.json();
+  } catch (error) {
+    toast.error('Đã xảy ra lỗi khi thay đổi ảnh đại diện');
+    console.error(error);
+    throw error;
+  }
 }

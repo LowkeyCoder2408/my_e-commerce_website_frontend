@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import UserModel from '../../models/UserModel';
-import { getUserById } from '../../api/UserAPI';
+import { changeAvatar, getUserById } from '../../api/UserAPI';
 import { getUserIdByToken } from '../../utils/Service/JwtService';
 import classNames from 'classnames/bind';
 import styles from './scss/MyProfile.module.scss';
@@ -15,6 +15,7 @@ import Loader from '../../utils/Loader';
 import { getDefaultAddressByUserId } from '../../api/AddressAPI';
 import { backendEndpoint } from '../../utils/Service/Constant';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
@@ -30,6 +31,8 @@ const MyProfile = () => {
   const [lastName, setLastName] = useState<string>('');
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [defaultAddress, setDefaultAddress] = useState<string>('');
+  const [avatarPreview, setAvatarPreview] = useState<string>('');
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   // Báo lỗi
   const [errorFirstName, setErrorFirstName] = useState<string>('');
@@ -43,7 +46,9 @@ const MyProfile = () => {
     useState<boolean>(true);
 
   // Save button
-  const [canSave, setCanSave] = useState<boolean>(false);
+  const [canChangeAvatar, setCanChangeAvatar] = useState<boolean>(false);
+  const [canChangeInformation, setCanChangeInformation] =
+    useState<boolean>(false);
 
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 
@@ -54,6 +59,10 @@ const MyProfile = () => {
       setFirstName(userResult.firstName);
       setLastName(userResult.lastName);
       setPhoneNumber(userResult.phoneNumber);
+      setAvatarPreview(
+        userResult.photo ||
+          'https://res.cloudinary.com/dgdn13yur/image/upload/v1710904428/avatar_sjugj8.png',
+      );
 
       const defaultAddressResult = await getDefaultAddressByUserId(userId);
       if (defaultAddressResult) {
@@ -90,6 +99,14 @@ const MyProfile = () => {
   }, []);
 
   useEffect(() => {
+    if (avatarFile) {
+      setCanChangeAvatar(true);
+    } else {
+      setCanChangeAvatar(false);
+    }
+  }, [avatarFile]);
+
+  useEffect(() => {
     if (
       (firstName !== user?.firstName ||
         lastName !== user?.lastName ||
@@ -98,9 +115,9 @@ const MyProfile = () => {
       errorLastName === '' &&
       errorPhoneNumber === ''
     ) {
-      setCanSave(true);
+      setCanChangeInformation(true);
     } else {
-      setCanSave(false);
+      setCanChangeInformation(false);
     }
   }, [
     firstName,
@@ -110,33 +127,6 @@ const MyProfile = () => {
     errorLastName,
     errorPhoneNumber,
   ]);
-
-  useEffect(() => {
-    console.log('Object: ', { firstName, lastName, phoneNumber });
-    console.log('Error: ', { errorFirstName, errorLastName, errorPhoneNumber });
-  }, [
-    firstName,
-    lastName,
-    phoneNumber,
-    errorFirstName,
-    errorLastName,
-    errorPhoneNumber,
-  ]);
-
-  useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (canSave) {
-        event.preventDefault();
-        event.returnValue = '';
-      }
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [canSave]);
 
   // Hàm check có đúng định dạng không
   const checkEmpty = (setErrorFunction: any, content: string) => {
@@ -163,6 +153,43 @@ const MyProfile = () => {
     }
   };
 
+  // handle change
+  const handleUploadAvatar = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const selectedImage = event.target.files[0];
+      setAvatarFile(selectedImage);
+      setAvatarPreview(URL.createObjectURL(selectedImage));
+    }
+  };
+
+  const handleChangeAvatar = async () => {
+    toast.promise(
+      changeAvatar(avatarFile, userId || 0)
+        .then((data) => {
+          if (data.status === 'success') {
+            const token = data.token;
+            toast.success(data.message || 'Cập nhật ảnh đại diện thành công');
+            fetchUserInformation();
+            localStorage.setItem('token', token);
+            window.location.reload();
+          } else if (data.status === 'warning') {
+            toast.warning(
+              data.message || 'Không có ảnh đại diện nào được cập nhật',
+            );
+          } else {
+            toast.error(data.message || 'Đã có lỗi xảy ra, vui lòng thử lại');
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error('Đã có lỗi trong quá trình xử lý');
+        }),
+      {
+        pending: 'Đang trong quá trình xử lý',
+      },
+    );
+  };
+
   const handleChangeInformation = async () => {
     setSubmitLoading(true);
     try {
@@ -171,23 +198,44 @@ const MyProfile = () => {
         {
           method: 'PUT',
           headers: {
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             userId,
-            lastName,
-            firstName,
-            phoneNumber,
+            ...(user?.lastName !== lastName && { lastName }),
+            ...(user?.firstName !== firstName && { firstName }),
+            ...(user?.phoneNumber !== phoneNumber && { phoneNumber }),
           }),
         },
       );
+
+      const data = await response.json();
+
+      if (response.ok && data.status === 'success') {
+        const token = data.token;
+        toast.success(data.message || 'Cập nhật thông tin thành công');
+        setIsLastNameDisabled(true);
+        setIsFirstNameDisabled(true);
+        setIsPhoneNumberDisabled(true);
+        setErrorLastName('');
+        setErrorFirstName('');
+        setErrorPhoneNumber('');
+        setCanChangeInformation(false);
+        fetchUserInformation();
+        localStorage.setItem('token', token);
+        window.location.reload();
+      } else if (data.status === 'warning') {
+        toast.warning(data.message || 'Không có thông tin nào được cập nhật');
+      } else {
+        toast.error(data.message || 'Đã có lỗi xảy ra, vui lòng thử lại');
+      }
     } catch (error) {
       console.error(error);
+      toast.error('Đã có lỗi trong quá trình xử lý');
     } finally {
       setSubmitLoading(false);
     }
-
-    fetchUserInformation();
   };
 
   if (!isLoggedIn) {
@@ -207,11 +255,14 @@ const MyProfile = () => {
           <ImageDisplay
             alt={`Ảnh đại diện của ${user?.firstName || ''} ${user?.lastName || ''}`}
             src={
-              user?.photo ||
+              avatarPreview ||
               'https://res.cloudinary.com/dgdn13yur/image/upload/v1710904428/avatar_sjugj8.png'
             }
             width={270}
             height={270}
+            canChangeImage={canChangeAvatar}
+            handleUploadImage={handleUploadAvatar}
+            handleSaveImage={handleChangeAvatar}
           />
         </div>
         <div
@@ -617,7 +668,7 @@ const MyProfile = () => {
               />
             </div>
           </div>
-          {canSave && (
+          {canChangeInformation && (
             <LoadingButton
               onClick={handleChangeInformation}
               loading={submitLoading}
