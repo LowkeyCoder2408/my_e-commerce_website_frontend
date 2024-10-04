@@ -223,6 +223,9 @@ function Header() {
                 <li className={cx('links-list-item')}>
                   <Link to={'/faq'}>HỎI & ĐÁP</Link>
                 </li>
+                <li className={cx('links-list-item')}>
+                  <Link to={'/blog'}>BÀI ĐĂNG</Link>
+                </li>
                 {/* {userRoles &&
                 userRoles.length === 1 &&
                 userRoles.includes('Khách hàng') ? (
@@ -264,7 +267,7 @@ function Header() {
                 <div className={cx('input-container')}>
                   <input
                     className="form-control mr-sm-2"
-                    type="search"
+                    type="text"
                     placeholder={`${isListening ? 'Đang nghe...' : 'Tìm kiếm sản phẩm tại đây...'}`}
                     aria-label="Search"
                     onChange={onSearchInputChange}

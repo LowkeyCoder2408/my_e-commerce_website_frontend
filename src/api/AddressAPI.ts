@@ -1,8 +1,5 @@
 import AddressModel from '../models/AddressModel';
 import { backendEndpoint } from '../utils/Service/Constant';
-import { publicRequest } from './Request';
-
-const token = localStorage.getItem('token');
 
 export async function getAllAddressesByUser(
   userId: any,
@@ -12,7 +9,7 @@ export async function getAllAddressesByUser(
   const response = await fetch(endpoint, {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
     },
   });
   const responseData = await response.json();
@@ -39,7 +36,7 @@ export async function getDefaultAddressByUserId(
   const response = await fetch(endpoint, {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
     },
   });
 

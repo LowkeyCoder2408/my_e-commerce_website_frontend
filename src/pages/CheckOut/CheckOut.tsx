@@ -40,10 +40,6 @@ import { toast } from 'react-toastify';
 import { handleSaveOrder } from '../../api/OrderAPI';
 import { CheckOutSuccess } from './components/CheckOutSuccess';
 
-const SpeechRecognition =
-  (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-console.log(SpeechRecognition);
-
 export const CheckOut = () => {
   const location = useLocation();
 

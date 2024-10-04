@@ -2,8 +2,6 @@ import { toast } from 'react-toastify';
 import UserModel from '../models/UserModel';
 import { backendEndpoint } from '../utils/Service/Constant';
 
-const token = localStorage.getItem('token');
-
 export async function getUserById(userId: any): Promise<UserModel> {
   const endpoint = `${backendEndpoint}/users/${userId}`;
 
@@ -11,7 +9,7 @@ export async function getUserById(userId: any): Promise<UserModel> {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
     },
   });
 

@@ -261,6 +261,33 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
     setIsFavoriteProduct(!isFavoriteProduct);
   };
 
+  const handleBuyNow = () => {
+    if (!isLoggedIn) {
+      toast.error('Bạn phải đăng nhập để yêu thích sản phẩm');
+      navigate('/login', {
+        state: { from: location },
+      });
+      return;
+    }
+
+    if (isTokenExpired()) {
+      localStorage.removeItem('token');
+      setIsLoggedIn(false);
+      toast.error(
+        'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
+      );
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
+    const buyNowProduct = {
+      buyNowProductId: props.product.id,
+      quantityToBuy: 1,
+    };
+    localStorage.setItem('buy_now_product', JSON.stringify(buyNowProduct));
+    navigate('/check-out');
+  };
+
   if (loading) {
     return <Loader />;
   }
@@ -380,17 +407,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
           <div
             title="Mua và thanh toán ngay"
             className={`${cx('btn-cart')} btn btn-dark`}
-            onClick={() => {
-              const buyNowProduct = {
-                buyNowProductId: props.product.id,
-                quantityToBuy: 1,
-              };
-              localStorage.setItem(
-                'buy_now_product',
-                JSON.stringify(buyNowProduct),
-              );
-              navigate('/check-out');
-            }}
+            onClick={handleBuyNow}
           >
             <span>Mua ngay</span>
           </div>

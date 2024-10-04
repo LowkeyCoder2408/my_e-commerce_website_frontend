@@ -416,6 +416,11 @@ button:hover {
   transition: 0.4s;
 }
 
+.btn-show.bx-x {
+  position: absolute;
+  right: 25px;
+}
+
 .btn-show:hover {
   background-color: rgba(237, 237, 237, 0.7);
   border-radius: 50%;
