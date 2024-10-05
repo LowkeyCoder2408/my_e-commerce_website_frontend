@@ -224,7 +224,7 @@ function Header() {
                   <Link to={'/faq'}>HỎI & ĐÁP</Link>
                 </li>
                 <li className={cx('links-list-item')}>
-                  <Link to={'/blog'}>BÀI ĐĂNG</Link>
+                  <Link to={'/blogs'}>BÀI ĐĂNG</Link>
                 </li>
                 {/* {userRoles &&
                 userRoles.length === 1 &&

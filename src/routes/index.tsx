@@ -22,7 +22,7 @@ import ForgotPassword from '../pages/User/ForgotPassword';
 import ChangePassword from '../pages/User/ChangePassword';
 import ResetPassword from '../pages/User/ResetPassword';
 import MyProfile from '../pages/User/MyProfile';
-import Blog from '../pages/Blog/Blog';
+import BlogList from '../pages/BlogList/BlogList';
 
 const publicRoutes = [
   {
@@ -93,7 +93,7 @@ const publicRoutes = [
   { path: '/about-us', component: AboutUs, layout: 'default' },
   { path: '/contact', component: Contact, layout: 'default' },
   { path: '/faq', component: FAQ, layout: 'default' },
-  { path: '/blog', component: Blog, layout: 'default' },
+  { path: '/blogs', component: BlogList, layout: 'default' },
   {
     path: '/exchange-return-refund-policy',
     component: ExchangeReturnRefundPolicy,

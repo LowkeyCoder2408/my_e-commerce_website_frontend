@@ -1,13 +1,13 @@
 import MainContent from './components/MainContent';
 import Latest from './components/Latest';
 
-const Blog = () => {
+const BlogList = () => {
   return (
-    <div className="container mt-5">
+    <div className="container" style={{ marginTop: '40px' }}>
       <MainContent />
       <Latest />
     </div>
   );
 };
 
-export default Blog;
+export default BlogList;
