@@ -1,4 +1,5 @@
 import BlogCategoryModel from './BlogCategoryModel';
+import BlogCommentModel from './BlogCommentModel';
 import UserModel from './UserModel';
 
 class BlogModel {
@@ -9,8 +10,10 @@ class BlogModel {
   author: UserModel;
   blogCategory: BlogCategoryModel;
   featuredImage: string;
-  tocreatedAt: Date;
+  createdAt: Date;
   updatedAt: Date;
+  likesCount: number;
+  comments: BlogCommentModel[];
 
   constructor(
     id: number,
@@ -22,6 +25,8 @@ class BlogModel {
     featuredImage: string,
     createdAt: Date,
     updatedAt: Date,
+    likesCount: number,
+    comments: BlogCommentModel[],
   ) {
     this.id = id;
     this.name = name;
@@ -32,6 +37,8 @@ class BlogModel {
     this.featuredImage = featuredImage;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
+    this.likesCount = likesCount;
+    this.comments = comments;
   }
 }
 

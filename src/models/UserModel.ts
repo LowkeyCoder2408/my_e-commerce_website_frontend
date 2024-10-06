@@ -16,6 +16,7 @@ class UserModel {
   reviews?: ReviewModel[];
   favoriteProducts?: FavoriteProductModel[];
   authenticationType?: string;
+  lastLoginTime?: Date;
 
   constructor(
     id: number,
@@ -31,6 +32,7 @@ class UserModel {
     reviews?: ReviewModel[],
     favoriteProducts?: FavoriteProductModel[],
     authenticationType?: string,
+    lastLoginTime?: Date,
   ) {
     this.id = id;
     this.email = email;
@@ -45,6 +47,7 @@ class UserModel {
     this.reviews = reviews;
     this.favoriteProducts = favoriteProducts;
     this.authenticationType = authenticationType;
+    this.lastLoginTime = lastLoginTime;
   }
 }
 

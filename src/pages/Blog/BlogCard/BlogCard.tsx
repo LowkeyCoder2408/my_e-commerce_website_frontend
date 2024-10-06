@@ -1,10 +1,10 @@
 import { Avatar, Box, CardMedia, Typography } from '@mui/material';
-import BlogModel from '../../models/BlogModel';
+import BlogModel from '../../../models/BlogModel';
 import {
   StyledTypography,
   SyledCard,
   SyledCardContent,
-} from './component/Styled';
+} from '../Styled/Styled';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 

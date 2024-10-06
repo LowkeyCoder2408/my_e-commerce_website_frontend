@@ -23,6 +23,7 @@ import ChangePassword from '../pages/User/ChangePassword';
 import ResetPassword from '../pages/User/ResetPassword';
 import MyProfile from '../pages/User/MyProfile';
 import BlogList from '../pages/BlogList/BlogList';
+import BlogDetail from '../pages/Blog/BlogDetail/BlogDetail';
 
 const publicRoutes = [
   {
@@ -94,6 +95,7 @@ const publicRoutes = [
   { path: '/contact', component: Contact, layout: 'default' },
   { path: '/faq', component: FAQ, layout: 'default' },
   { path: '/blogs', component: BlogList, layout: 'default' },
+  { path: '/blog-detail', component: BlogDetail, layout: 'default' },
   {
     path: '/exchange-return-refund-policy',
     component: ExchangeReturnRefundPolicy,

@@ -34,6 +34,7 @@ export async function getUserById(userId: any): Promise<UserModel> {
     reviews: responseUser.reviews,
     favoriteProducts: responseUser.favoriteProducts,
     authenticationType: responseUser.authenticationType,
+    lastLoginTime: responseUser.lastLoginTime,
   };
 
   return user;

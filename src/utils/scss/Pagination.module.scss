@@ -19,7 +19,9 @@
   width: 35px;
   height: 35px;
   border-radius: 50% !important;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
   font-size: 1.6rem;
   outline: none !important;
   border: none !important;

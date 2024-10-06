@@ -54,3 +54,48 @@ export async function getAllFilteredBlogs(
   }
   return getBlogsWithEmbedded(url);
 }
+
+export async function getAndFindBlogs(
+  size: number,
+  page: number,
+  blogCategoryName: string,
+  keyword: string,
+): Promise<ResultInterface> {
+  keyword = keyword.trim();
+
+  let url = '';
+
+  if (keyword && blogCategoryName && blogCategoryName !== 'Tất cả') {
+    url =
+      backendEndpoint +
+      `/blogs/find-by-name-containing-and-blog-category-name?size=${size}&page=${page}&blogCategoryName=${blogCategoryName}&keyword=${keyword}`;
+  } else if (keyword) {
+    url =
+      backendEndpoint +
+      `/blogs/find-by-name-containing?size=${size}&page=${page}&keyword=${keyword}`;
+  } else if (blogCategoryName && blogCategoryName !== 'Tất cả') {
+    url =
+      backendEndpoint +
+      `/blogs/find-by-blog-category-name?size=${size}&page=${page}&blogCategoryName=${blogCategoryName}`;
+  } else {
+    url = backendEndpoint + `/blogs?size=${size}&page=${page}`;
+  }
+
+  return getBlogsWithEmbedded(url);
+}
+
+export async function getNewestBlogs(
+  totalElements: number,
+): Promise<ResultInterface> {
+  const url: string =
+    backendEndpoint +
+    `/blogs?sortBy=createdAt&sortDir=desc&page=0&size=${totalElements}`;
+
+  return getBlogsWithEmbedded(url);
+}
+
+export async function getBlogById(blogId: number): Promise<BlogModel> {
+  const url = backendEndpoint + `/blogs/${blogId}`;
+  const responseData = await publicRequest(url);
+  return responseData;
+}
