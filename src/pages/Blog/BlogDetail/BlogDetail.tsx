@@ -20,6 +20,7 @@ import {
 } from 'react-icons/fa';
 import { Avatar } from '@mui/material';
 import { format } from 'date-fns';
+import BlogComment from './components/BlogCommentList/BlogComment';
 
 const cx = classNames.bind(styles);
 
@@ -60,7 +61,9 @@ const BlogDetail = () => {
   return (
     <div className="container" style={{ marginTop: '50px' }}>
       <div className="row">
-        <div className={`${cx('blog__left')} col col-xxl-7 col-12`}>
+        <div
+          className={`${cx('blog__left')} col col-xxl-8 col-xl-8 col-lg-8 col-12`}
+        >
           <div className="d-flex justify-content-between align-content-center">
             <div className={cx('blog__category-name')}>
               <span>{blog?.blogCategory.name}</span>
@@ -68,74 +71,88 @@ const BlogDetail = () => {
             <div className={cx('blog__sharing')}>
               <ul>
                 <li className={cx('blog__sharing-item')}>
-                  <FaComment /> {blog?.comments.length}
+                  <FaComment /> {blog?.comments.length} bình luận
                 </li>
                 <li className={cx('blog__sharing-item')}>
-                  <FaThumbsUp /> {blog?.likesCount}
+                  <FaThumbsUp /> {blog?.likesCount} lượt thích
                 </li>
               </ul>
             </div>
           </div>
           <div className={cx('blog__content')}>
             <div className={cx('blog__title')}>{blog?.title}</div>
-            <img className={cx('blog__img')} src={blog?.featuredImage} alt="" />
-          </div>
-          <div className={cx('blog__author')}>
-            <div className={cx('blog__author-info')}>
-              <Avatar src={blog?.author.photo} />
-              <div className="d-flex flex-column">
-                <h5 className={cx('blog__author-info__name')}>
-                  {blog?.author.lastName + ' ' + blog?.author.firstName}
-                </h5>
-                <div className={cx('blog__author-info__time')}>
-                  {format(
-                    new Date(blog?.createdAt || 0),
-                    'dd/MM/yyyy, HH:mm:ss',
-                  )}
+            <div className={cx('blog__author')}>
+              <div className={cx('blog__author-info')}>
+                <Avatar src={blog?.author.photo} />
+                <div className="d-flex flex-column">
+                  <h5 className={cx('blog__author-info__name')}>
+                    {blog?.author.lastName + ' ' + blog?.author.firstName}
+                  </h5>
+                  <div className={cx('blog__author-info__time')}>
+                    {format(
+                      new Date(blog?.createdAt || 0),
+                      'dd/MM/yyyy, HH:mm:ss',
+                    )}
+                  </div>
                 </div>
               </div>
+              <div className={cx('blog__author-social')}>
+                <ul>
+                  <li>
+                    <Link to="/">
+                      <FaFacebookF />
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/">
+                      <FaTwitter />
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/">
+                      <FaYoutube />
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/">
+                      <FaInstagram />
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/">
+                      <FaHeart />
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/">
+                      <FaBookmark />
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/">
+                      <FaEllipsisV />
+                    </Link>
+                  </li>
+                </ul>
+              </div>
             </div>
-            <div className={cx('blog__author-social')}>
-              <ul>
-                <li>
-                  <Link to="/">
-                    <FaFacebookF />
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/">
-                    <FaTwitter />
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/">
-                    <FaYoutube />
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/">
-                    <FaInstagram />
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/">
-                    <FaHeart />
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/">
-                    <FaBookmark />
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/">
-                    <FaEllipsisV />
-                  </Link>
-                </li>
-              </ul>
-            </div>
+            <img className={cx('blog__img')} src={blog?.featuredImage} alt="" />
           </div>
-          <div>{blog?.content}</div>
+          <div
+            className="mt-4"
+            dangerouslySetInnerHTML={{ __html: blog?.content || '' }}
+          />
+        </div>
+        <div
+          className={`${cx('blog__right')} col col-xxl-4 col-xl-4 col-lg-4 col-12`}
+          style={{ height: '1000px' }}
+        >
+          <div className={cx('blog__category-name')}>
+            <span>BÌNH LUẬN GẦN ĐÂY NHẤT</span>
+          </div>
+          {blog?.comments.map((blogComment, index) => (
+            <BlogComment key={index} blogComment={blogComment} />
+          ))}
         </div>
       </div>
     </div>

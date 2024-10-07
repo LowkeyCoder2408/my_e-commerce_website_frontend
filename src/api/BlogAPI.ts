@@ -99,3 +99,15 @@ export async function getBlogById(blogId: number): Promise<BlogModel> {
   const responseData = await publicRequest(url);
   return responseData;
 }
+
+export async function getMyBlogs(
+  userId: number,
+  size: number,
+  page: number,
+): Promise<ResultInterface> {
+  const url: string =
+    backendEndpoint +
+    `/blogs/find-by-user?userId=${userId}&sortBy=createdAt&sortDir=desc&page=${page}&size=${size}`;
+
+  return getBlogsWithEmbedded(url);
+}

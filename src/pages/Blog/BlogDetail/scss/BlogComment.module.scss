@@ -1,0 +1,51 @@
+.comment-item {
+  margin: 20px 0 20px 25px;
+  padding: 8px 15px;
+  border-radius: 10px;
+  position: relative;
+  background-color: #fff;
+
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: -17px;
+    left: -11px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 10px 30px 10px 0;
+    border-color: transparent #fff transparent transparent; /* Màu của mũi tên khớp với màu nền */
+    transform: rotate(-37deg);
+    transform-origin: bottom left;
+  }
+}
+
+.comment-content {
+  font-size: 1.6rem;
+  line-height: 2.5rem;
+  font-weight: 500;
+  text-align: justify;
+  width: 100%;
+}
+
+.comment-content p {
+  margin: 0;
+  margin-top: 5px;
+  font-size: 1.6rem;
+  line-height: 2.5rem;
+  font-weight: 400;
+}
+
+.comment-author {
+  display: flex; /* Sử dụng flexbox để căn chỉnh */
+  justify-content: space-between; /* Căn chỉnh giữa người dùng và ngày tháng */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  margin-top: 8px; /* Khoảng cách giữa nội dung và thông tin tác giả */
+  font-size: 0.875rem; /* Kích thước chữ nhỏ hơn cho tác giả và ngày */
+  color: #666; /* Màu chữ cho tác giả và ngày */
+}
+
+.comment-date {
+  margin-left: 8px; /* Khoảng cách giữa tên tác giả và ngày */
+  font-style: italic; /* In nghiêng cho ngày */
+}

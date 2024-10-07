@@ -1,7 +1,7 @@
 .blog__left,
 .blog__right {
   position: relative;
-  max-height: 100vh;
+  max-height: 82vh;
   overflow-y: auto;
 
   &::-webkit-scrollbar {
@@ -42,6 +42,7 @@
   font-size: 34px;
   line-height: 40px;
   font-weight: 700;
+  margin: 5px 0;
 }
 
 .blog__img {
@@ -53,7 +54,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 20px;
+  margin: 10px 0 10px;
 }
 
 .blog__author-info {

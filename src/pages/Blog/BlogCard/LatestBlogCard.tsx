@@ -42,14 +42,20 @@ const LatestBlogCard = (props: LatestBlogCardProps) => {
           >
             <strong>{props.blog.title}</strong>
           </Typography>
-
           <StyledTypography
             variant="body2"
             color="text.secondary"
             gutterBottom
             style={{ fontSize: '1.2rem' }}
           >
-            {props.blog.content}
+            {props.blog.content
+              ? new DOMParser()
+                  .parseFromString(
+                    (props.blog.content || '').toString(),
+                    'text/html',
+                  )
+                  .documentElement.textContent?.replace(/<[^>]+>/g, '')
+              : ''}
           </StyledTypography>
         </SyledCardContent>
         <Box

@@ -24,6 +24,7 @@ import ResetPassword from '../pages/User/ResetPassword';
 import MyProfile from '../pages/User/MyProfile';
 import BlogList from '../pages/BlogList/BlogList';
 import BlogDetail from '../pages/Blog/BlogDetail/BlogDetail';
+import MyBlogs from '../pages/Blog/MyBlogs';
 
 const publicRoutes = [
   {
@@ -89,6 +90,11 @@ const publicRoutes = [
   {
     path: '/my-order',
     component: MyOrder,
+    layout: 'default',
+  },
+  {
+    path: '/my-blog',
+    component: MyBlogs,
     layout: 'default',
   },
   { path: '/about-us', component: AboutUs, layout: 'default' },

@@ -13,6 +13,8 @@ interface BlogCardProps {
 }
 
 const BlogCard = (props: BlogCardProps) => {
+  const parser = new DOMParser();
+
   return (
     <Link to={`/blog-detail?id=${props.blog.id}`}>
       <SyledCard variant="outlined" sx={{ height: '100%' }}>
@@ -56,7 +58,14 @@ const BlogCard = (props: BlogCardProps) => {
             gutterBottom
             style={{ fontSize: '1.2rem' }}
           >
-            {props.blog.content}
+            {props.blog.content
+              ? new DOMParser()
+                  .parseFromString(
+                    (props.blog.content || '').toString(),
+                    'text/html',
+                  )
+                  .documentElement.textContent?.replace(/<[^>]+>/g, '')
+              : ''}
           </StyledTypography>
         </SyledCardContent>
         <Box

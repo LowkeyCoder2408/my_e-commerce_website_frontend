@@ -2,6 +2,7 @@ import styles from './scss/Information.module.scss';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+  faBlog,
   faCartShopping,
   faExchange,
   faHeart,
@@ -169,6 +170,26 @@ function Information() {
                           icon={faReceipt as IconProp}
                         />
                         Đơn hàng của tôi
+                      </button>
+                    </Link>
+                  </li>
+                  <li
+                    style={{
+                      fontSize: '15px',
+                      padding: '4px 6px',
+                      color: '#666',
+                    }}
+                  >
+                    <Link to={'/my-blog'}>
+                      <button
+                        className="dropdown-item d-flex gap-3 align-items-center"
+                        type="button"
+                      >
+                        <FontAwesomeIcon
+                          style={{ width: '12px', height: '12px' }}
+                          icon={faBlog as IconProp}
+                        />
+                        Bài đăng của tôi
                       </button>
                     </Link>
                   </li>

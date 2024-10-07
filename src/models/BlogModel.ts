@@ -6,7 +6,7 @@ class BlogModel {
   id: number;
   name: string;
   title: string;
-  content: string;
+  content: string | TrustedHTML;
   author: UserModel;
   blogCategory: BlogCategoryModel;
   featuredImage: string;
@@ -19,7 +19,7 @@ class BlogModel {
     id: number,
     name: string,
     title: string,
-    content: string,
+    content: string | TrustedHTML,
     author: UserModel,
     blogCategory: BlogCategoryModel,
     featuredImage: string,
