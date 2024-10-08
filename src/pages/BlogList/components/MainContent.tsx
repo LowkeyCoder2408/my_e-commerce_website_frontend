@@ -14,7 +14,7 @@ import {
   OutlinedInput,
   Pagination,
 } from '@mui/material';
-import BlogCard from '../../Blog/BlogCard/BlogCard';
+import BlogCard from '../../Blog/components/BlogCard';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import Loader from '../../../utils/Loader';
 

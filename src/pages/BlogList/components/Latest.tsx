@@ -1,7 +1,7 @@
 import Grid from '@mui/material/Grid2';
 import { useEffect, useState } from 'react';
 import BlogModel from '../../../models/BlogModel';
-import LatestBlogCard from '../../Blog/BlogCard/LatestBlogCard';
+import LatestBlogCard from '../../Blog/components/LatestBlogCard';
 import { getNewestBlogs } from '../../../api/BlogAPI';
 import { toast } from 'react-toastify';
 import Loader from '../../../utils/Loader';

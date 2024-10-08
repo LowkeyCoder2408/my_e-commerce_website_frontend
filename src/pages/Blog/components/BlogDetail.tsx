@@ -5,7 +5,7 @@ import BlogModel from '../../../models/BlogModel';
 import { toast } from 'react-toastify';
 import { getBlogById } from '../../../api/BlogAPI';
 import Loader from '../../../utils/Loader';
-import styles from './scss/BlogDetail.module.scss';
+import styles from '../scss/BlogDetail.module.scss';
 import classNames from 'classnames/bind';
 import {
   FaBookmark,
@@ -20,7 +20,7 @@ import {
 } from 'react-icons/fa';
 import { Avatar } from '@mui/material';
 import { format } from 'date-fns';
-import BlogComment from './components/BlogCommentList/BlogComment';
+import BlogComment from './BlogComment';
 
 const cx = classNames.bind(styles);
 

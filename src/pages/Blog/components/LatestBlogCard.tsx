@@ -1,32 +1,23 @@
 import { Avatar, Box, CardMedia, Typography } from '@mui/material';
-import BlogModel from '../../../models/BlogModel';
+import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
 import {
   StyledTypography,
   SyledCard,
   SyledCardContent,
-} from '../Styled/Styled';
+  TitleTypography,
+} from './Styled';
+import BlogModel from '../../../models/BlogModel';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 
-interface BlogCardProps {
+interface LatestBlogCardProps {
   blog: BlogModel;
 }
 
-const BlogCard = (props: BlogCardProps) => {
-  const parser = new DOMParser();
-
+const LatestBlogCard = (props: LatestBlogCardProps) => {
   return (
     <Link to={`/blog-detail?id=${props.blog.id}`}>
       <SyledCard variant="outlined" sx={{ height: '100%' }}>
-        <CardMedia
-          component="img"
-          alt="green iguana"
-          image={props.blog.featuredImage}
-          sx={{
-            height: { sm: 'auto', md: '50%' },
-            aspectRatio: { sm: '16 / 9', md: '' },
-          }}
-        />
         <SyledCardContent>
           <Typography
             gutterBottom
@@ -51,7 +42,6 @@ const BlogCard = (props: BlogCardProps) => {
           >
             <strong>{props.blog.title}</strong>
           </Typography>
-
           <StyledTypography
             variant="body2"
             color="text.secondary"
@@ -104,4 +94,4 @@ const BlogCard = (props: BlogCardProps) => {
   );
 };
 
-export default BlogCard;
+export default LatestBlogCard;

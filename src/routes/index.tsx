@@ -23,8 +23,9 @@ import ChangePassword from '../pages/User/ChangePassword';
 import ResetPassword from '../pages/User/ResetPassword';
 import MyProfile from '../pages/User/MyProfile';
 import BlogList from '../pages/BlogList/BlogList';
-import BlogDetail from '../pages/Blog/BlogDetail/BlogDetail';
+import BlogDetail from '../pages/Blog/components/BlogDetail';
 import MyBlogs from '../pages/Blog/MyBlogs';
+import CreateBlog from '../pages/Blog/components/CreateBlog';
 
 const publicRoutes = [
   {
@@ -95,6 +96,11 @@ const publicRoutes = [
   {
     path: '/my-blog',
     component: MyBlogs,
+    layout: 'default',
+  },
+  {
+    path: '/create-blog',
+    component: CreateBlog,
     layout: 'default',
   },
   { path: '/about-us', component: AboutUs, layout: 'default' },

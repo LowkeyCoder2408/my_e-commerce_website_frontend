@@ -1,7 +1,7 @@
 import React from 'react';
 import { format } from 'date-fns';
-import BlogCommentModel from '../../../../../models/BlogCommentModel';
-import styles from '../../scss/BlogComment.module.scss';
+import BlogCommentModel from '../../../models/BlogCommentModel';
+import styles from '../scss/BlogComment.module.scss';
 import classNames from 'classnames/bind';
 import { Avatar, Box, Typography } from '@mui/material';
 

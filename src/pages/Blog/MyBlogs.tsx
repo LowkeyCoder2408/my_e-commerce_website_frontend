@@ -7,8 +7,10 @@ import { useAuth } from '../../utils/Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Fab, Pagination } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import BlogCard from './BlogCard/BlogCard';
+import BlogCard from './components/BlogCard';
 import { Add } from '@mui/icons-material';
+import { FadeModal } from '../../utils/FadeModal';
+import BlogModal from './components/BlogModal';
 
 const MyBlogs = () => {
   const userId = getUserIdByToken();
@@ -20,6 +22,15 @@ const MyBlogs = () => {
   const [numberOfPage, setNumberOfPage] = useState(0);
   const [numberOfPageTemp, setTotalPageTemp] = useState(numberOfPage);
   const [currentPage, setCurrentPage] = useState(1);
+  const [blogId, setBlogId] = useState<number>(0);
+  const [option, setOption] = useState('');
+  const [openBlogModal, setOpenBlogModal] = useState<boolean>(false);
+
+  const handleOpenBlogModal = () => setOpenBlogModal(true);
+  const handleCloseBlogModal = () => {
+    // setBlogId(0);
+    setOpenBlogModal(false);
+  };
 
   if (numberOfPageTemp !== numberOfPage) {
     setCurrentPage(1);
@@ -58,14 +69,18 @@ const MyBlogs = () => {
           title="Thêm bài đăng"
           color="primary"
           aria-label="add"
-          // onClick={handleAddBlog}
           sx={{
             position: 'fixed',
             bottom: '40px',
             right: '40px',
-            width: '50px',
-            height: '50px',
+            width: '45px',
+            height: '45px',
             backgroundColor: '#1976d2',
+          }}
+          onClick={() => {
+            handleOpenBlogModal();
+            setOption('add');
+            setBlogId(0);
           }}
         >
           <Add sx={{ fontSize: '3rem' }} />
@@ -114,6 +129,17 @@ const MyBlogs = () => {
           </div>
         </>
       )}
+      <FadeModal
+        open={openBlogModal}
+        handleOpen={handleOpenBlogModal}
+        handleClose={handleCloseBlogModal}
+      >
+        <BlogModal
+          blogId={blogId}
+          option={option}
+          handleCloseModal={handleCloseBlogModal}
+        />
+      </FadeModal>
     </div>
   );
 };
