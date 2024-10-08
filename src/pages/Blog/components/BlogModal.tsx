@@ -10,6 +10,8 @@ import BlogCategoryModel from '../../../models/BlogCategoryModel';
 import { getAllBlogCategories } from '../../../api/BlogCategoriAPI';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { ChangeCircle, NoteAdd } from '@mui/icons-material';
+// import 'react-quill/dist/quill.snow.css';
+import ReactQuill from 'react-quill';
 
 interface BlogModalProps {
   blogId: number;
@@ -17,11 +19,24 @@ interface BlogModalProps {
   handleCloseModal: () => void;
 }
 
+const modules = {
+  toolbar: [
+    [{ header: '1' }, { header: '2' }, { font: [] }],
+    [{ list: 'ordered' }, { list: 'bullet' }],
+    ['bold', 'italic', 'underline', 'strike'],
+    ['link', 'image'],
+    [{ align: [] }],
+    ['clean'],
+  ],
+};
+
 const BlogModal = (props: BlogModalProps) => {
   const [title, setTitle] = useState<string>('');
   const [errorTitle, setErrorTitle] = useState('');
   const [blogCategories, setBlogCategories] = useState<BlogCategoryModel[]>([]);
   const [blogCategoryName, setBlogCategoryName] = useState<string>('');
+  const [content, setContent] = useState<string>('');
+  const [errorContent, setErrorContent] = useState('');
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 
   // Hàm check có đúng định dạng không
@@ -123,6 +138,14 @@ const BlogModal = (props: BlogModalProps) => {
           </Select>
         </FormControl>
       </div>
+      {/* <div className="mt-4">
+        <ReactQuill
+          theme="snow"
+          value={content}
+          onChange={setContent}
+          modules={modules}
+        />
+      </div> */}
       <div className="mt-4">
         <LoadingButton
           disabled={errorTitle.length > 0 || blogCategoryName.trim() === ''}
