@@ -41,7 +41,7 @@ const ProductRating: React.FC<ProductRatingProps> = (
         </div>
       )}
 
-      {props.rating !== undefined && props.rating == 0 && (
+      {props.rating !== undefined && props.rating === 0 && (
         <div className={cx('product-details__rating')}>
           0
           <FontAwesomeIcon

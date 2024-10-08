@@ -10,7 +10,7 @@ import BlogCategoryModel from '../../../models/BlogCategoryModel';
 import { getAllBlogCategories } from '../../../api/BlogCategoriAPI';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { ChangeCircle, NoteAdd } from '@mui/icons-material';
-// import 'react-quill/dist/quill.snow.css';
+import 'react-quill/dist/quill.snow.css';
 import ReactQuill from 'react-quill';
 
 interface BlogModalProps {
@@ -21,10 +21,15 @@ interface BlogModalProps {
 
 const modules = {
   toolbar: [
-    [{ header: '1' }, { header: '2' }, { font: [] }],
-    [{ list: 'ordered' }, { list: 'bullet' }],
-    ['bold', 'italic', 'underline', 'strike'],
-    ['link', 'image'],
+    [{ header: [1, 2, false] }, { font: [] }],
+    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+    [
+      { list: 'ordered' },
+      { list: 'bullet' },
+      { indent: '-1' },
+      { indent: '+1' },
+    ],
+    ['link'],
     [{ align: [] }],
     ['clean'],
   ],
@@ -36,7 +41,6 @@ const BlogModal = (props: BlogModalProps) => {
   const [blogCategories, setBlogCategories] = useState<BlogCategoryModel[]>([]);
   const [blogCategoryName, setBlogCategoryName] = useState<string>('');
   const [content, setContent] = useState<string>('');
-  const [errorContent, setErrorContent] = useState('');
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 
   // Hàm check có đúng định dạng không
@@ -61,15 +65,15 @@ const BlogModal = (props: BlogModalProps) => {
   }, []);
 
   useEffect(() => {
-    console.log('Object: ', { title, blogCategoryName });
+    console.log('Object: ', { title, blogCategoryName, content });
     console.log('Error: ', { errorTitle });
-  }, [title, blogCategoryName, errorTitle]);
+  }, [title, blogCategoryName, content, errorTitle]);
 
   return (
     <>
-      <div>
+      {/* <div>
         BlogModal, {props.option?.toString()}, {props.blogId}
-      </div>
+      </div> */}
       <div className="default-title text-center">
         {props.option === 'add' ? 'TẠO BÀI ĐĂNG MỚI' : 'CHỈNH SỬA BÀI ĐĂNG'}
       </div>
@@ -138,17 +142,21 @@ const BlogModal = (props: BlogModalProps) => {
           </Select>
         </FormControl>
       </div>
-      {/* <div className="mt-4">
+      <div className="mt-5">
         <ReactQuill
           theme="snow"
           value={content}
           onChange={setContent}
           modules={modules}
         />
-      </div> */}
+      </div>
       <div className="mt-4">
         <LoadingButton
-          disabled={errorTitle.length > 0 || blogCategoryName.trim() === ''}
+          disabled={
+            errorTitle.length > 0 ||
+            blogCategoryName.trim() === '' ||
+            content.trim() === ''
+          }
           fullWidth
           onClick={handleSubmit}
           loading={submitLoading}

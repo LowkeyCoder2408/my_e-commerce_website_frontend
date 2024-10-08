@@ -27,7 +27,7 @@ export const Pagination: React.FC<PaginationProps> = (props) => {
       pageList.push(props.currentPage + 2);
     }
   } else if (props.currentPage > 1) {
-    if (props.numberOfPage > 2 && props.numberOfPage == props.currentPage) {
+    if (props.numberOfPage > 2 && props.numberOfPage === props.currentPage) {
       pageList.push(props.currentPage - 2);
     }
     if (props.currentPage >= 2) {

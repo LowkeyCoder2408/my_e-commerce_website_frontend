@@ -84,7 +84,7 @@ const ProductCartCard: React.FC<ProductCartCardProps> = (props) => {
           .then(async (response) => {
             const data = await response.json();
             if (response.ok) {
-              if (data.status == 'success') {
+              if (data.status === 'success') {
                 toast.success(
                   data.message || 'Xóa sản phẩm trong giỏ hàng thành công',
                 );
