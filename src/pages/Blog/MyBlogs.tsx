@@ -1,21 +1,26 @@
 import { useEffect, useState } from 'react';
 import BlogModel from '../../models/BlogModel';
 import { getMyBlogs } from '../../api/BlogAPI';
-import { getUserIdByToken } from '../../utils/Service/JwtService';
+import {
+  getUserIdByToken,
+  isTokenExpired,
+} from '../../utils/Service/JwtService';
 import Loader from '../../utils/Loader';
 import { useAuth } from '../../utils/Context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Fab, Pagination } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import BlogCard from './components/BlogCard';
 import { Add } from '@mui/icons-material';
 import { FadeModal } from '../../utils/FadeModal';
 import BlogModal from './components/BlogModal';
+import { toast } from 'react-toastify';
 
 const MyBlogs = () => {
   const userId = getUserIdByToken();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [blogs, setBlogs] = useState<BlogModel[]>([]);
@@ -26,7 +31,24 @@ const MyBlogs = () => {
   const [option, setOption] = useState('');
   const [openBlogModal, setOpenBlogModal] = useState<boolean>(false);
 
-  const handleOpenBlogModal = () => setOpenBlogModal(true);
+  const handleOpenBlogModal = () => {
+    if (!isLoggedIn) {
+      toast.error('Bạn cần đăng nhập để thêm vào giỏ hàng');
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
+    if (isTokenExpired()) {
+      localStorage.removeItem('token');
+      setIsLoggedIn(false);
+      toast.error(
+        'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
+      );
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+    setOpenBlogModal(true);
+  };
   const handleCloseBlogModal = () => {
     // setBlogId(0);
     setOpenBlogModal(false);
@@ -43,18 +65,24 @@ const MyBlogs = () => {
     }
   }, []);
 
-  useEffect(() => {
+  const fetchMyBlogs = async () => {
+    setIsLoading(true);
+
     if (userId) {
-      setIsLoading(true);
-      getMyBlogs(userId, 3, currentPage - 1)
-        .then((blogsResult) => {
-          setBlogs(blogsResult.result);
-          setNumberOfPage(blogsResult.totalPages);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+      try {
+        const blogsResult = await getMyBlogs(userId, 3, currentPage - 1);
+        setBlogs(blogsResult.result);
+        setNumberOfPage(blogsResult.totalPages);
+      } catch (error) {
+        console.error('Lỗi khi lấy blog của người dùng:', error);
+      } finally {
+        setIsLoading(false);
+      }
     }
+  };
+
+  useEffect(() => {
+    fetchMyBlogs();
   }, [currentPage]);
 
   if (isLoading) {
@@ -91,7 +119,7 @@ const MyBlogs = () => {
           <Grid container spacing={2} columns={12}>
             {blogs.map((blog, index) => (
               <Grid key={index} size={{ xs: 12, md: 4 }}>
-                <BlogCard blog={blog} />
+                <BlogCard blog={blog} canChange />
               </Grid>
             ))}
           </Grid>
@@ -99,6 +127,21 @@ const MyBlogs = () => {
             count={numberOfPage}
             page={currentPage}
             onChange={(event, page) => {
+              if (!isLoggedIn) {
+                toast.error('Bạn cần đăng nhập để xem bài đăng của mình');
+                navigate('/login', { state: { from: location } });
+                return;
+              }
+
+              if (isTokenExpired()) {
+                localStorage.removeItem('token');
+                setIsLoggedIn(false);
+                toast.error(
+                  'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
+                );
+                navigate('/login', { state: { from: location } });
+                return;
+              }
               setCurrentPage(page);
             }}
             style={{ marginTop: '20px' }}
@@ -137,6 +180,7 @@ const MyBlogs = () => {
         <BlogModal
           blogId={blogId}
           option={option}
+          fetchBlogs={fetchMyBlogs}
           handleCloseModal={handleCloseBlogModal}
         />
       </FadeModal>

@@ -21,14 +21,13 @@ import {
 import { Avatar } from '@mui/material';
 import { format } from 'date-fns';
 import BlogComment from './BlogComment';
+import 'react-quill/dist/quill.snow.css';
+import Latest from '../../BlogList/components/Latest';
 
 const cx = classNames.bind(styles);
 
 const BlogDetail = () => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const token = localStorage.getItem('token');
-  const { isLoggedIn, setIsLoggedIn } = useAuth();
 
   const queryParams = new URLSearchParams(location.search);
   const id = queryParams.get('id');
@@ -139,7 +138,7 @@ const BlogDetail = () => {
             <img className={cx('blog__img')} src={blog?.featuredImage} alt="" />
           </div>
           <div
-            className="mt-4"
+            className="mt-4 view ql-editor p-0"
             dangerouslySetInnerHTML={{ __html: blog?.content || '' }}
           />
         </div>
@@ -154,6 +153,7 @@ const BlogDetail = () => {
             <BlogComment key={index} blogComment={blogComment} />
           ))}
         </div>
+        <Latest />
       </div>
     </div>
   );

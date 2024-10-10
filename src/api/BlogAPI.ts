@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import BlogModel from '../models/BlogModel';
 import { backendEndpoint } from '../utils/Service/Constant';
 import { publicRequest } from './Request';
@@ -110,4 +111,37 @@ export async function getMyBlogs(
     `/blogs/find-by-user?userId=${userId}&sortBy=createdAt&sortDir=desc&page=${page}&size=${size}`;
 
   return getBlogsWithEmbedded(url);
+}
+
+export async function addABlog(
+  title: string,
+  blogCategoryName: string,
+  content: string,
+  image: File | null,
+) {
+  const formData = new FormData();
+
+  title && formData.append('title', title);
+  blogCategoryName && formData.append('blogCategoryName', blogCategoryName);
+  content && formData.append('content', content);
+  image && formData.append('image', image);
+
+  // try {
+  const response = await fetch(`${backendEndpoint}/blogs/add-blog`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error('Xảy ra lỗi khi thêm bài đăng');
+  }
+  return response.json();
+  // } catch (error) {
+  //   toast.error('Đã xảy ra lỗi khi thay đổi ảnh đại diện');
+  //   console.error(error);
+  //   throw error;
+  // }
 }

@@ -1,4 +1,5 @@
-import { Avatar, Box, CardMedia, Typography } from '@mui/material';
+import { Avatar, Box, CardMedia, Typography, IconButton } from '@mui/material';
+import { Edit, Delete } from '@mui/icons-material';
 import BlogModel from '../../../models/BlogModel';
 import { StyledTypography, SyledCard, SyledCardContent } from './Styled';
 import { format } from 'date-fns';
@@ -6,13 +7,18 @@ import { Link } from 'react-router-dom';
 
 interface BlogCardProps {
   blog: BlogModel;
-  isMyBlog?: boolean;
+  canChange?: boolean;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 const BlogCard = (props: BlogCardProps) => {
   return (
     <Link to={`/blog-detail?id=${props.blog.id}`}>
-      <SyledCard variant="outlined" sx={{ height: '100%' }}>
+      <SyledCard
+        variant="outlined"
+        sx={{ height: '100%', position: 'relative' }}
+      >
         <CardMedia
           component="img"
           alt="green iguana"
@@ -22,6 +28,58 @@ const BlogCard = (props: BlogCardProps) => {
             aspectRatio: { sm: '16 / 9', md: '' },
           }}
         />
+        {props.canChange && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 10,
+              right: 10,
+              display: 'flex',
+              gap: 1,
+            }}
+          >
+            <IconButton
+              aria-label="edit"
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                if (props.onEdit) props.onEdit();
+              }}
+              sx={{
+                color: 'white',
+                backgroundColor: '#1976d2',
+                '&:hover': {
+                  backgroundColor: '#1565c0',
+                },
+                padding: '5px',
+                borderRadius: '50%',
+                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+              }}
+            >
+              <Edit sx={{ fontSize: '1.8rem' }} />
+            </IconButton>
+            <IconButton
+              aria-label="delete"
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                if (props.onDelete) props.onDelete();
+              }}
+              sx={{
+                color: 'white',
+                backgroundColor: '#d32f2f',
+                '&:hover': {
+                  backgroundColor: '#c62828',
+                },
+                padding: '5px',
+                borderRadius: '50%',
+                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+              }}
+            >
+              <Delete sx={{ fontSize: '1.8rem' }} />
+            </IconButton>
+          </Box>
+        )}
         <SyledCardContent>
           <Typography
             gutterBottom

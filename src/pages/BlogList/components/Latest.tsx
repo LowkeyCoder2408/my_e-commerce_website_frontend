@@ -12,7 +12,7 @@ export default function Latest() {
 
   useEffect(() => {
     setIsLoading(true);
-    getNewestBlogs(6)
+    getNewestBlogs(4)
       .then((blogsResult) => {
         setBlogs(blogsResult.result);
       })
@@ -30,7 +30,7 @@ export default function Latest() {
 
   return (
     <>
-      <div className="default-title mt-5">BÀI ĐĂNG MỚI NHẤT</div>
+      <div className="default-title mt-5">CÁC BÀI ĐĂNG GẦN ĐÂY</div>
       {blogs.length > 0 ? (
         <>
           <Grid container spacing={2} columns={12} sx={{ my: 4 }}>

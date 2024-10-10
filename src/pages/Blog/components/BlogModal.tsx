@@ -9,13 +9,17 @@ import { useEffect, useState } from 'react';
 import BlogCategoryModel from '../../../models/BlogCategoryModel';
 import { getAllBlogCategories } from '../../../api/BlogCategoriAPI';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { ChangeCircle, NoteAdd } from '@mui/icons-material';
+import { ChangeCircle, CloudUpload, NoteAdd } from '@mui/icons-material';
 import 'react-quill/dist/quill.snow.css';
 import ReactQuill from 'react-quill';
+import UploadImageInput from '../../../utils/UploadImageInput';
+import { toast } from 'react-toastify';
+import { addABlog } from '../../../api/BlogAPI';
 
 interface BlogModalProps {
   blogId: number;
   option: string;
+  fetchBlogs: () => Promise<void>;
   handleCloseModal: () => void;
 }
 
@@ -29,6 +33,7 @@ const modules = {
       { indent: '-1' },
       { indent: '+1' },
     ],
+    [{ color: [] }, { background: [] }],
     ['link'],
     [{ align: [] }],
     ['clean'],
@@ -41,6 +46,8 @@ const BlogModal = (props: BlogModalProps) => {
   const [blogCategories, setBlogCategories] = useState<BlogCategoryModel[]>([]);
   const [blogCategoryName, setBlogCategoryName] = useState<string>('');
   const [content, setContent] = useState<string>('');
+  const [imagePreview, setImagePreview] = useState<string>('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 
   // Hàm check có đúng định dạng không
@@ -54,8 +61,42 @@ const BlogModal = (props: BlogModalProps) => {
     }
   };
 
+  const handleUploadImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      if (event.target.files.length > 1) {
+        toast.error(`Bạn chỉ được upload tối đa 1 ảnh`);
+        return;
+      }
+      const selectedImage = event.target.files[0];
+      setImageFile(selectedImage);
+      setImagePreview(URL.createObjectURL(selectedImage));
+    }
+  };
+
   const handleSubmit = async () => {
     setSubmitLoading(true);
+    addABlog(title, blogCategoryName, content, imageFile)
+      .then((data) => {
+        if (data.status === 'success') {
+          toast.success(data.message || 'Thêm bài đăng mới thành công');
+          setTitle('');
+          setBlogCategoryName('');
+          setContent('');
+          setImageFile(null);
+          setImagePreview('');
+          props.handleCloseModal();
+          props.fetchBlogs();
+        } else {
+          toast.error(data.message || 'Đã có lỗi xảy ra, vui lòng thử lại');
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error('Đã có lỗi trong quá trình xử lý');
+      })
+      .finally(() => {
+        setSubmitLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -65,15 +106,18 @@ const BlogModal = (props: BlogModalProps) => {
   }, []);
 
   useEffect(() => {
-    console.log('Object: ', { title, blogCategoryName, content });
+    console.log('Object: ', {
+      title,
+      blogCategoryName,
+      content,
+      imageFile,
+      imagePreview,
+    });
     console.log('Error: ', { errorTitle });
-  }, [title, blogCategoryName, content, errorTitle]);
+  }, [title, blogCategoryName, content, errorTitle, imageFile, imagePreview]);
 
   return (
     <>
-      {/* <div>
-        BlogModal, {props.option?.toString()}, {props.blogId}
-      </div> */}
       <div className="default-title text-center">
         {props.option === 'add' ? 'TẠO BÀI ĐĂNG MỚI' : 'CHỈNH SỬA BÀI ĐĂNG'}
       </div>
@@ -143,6 +187,7 @@ const BlogModal = (props: BlogModalProps) => {
         </FormControl>
       </div>
       <div className="mt-5">
+        <div className="default-title mb-3">Nội dung bài đăng</div>
         <ReactQuill
           theme="snow"
           value={content}
@@ -150,12 +195,56 @@ const BlogModal = (props: BlogModalProps) => {
           modules={modules}
         />
       </div>
+      <div className="d-flex mt-3">
+        <UploadImageInput
+          required
+          title="Thêm ảnh"
+          handleImageUpload={handleUploadImage}
+        />
+      </div>
+      {imagePreview && (
+        <div
+          className="mt-3 position-relative"
+          style={{ width: '450px', maxWidth: '100%', borderRadius: '5px' }}
+        >
+          <img src={imagePreview} alt="" style={{ borderRadius: '5px' }} />
+          <button
+            onClick={() => {
+              setImageFile(null);
+              setImagePreview('');
+            }}
+            style={{
+              position: 'absolute',
+              top: '-12px',
+              right: '-12px',
+              backgroundColor: '#ff3e3e',
+              color: '#fff',
+              border: '2px solid #fff',
+              width: '24px',
+              height: '24px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: '50%',
+              cursor: 'pointer',
+              fontSize: '2rem',
+              fontWeight: '600',
+            }}
+          >
+            &times;
+          </button>
+        </div>
+      )}
       <div className="mt-4">
         <LoadingButton
           disabled={
             errorTitle.length > 0 ||
             blogCategoryName.trim() === '' ||
-            content.trim() === ''
+            new DOMParser()
+              .parseFromString(content.toString(), 'text/html')
+              .documentElement.textContent?.replace(/<[^>]+>/g, '')
+              .trim() === '' ||
+            !imageFile
           }
           fullWidth
           onClick={handleSubmit}
@@ -177,6 +266,11 @@ const BlogModal = (props: BlogModalProps) => {
             opacity:
               errorTitle.length > 0 ||
               blogCategoryName.trim() === '' ||
+              new DOMParser()
+                .parseFromString(content.toString(), 'text/html')
+                .documentElement.textContent?.replace(/<[^>]+>/g, '')
+                .trim() === '' ||
+              !imageFile ||
               submitLoading
                 ? 0.5
                 : 1,
