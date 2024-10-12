@@ -3,16 +3,82 @@ import { Edit, Delete } from '@mui/icons-material';
 import BlogModel from '../../../models/BlogModel';
 import { StyledTypography, SyledCard, SyledCardContent } from './Styled';
 import { format } from 'date-fns';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { SetStateAction } from 'react';
+import { toast } from 'react-toastify';
+import { useAuth } from '../../../utils/Context/AuthContext';
+import { isTokenExpired } from '../../../utils/Service/JwtService';
+import { confirm } from 'material-ui-confirm';
+import { backendEndpoint } from '../../../utils/Service/Constant';
 
 interface BlogCardProps {
   blog: BlogModel;
   canChange?: boolean;
-  onEdit?: () => void;
-  onDelete?: () => void;
+  setBlogId?: React.Dispatch<SetStateAction<number | undefined>>;
+  setOption?: React.Dispatch<SetStateAction<string>>;
+  setKeyCountReload?: React.Dispatch<SetStateAction<number>>;
+  handleOpenModal?: () => void;
 }
 
 const BlogCard = (props: BlogCardProps) => {
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleDeleteCartItem = () => {
+    if (!isLoggedIn) {
+      toast.error('Bạn cần đăng nhập để xóa bài đăng của mình');
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
+    if (isTokenExpired()) {
+      localStorage.removeItem('token');
+      setIsLoggedIn(false);
+      toast.error(
+        'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
+      );
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
+    confirm({
+      title: <span style={{ fontSize: '20px' }}>XÓA BÀI ĐĂNG CỦA BẠN</span>,
+      description: (
+        <span style={{ fontSize: '16px' }}>
+          Bạn có chắc chắn rằng sẽ xóa bài đăng này khỏi danh sách?
+        </span>
+      ),
+      confirmationText: <span style={{ fontSize: '15px' }}>Đồng ý</span>,
+      cancellationText: <span style={{ fontSize: '15px' }}>Huỷ</span>,
+    })
+      .then(() => {
+        fetch(backendEndpoint + `/blogs/delete-blog/${props.blog.id}`, {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'content-type': 'application/json',
+          },
+        })
+          .then(async (response) => {
+            const data = await response.json();
+            if (response.ok) {
+              if (data.status === 'success') {
+                toast.success(data.message || 'Xóa bài đăng thành công');
+                props.setKeyCountReload &&
+                  props.setKeyCountReload(Math.random());
+              } else {
+                toast.error(data.message || 'Xóa bài đăng không thành công');
+              }
+            } else {
+              toast.error('Đã xảy ra lỗi trong quá trình xóa bài đăng');
+            }
+          })
+          .catch((error) => console.log('Lỗi khi xóa bài đăng:', error));
+      })
+      .catch(() => {});
+  };
+
   return (
     <Link to={`/blog-detail?id=${props.blog.id}`}>
       <SyledCard
@@ -43,7 +109,9 @@ const BlogCard = (props: BlogCardProps) => {
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
-                if (props.onEdit) props.onEdit();
+                props.handleOpenModal && props.handleOpenModal();
+                props.setBlogId && props.setBlogId(props.blog.id);
+                props.setOption && props.setOption('update');
               }}
               sx={{
                 color: 'white',
@@ -63,7 +131,8 @@ const BlogCard = (props: BlogCardProps) => {
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
-                if (props.onDelete) props.onDelete();
+                props.setBlogId && props.setBlogId(props.blog.id);
+                handleDeleteCartItem();
               }}
               sx={{
                 color: 'white',

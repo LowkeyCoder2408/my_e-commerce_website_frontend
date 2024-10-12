@@ -123,7 +123,7 @@ export async function addABlog(
 
   title && formData.append('title', title);
   blogCategoryName && formData.append('blogCategoryName', blogCategoryName);
-  content && formData.append('content', content);
+  content && formData.append('content', content.toString());
   image && formData.append('image', image);
 
   // try {
@@ -139,9 +139,35 @@ export async function addABlog(
     throw new Error('Xảy ra lỗi khi thêm bài đăng');
   }
   return response.json();
-  // } catch (error) {
-  //   toast.error('Đã xảy ra lỗi khi thay đổi ảnh đại diện');
-  //   console.error(error);
-  //   throw error;
-  // }
+}
+
+export async function updateABlog(
+  blogId: number,
+  title: string,
+  blogCategoryName: string,
+  content: string,
+  image: File | null,
+) {
+  const formData = new FormData();
+
+  title && formData.append('title', title);
+  blogCategoryName && formData.append('blogCategoryName', blogCategoryName);
+  content && formData.append('content', content.toString());
+  image && formData.append('image', image);
+
+  const response = await fetch(
+    `${backendEndpoint}/blogs/update-blog/${blogId}`,
+    {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: formData,
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error('Xảy ra lỗi khi cập nhật bài đăng');
+  }
+  return response.json();
 }

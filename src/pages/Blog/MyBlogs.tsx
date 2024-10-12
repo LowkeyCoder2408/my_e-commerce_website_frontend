@@ -27,9 +27,10 @@ const MyBlogs = () => {
   const [numberOfPage, setNumberOfPage] = useState(0);
   const [numberOfPageTemp, setTotalPageTemp] = useState(numberOfPage);
   const [currentPage, setCurrentPage] = useState(1);
-  const [blogId, setBlogId] = useState<number>(0);
+  const [blogId, setBlogId] = useState<number | undefined>(undefined);
   const [option, setOption] = useState('');
   const [openBlogModal, setOpenBlogModal] = useState<boolean>(false);
+  const [keyCountReload, setKeyCountReload] = useState<number>(0);
 
   const handleOpenBlogModal = () => {
     if (!isLoggedIn) {
@@ -49,8 +50,9 @@ const MyBlogs = () => {
     }
     setOpenBlogModal(true);
   };
+
   const handleCloseBlogModal = () => {
-    // setBlogId(0);
+    setBlogId(undefined);
     setOpenBlogModal(false);
   };
 
@@ -65,25 +67,19 @@ const MyBlogs = () => {
     }
   }, []);
 
-  const fetchMyBlogs = async () => {
-    setIsLoading(true);
-
-    if (userId) {
-      try {
-        const blogsResult = await getMyBlogs(userId, 3, currentPage - 1);
-        setBlogs(blogsResult.result);
-        setNumberOfPage(blogsResult.totalPages);
-      } catch (error) {
-        console.error('Lỗi khi lấy blog của người dùng:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-  };
-
   useEffect(() => {
-    fetchMyBlogs();
-  }, [currentPage]);
+    if (userId) {
+      setIsLoading(true);
+      getMyBlogs(userId, 3, currentPage - 1)
+        .then((blogsResult) => {
+          setBlogs(blogsResult.result);
+          setNumberOfPage(blogsResult.totalPages);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
+  }, [currentPage, keyCountReload]);
 
   if (isLoading) {
     return <Loader />;
@@ -108,7 +104,7 @@ const MyBlogs = () => {
           onClick={() => {
             handleOpenBlogModal();
             setOption('add');
-            setBlogId(0);
+            setBlogId(undefined);
           }}
         >
           <Add sx={{ fontSize: '3rem' }} />
@@ -119,7 +115,14 @@ const MyBlogs = () => {
           <Grid container spacing={2} columns={12}>
             {blogs.map((blog, index) => (
               <Grid key={index} size={{ xs: 12, md: 4 }}>
-                <BlogCard blog={blog} canChange />
+                <BlogCard
+                  blog={blog}
+                  canChange
+                  setBlogId={setBlogId}
+                  setOption={setOption}
+                  setKeyCountReload={setKeyCountReload}
+                  handleOpenModal={handleOpenBlogModal}
+                />
               </Grid>
             ))}
           </Grid>
@@ -180,7 +183,7 @@ const MyBlogs = () => {
         <BlogModal
           blogId={blogId}
           option={option}
-          fetchBlogs={fetchMyBlogs}
+          setKeyCountReload={setKeyCountReload}
           handleCloseModal={handleCloseBlogModal}
         />
       </FadeModal>

@@ -9,17 +9,21 @@ import { useEffect, useState } from 'react';
 import BlogCategoryModel from '../../../models/BlogCategoryModel';
 import { getAllBlogCategories } from '../../../api/BlogCategoriAPI';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { ChangeCircle, CloudUpload, NoteAdd } from '@mui/icons-material';
+import { ChangeCircle, NoteAdd } from '@mui/icons-material';
 import 'react-quill/dist/quill.snow.css';
-import ReactQuill from 'react-quill';
 import UploadImageInput from '../../../utils/UploadImageInput';
 import { toast } from 'react-toastify';
-import { addABlog } from '../../../api/BlogAPI';
+import { addABlog, getBlogById, updateABlog } from '../../../api/BlogAPI';
+import { useQuill } from 'react-quilljs';
+import BlogModel from '../../../models/BlogModel';
+import { isTokenExpired } from '../../../utils/Service/JwtService';
+import { useAuth } from '../../../utils/Context/AuthContext';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface BlogModalProps {
-  blogId: number;
+  blogId: number | undefined;
   option: string;
-  fetchBlogs: () => Promise<void>;
+  setKeyCountReload: any;
   handleCloseModal: () => void;
 }
 
@@ -41,14 +45,21 @@ const modules = {
 };
 
 const BlogModal = (props: BlogModalProps) => {
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [title, setTitle] = useState<string>('');
   const [errorTitle, setErrorTitle] = useState('');
+  const [blog, setBlog] = useState<BlogModel | null>(null);
   const [blogCategories, setBlogCategories] = useState<BlogCategoryModel[]>([]);
   const [blogCategoryName, setBlogCategoryName] = useState<string>('');
   const [content, setContent] = useState<string>('');
   const [imagePreview, setImagePreview] = useState<string>('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
+
+  const { quill, quillRef } = useQuill();
 
   // Hàm check có đúng định dạng không
   const checkEmpty = (setErrorFunction: any, content: string) => {
@@ -74,47 +85,108 @@ const BlogModal = (props: BlogModalProps) => {
   };
 
   const handleSubmit = async () => {
+    if (!isLoggedIn) {
+      toast.error('Bạn cần đăng nhập để cập nhật bài đăng của mình');
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+    if (isTokenExpired()) {
+      localStorage.removeItem('token');
+      setIsLoggedIn(false);
+      toast.error(
+        'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
+      );
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
     setSubmitLoading(true);
-    addABlog(title, blogCategoryName, content, imageFile)
-      .then((data) => {
-        if (data.status === 'success') {
-          toast.success(data.message || 'Thêm bài đăng mới thành công');
-          setTitle('');
-          setBlogCategoryName('');
-          setContent('');
-          setImageFile(null);
-          setImagePreview('');
-          props.handleCloseModal();
-          props.fetchBlogs();
-        } else {
-          toast.error(data.message || 'Đã có lỗi xảy ra, vui lòng thử lại');
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error('Đã có lỗi trong quá trình xử lý');
-      })
-      .finally(() => {
-        setSubmitLoading(false);
-      });
+    if (props.option === 'add') {
+      addABlog(title, blogCategoryName, content as string, imageFile)
+        .then((data) => {
+          if (data.status === 'success') {
+            toast.success(data.message || 'Thêm bài đăng mới thành công');
+            // setTitle('');
+            // setBlogCategoryName('');
+            // setContent('');
+            // setImageFile(null);
+            // setImagePreview('');
+            props.handleCloseModal();
+            props.setKeyCountReload(Math.random());
+          } else {
+            toast.error(data.message || 'Đã có lỗi xảy ra, vui lòng thử lại');
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error('Đã có lỗi trong quá trình xử lý');
+        })
+        .finally(() => {
+          setSubmitLoading(false);
+        });
+    } else {
+      if (props.blogId) {
+        updateABlog(
+          props.blogId,
+          title,
+          blogCategoryName,
+          content as string,
+          imageFile,
+        )
+          .then((data) => {
+            if (data.status === 'success') {
+              toast.success(data.message || 'Cập nhật bài đăng thành công');
+              props.handleCloseModal();
+              props.setKeyCountReload(Math.random());
+            } else {
+              toast.error(data.message || 'Đã có lỗi xảy ra, vui lòng thử lại');
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+            toast.error('Đã có lỗi trong quá trình xử lý');
+          })
+          .finally(() => {
+            setSubmitLoading(false);
+          });
+      }
+    }
   };
 
   useEffect(() => {
-    getAllBlogCategories().then((blogCategoriesResult) => {
+    Promise.all([
+      getAllBlogCategories(),
+      props.blogId !== undefined && getBlogById(props.blogId),
+    ]).then(([blogCategoriesResult, blogResult]) => {
       setBlogCategories(blogCategoriesResult);
+      blogResult && setBlog(blogResult);
     });
   }, []);
 
   useEffect(() => {
-    console.log('Object: ', {
-      title,
-      blogCategoryName,
-      content,
-      imageFile,
-      imagePreview,
-    });
-    console.log('Error: ', { errorTitle });
-  }, [title, blogCategoryName, content, errorTitle, imageFile, imagePreview]);
+    if (props.blogId !== undefined) {
+      getBlogById(props.blogId).then((blogResult) => {
+        setTitle(blogResult.title);
+        setBlogCategoryName(blogResult.blogCategory.name || '');
+        setContent(blogResult.content);
+        setImagePreview(blogResult.featuredImage);
+        if (quill) {
+          quill.clipboard.dangerouslyPasteHTML(blogResult.content);
+        }
+      });
+    }
+  }, [props.blogId, quill]);
+
+  useEffect(() => {
+    if (quill)
+      quill.on('text-change', () => {
+        setContent(quillRef.current.firstChild.innerHTML);
+      });
+  }, [quill]);
+
+  useEffect(() => {
+    console.log({ title, blogCategoryName, content, imagePreview, imageFile });
+  }, [title, blogCategoryName, content, imagePreview, imageFile]);
 
   return (
     <>
@@ -188,12 +260,7 @@ const BlogModal = (props: BlogModalProps) => {
       </div>
       <div className="mt-5">
         <div className="default-title mb-3">Nội dung bài đăng</div>
-        <ReactQuill
-          theme="snow"
-          value={content}
-          onChange={setContent}
-          modules={modules}
-        />
+        <div style={{ height: 200 }} ref={quillRef}></div>
       </div>
       <div className="d-flex mt-3">
         <UploadImageInput
@@ -238,13 +305,25 @@ const BlogModal = (props: BlogModalProps) => {
       <div className="mt-4">
         <LoadingButton
           disabled={
-            errorTitle.length > 0 ||
-            blogCategoryName.trim() === '' ||
-            new DOMParser()
-              .parseFromString(content.toString(), 'text/html')
-              .documentElement.textContent?.replace(/<[^>]+>/g, '')
-              .trim() === '' ||
-            !imageFile
+            props.option === 'add'
+              ? errorTitle.length > 0 ||
+                blogCategoryName.trim() === '' ||
+                new DOMParser()
+                  .parseFromString(content.toString(), 'text/html')
+                  .documentElement.textContent?.replace(/<[^>]+>/g, '')
+                  .trim() === '' ||
+                (!imageFile && imagePreview.trim() === '')
+              : errorTitle.length > 0 ||
+                blogCategoryName.trim() === '' ||
+                new DOMParser()
+                  .parseFromString(content.toString(), 'text/html')
+                  .documentElement.textContent?.replace(/<[^>]+>/g, '')
+                  .trim() === '' ||
+                (!imageFile && imagePreview.trim() === '') ||
+                (title.trim() === blog?.title &&
+                  blogCategoryName.trim() === blog?.blogCategory?.name &&
+                  content.trim() === blog?.content &&
+                  imagePreview === blog?.featuredImage)
           }
           fullWidth
           onClick={handleSubmit}
@@ -270,7 +349,11 @@ const BlogModal = (props: BlogModalProps) => {
                 .parseFromString(content.toString(), 'text/html')
                 .documentElement.textContent?.replace(/<[^>]+>/g, '')
                 .trim() === '' ||
-              !imageFile ||
+              (!imageFile && imagePreview.trim() === '') ||
+              (title.trim() === blog?.title &&
+                blogCategoryName.trim() === blog?.blogCategory?.name &&
+                content.trim() === blog?.content &&
+                imagePreview === blog?.featuredImage) ||
               submitLoading
                 ? 0.5
                 : 1,

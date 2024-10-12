@@ -180,7 +180,7 @@ function Information() {
                       color: '#666',
                     }}
                   >
-                    <Link to={'/my-blog'}>
+                    <Link to={'/my-blogs'}>
                       <button
                         className="dropdown-item d-flex gap-3 align-items-center"
                         type="button"

@@ -94,7 +94,7 @@ const publicRoutes = [
     layout: 'default',
   },
   {
-    path: '/my-blog',
+    path: '/my-blogs',
     component: MyBlogs,
     layout: 'default',
   },
