@@ -1,3 +1,4 @@
+import LikedBlogCommentModel from './LikedBlogCommentModel';
 import UserModel from './UserModel';
 
 class BlogCommentModel {
@@ -8,6 +9,7 @@ class BlogCommentModel {
   createdAt: Date;
   parentCommentId: number;
   replies: BlogCommentModel[];
+  likedBlogComments: LikedBlogCommentModel[];
   authorComment: boolean;
   replyTo: string;
 
@@ -19,6 +21,7 @@ class BlogCommentModel {
     createdAt: Date,
     parentCommentId: number,
     replies: BlogCommentModel[],
+    likedBlogComments: LikedBlogCommentModel[],
     authorComment: boolean,
     replyTo: string,
   ) {
@@ -29,6 +32,7 @@ class BlogCommentModel {
     this.createdAt = createdAt;
     this.parentCommentId = parentCommentId;
     this.replies = replies;
+    this.likedBlogComments = likedBlogComments;
     this.authorComment = authorComment;
     this.replyTo = replyTo;
   }

@@ -30,7 +30,7 @@ import {
 } from '../../../utils/Service/JwtService';
 import { backendEndpoint } from '../../../utils/Service/Constant';
 import LikedBlogModel from '../../../models/LikedBlogModel';
-import { fetchLikedBlogsByUserId } from '../../../api/LikedProductAPI';
+import { fetchLikedBlogsByUserId } from '../../../api/LikedBlogAPI';
 import BlogCommentModel from '../../../models/BlogCommentModel';
 
 const cx = classNames.bind(styles);
@@ -50,6 +50,7 @@ const BlogDetail = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
   const [parentComments, setParentComments] = useState<BlogCommentModel[]>([]);
+  const [keyCountReload, setKeyCountReload] = useState<number>(0);
 
   const fetchBlogAndLikedData = async () => {
     try {
@@ -170,11 +171,7 @@ const BlogDetail = () => {
 
   useEffect(() => {
     fetchBlogAndLikedData();
-  }, [idNumber]);
-
-  useEffect(() => {
-    console.log({ userLikedBlogs, isLiked });
-  }, [userLikedBlogs, isLiked]);
+  }, [idNumber, keyCountReload]);
 
   if (isLoading) {
     return <Loader />;
@@ -311,7 +308,11 @@ const BlogDetail = () => {
               parentComments
                 .sort((a, b) => (b.authorComment === true ? 1 : -1))
                 .map((blogComment, index) => (
-                  <BlogComment key={index} blogComment={blogComment} />
+                  <BlogComment
+                    key={index}
+                    blogComment={blogComment}
+                    setKeyCountReload={setKeyCountReload}
+                  />
                 ))
             ) : (
               <div className="h-100 d-flex flex-column gap-5 justify-content-center align-items-center">
