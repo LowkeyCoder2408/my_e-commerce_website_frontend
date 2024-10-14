@@ -106,11 +106,11 @@ const BlogModal = (props: BlogModalProps) => {
         .then((data) => {
           if (data.status === 'success') {
             toast.success(data.message || 'Thêm bài đăng mới thành công');
-            // setTitle('');
-            // setBlogCategoryName('');
-            // setContent('');
-            // setImageFile(null);
-            // setImagePreview('');
+            setTitle('');
+            setBlogCategoryName('');
+            setContent('');
+            setImageFile(null);
+            setImagePreview('');
             props.handleCloseModal();
             props.setKeyCountReload(Math.random());
           } else {
@@ -136,6 +136,11 @@ const BlogModal = (props: BlogModalProps) => {
           .then((data) => {
             if (data.status === 'success') {
               toast.success(data.message || 'Cập nhật bài đăng thành công');
+              setTitle('');
+              setBlogCategoryName('');
+              setContent('');
+              setImageFile(null);
+              setImagePreview('');
               props.handleCloseModal();
               props.setKeyCountReload(Math.random());
             } else {
@@ -183,10 +188,6 @@ const BlogModal = (props: BlogModalProps) => {
         setContent(quillRef.current.firstChild.innerHTML);
       });
   }, [quill]);
-
-  useEffect(() => {
-    console.log({ title, blogCategoryName, content, imagePreview, imageFile });
-  }, [title, blogCategoryName, content, imagePreview, imageFile]);
 
   return (
     <>
@@ -265,7 +266,7 @@ const BlogModal = (props: BlogModalProps) => {
       <div className="d-flex mt-3">
         <UploadImageInput
           required
-          title="Thêm ảnh"
+          title={props.option === 'add' ? 'Thêm ảnh' : 'Chỉnh sửa ảnh'}
           handleImageUpload={handleUploadImage}
         />
       </div>

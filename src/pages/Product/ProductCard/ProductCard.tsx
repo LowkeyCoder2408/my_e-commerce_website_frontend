@@ -59,7 +59,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
         setIsInNewestProducts(isNewestProduct);
         setIsFavoriteProduct(isFavoriteProduct);
       } catch (error) {
-        console.log('Lấy danh sách sản phẩm mới không thành công: ', error);
+        console.log('Lấy danh sách sản phẩm không thành công: ', error);
       } finally {
         setLoading(false);
       }
@@ -172,7 +172,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
     }
   };
 
-  const handleAddToFavoriteProducts = async (newProduct: ProductModel) => {
+  const handleAddToFavoriteProducts = async () => {
     if (!isLoggedIn) {
       toast.error('Bạn phải đăng nhập để yêu thích sản phẩm');
       navigate('/login', {
@@ -320,7 +320,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  handleAddToFavoriteProducts(props.product);
+                  handleAddToFavoriteProducts();
                 }}
                 className={cx('product__item-quick-link-item')}
               >

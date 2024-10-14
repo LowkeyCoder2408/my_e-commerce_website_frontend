@@ -250,7 +250,7 @@ export default function MainContent() {
           </IconButton>
         </Box>
       </Box>
-      {keyword && (
+      {keyword.trim() !== '' && (
         <div
           className="alert alert-success alert-dismissible mb-0 position-relative"
           role="alert"

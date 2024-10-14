@@ -1,11 +1,14 @@
 .comment-item {
-  margin: 20px 0 20px 25px;
   padding: 8px 15px;
   border-radius: 10px;
   position: relative;
   background-color: #fff;
 
-  &::before {
+  &.parent-item {
+    margin: 10px 0 15px 25px;
+  }
+
+  &.parent-item::before {
     content: '';
     position: absolute;
     bottom: -17px;
@@ -14,9 +17,39 @@
     height: 0;
     border-style: solid;
     border-width: 10px 30px 10px 0;
-    border-color: transparent #fff transparent transparent; /* Màu của mũi tên khớp với màu nền */
+    border-color: transparent #fff transparent transparent;
     transform: rotate(-37deg);
     transform-origin: bottom left;
+  }
+
+  &.child-item {
+    margin: 10px 15px 15px 40px;
+  }
+
+  &.child-item::before {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    right: -27px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 30px 30px 30px 30px;
+    border-color: transparent #fff transparent transparent;
+    transform: rotate(-37deg);
+    transform-origin: bottom left;
+  }
+
+  & p {
+    word-wrap: break-word !important;
+  }
+
+  &.author-comment {
+    background-color: #ffffda;
+  }
+
+  &.author-comment::before {
+    border-color: transparent #ffffda transparent transparent;
   }
 }
 
@@ -48,4 +81,11 @@
 .comment-date {
   margin-left: 8px; /* Khoảng cách giữa tên tác giả và ngày */
   font-style: italic; /* In nghiêng cho ngày */
+}
+
+.show-comments {
+  text-align: right;
+  color: #65676b;
+  font-weight: 500;
+  cursor: pointer;
 }

@@ -53,7 +53,7 @@ function ProductDetail() {
           setIsLoading(false);
         });
     }
-  }, []);
+  }, [idNumber]);
 
   const increaseQuantity = () => {
     if (quantity < (product && product.quantity ? product.quantity : 1)) {
