@@ -17,7 +17,7 @@ export async function adminRequest(endpoint: string) {
   const response = await fetch(endpoint, {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
     },
   });
   if (!response.ok) {

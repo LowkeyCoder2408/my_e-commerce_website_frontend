@@ -21,7 +21,7 @@ const cx = classNames.bind(styles);
 
 const MyProfile = () => {
   const userId = getUserIdByToken();
-  const token = localStorage.getItem('token');
+
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
 
@@ -199,7 +199,7 @@ const MyProfile = () => {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
           body: JSON.stringify({
             userId,

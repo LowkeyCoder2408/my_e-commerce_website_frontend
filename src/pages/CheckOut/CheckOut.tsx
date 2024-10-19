@@ -43,7 +43,6 @@ import { CheckOutSuccess } from './components/CheckOutSuccess';
 export const CheckOut = () => {
   const location = useLocation();
 
-  const token = localStorage.getItem('token');
   const storedProduct = localStorage.getItem('buy_now_product');
 
   const userId = getUserIdByToken();
@@ -307,7 +306,7 @@ export const CheckOut = () => {
           {
             method: 'POST',
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
               'content-type': 'application/json',
             },
           },

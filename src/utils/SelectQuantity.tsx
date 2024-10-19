@@ -24,8 +24,6 @@ interface SelectQuantityProps {
 }
 
 const SelectQuantity: React.FC<SelectQuantityProps> = (props) => {
-  const token = localStorage.getItem('token');
-
   const { isLoggedIn, setIsLoggedIn } = useAuth();
   const { cartItems, fetchCartItems } = useCartItems();
 
@@ -71,7 +69,7 @@ const SelectQuantity: React.FC<SelectQuantityProps> = (props) => {
         fetch(backendEndpoint + `/cart-items/update-item`, {
           method: 'PUT',
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
             'content-type': 'application/json',
           },
           body: JSON.stringify({

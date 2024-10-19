@@ -19,7 +19,6 @@ const cx = classNames.bind(styles);
 
 const ChangePassword = () => {
   const userId = getUserIdByToken();
-  const token = localStorage.getItem('token');
 
   const navigate = useNavigate();
   const { isLoggedIn, setIsLoggedIn } = useAuth();
@@ -92,7 +91,7 @@ const ChangePassword = () => {
       const response = await fetch(endpoint, {
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json',
         },
       });
@@ -192,7 +191,7 @@ const ChangePassword = () => {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
       body: JSON.stringify({
         userId,

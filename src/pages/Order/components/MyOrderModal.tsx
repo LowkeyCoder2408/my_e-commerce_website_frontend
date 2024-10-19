@@ -40,7 +40,6 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 const MyOrderModal = (props: OrderModalProps) => {
-  const token = localStorage.getItem('token');
   const { isLoggedIn, setIsLoggedIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -55,7 +54,7 @@ const MyOrderModal = (props: OrderModalProps) => {
         {
           method: 'GET',
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         },
       );
@@ -115,7 +114,7 @@ const MyOrderModal = (props: OrderModalProps) => {
           fetch(backendEndpoint + `/orders/return-request/${props.orderId}`, {
             method: 'PUT',
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
           })
             .then(async (response) => {

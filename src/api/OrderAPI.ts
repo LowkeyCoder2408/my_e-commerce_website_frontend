@@ -2,8 +2,6 @@ import { toast } from 'react-toastify';
 import { backendEndpoint } from '../utils/Service/Constant';
 import { Dispatch, SetStateAction } from 'react';
 
-const token = localStorage.getItem('token');
-
 export const handleSaveOrder = (
   request: any,
   fetchCartItems: () => void,
@@ -12,7 +10,7 @@ export const handleSaveOrder = (
   fetch(backendEndpoint + '/orders/add-order', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
       'content-type': 'application/json',
     },
     body: JSON.stringify(request),

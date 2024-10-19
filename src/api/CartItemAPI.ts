@@ -5,14 +5,13 @@ import { getUserIdByToken } from '../utils/Service/JwtService';
 
 export const fetchCartItemsByUserId = async (): Promise<CartItemModel[]> => {
   const userId = getUserIdByToken();
-  const token = localStorage.getItem('token');
 
   try {
     const response = await fetch(
       backendEndpoint + `/cart-items/find-by-user?userId=${userId}`,
       {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       },
     );

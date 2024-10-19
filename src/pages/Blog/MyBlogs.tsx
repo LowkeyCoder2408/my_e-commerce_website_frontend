@@ -95,11 +95,11 @@ const MyBlogs = () => {
           aria-label="add"
           sx={{
             position: 'fixed',
-            bottom: '40px',
-            right: '40px',
-            width: '45px',
-            height: '45px',
-            backgroundColor: '#1976d2',
+            bottom: '90px',
+            right: '20px',
+            width: '56px',
+            height: '56px',
+            backgroundColor: 'rgb(66, 165, 245)',
           }}
           onClick={() => {
             handleOpenBlogModal();

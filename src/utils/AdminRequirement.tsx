@@ -16,10 +16,9 @@ const AdminRequirement = <P extends object>(
   const WithAdminCheck: React.FC<P> = (props) => {
     const navigate = useNavigate();
     const [isAuthorized, setIsAuthorized] = useState(false);
+    const token = localStorage.getItem('token');
 
     useEffect(() => {
-      const token = localStorage.getItem('token');
-
       if (!token) {
         navigate('/admin/login');
         return;

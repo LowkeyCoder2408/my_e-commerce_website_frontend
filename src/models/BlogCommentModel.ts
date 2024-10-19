@@ -7,6 +7,7 @@ class BlogCommentModel {
   blogId: number;
   user: UserModel;
   createdAt: Date;
+  lastUpdatedTime: Date;
   parentCommentId: number;
   replies: BlogCommentModel[];
   likedBlogComments: LikedBlogCommentModel[];
@@ -19,6 +20,7 @@ class BlogCommentModel {
     blogId: number,
     user: UserModel,
     createdAt: Date,
+    lastUpdatedTime: Date,
     parentCommentId: number,
     replies: BlogCommentModel[],
     likedBlogComments: LikedBlogCommentModel[],
@@ -30,6 +32,7 @@ class BlogCommentModel {
     this.blogId = blogId;
     this.user = user;
     this.createdAt = createdAt;
+    this.lastUpdatedTime = lastUpdatedTime;
     this.parentCommentId = parentCommentId;
     this.replies = replies;
     this.likedBlogComments = likedBlogComments;

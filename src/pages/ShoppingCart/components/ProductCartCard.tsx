@@ -23,8 +23,6 @@ interface ProductCartCardProps {
 }
 
 const ProductCartCard: React.FC<ProductCartCardProps> = (props) => {
-  const token = localStorage.getItem('token');
-
   const confirm = useConfirm();
   const { isLoggedIn, setIsLoggedIn } = useAuth();
   const { cartItems, fetchCartItems } = useCartItems();
@@ -76,7 +74,7 @@ const ProductCartCard: React.FC<ProductCartCardProps> = (props) => {
           {
             method: 'DELETE',
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
               'content-type': 'application/json',
             },
           },
@@ -172,7 +170,7 @@ const ProductCartCard: React.FC<ProductCartCardProps> = (props) => {
       fetch(backendEndpoint + `/cart-items/update-item`, {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
           'content-type': 'application/json',
         },
         body: JSON.stringify({

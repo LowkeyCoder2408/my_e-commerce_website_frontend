@@ -25,6 +25,7 @@ interface ReviewItemProps {
 function ReviewItem(props: ReviewItemProps) {
   const userId = getUserIdByToken();
   const token = localStorage.getItem('token');
+
   const { isLoggedIn } = useAuth();
 
   const [openModal, setOpenModal] = useState<boolean>(false);

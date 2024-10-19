@@ -35,7 +35,7 @@ export const deleteReview = async (reviewId: number, token: string) => {
   return fetch(backendEndpoint + endpoint, {
     method: 'DELETE',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
       'Content-Type': 'application/json',
     },
   });

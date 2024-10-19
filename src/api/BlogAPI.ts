@@ -47,11 +47,13 @@ export async function getAllFilteredBlogs(
   let url: string = '';
 
   if (blogCategoryName === 'Tất cả') {
-    url = backendEndpoint + `/blogs?size=${size}&page=${page}`;
+    url =
+      backendEndpoint +
+      `/blogs?sortBy=createdAt&sortDir=desc&size=${size}&page=${page}`;
   } else {
     url =
       backendEndpoint +
-      `/blogs/find-by-blog-category-name?blogCategoryName=${blogCategoryName}&size=${size}&page=${page}`;
+      `/blogs/find-by-blog-category-name?sortBy=createdAt&sortDir=desc&blogCategoryName=${blogCategoryName}&size=${size}&page=${page}`;
   }
   return getBlogsWithEmbedded(url);
 }
@@ -69,17 +71,19 @@ export async function getAndFindBlogs(
   if (keyword && blogCategoryName && blogCategoryName !== 'Tất cả') {
     url =
       backendEndpoint +
-      `/blogs/find-by-name-containing-and-blog-category-name?size=${size}&page=${page}&blogCategoryName=${blogCategoryName}&keyword=${keyword}`;
+      `/blogs/find-by-name-containing-and-blog-category-name?sortBy=createdAt&sortDir=desc&size=${size}&page=${page}&blogCategoryName=${blogCategoryName}&keyword=${keyword}`;
   } else if (keyword) {
     url =
       backendEndpoint +
-      `/blogs/find-by-name-containing?size=${size}&page=${page}&keyword=${keyword}`;
+      `/blogs/find-by-name-containing?sortBy=createdAt&sortDir=desc&size=${size}&page=${page}&keyword=${keyword}`;
   } else if (blogCategoryName && blogCategoryName !== 'Tất cả') {
     url =
       backendEndpoint +
-      `/blogs/find-by-blog-category-name?size=${size}&page=${page}&blogCategoryName=${blogCategoryName}`;
+      `/blogs/find-by-blog-category-name?sortBy=createdAt&sortDir=desc&size=${size}&page=${page}&blogCategoryName=${blogCategoryName}`;
   } else {
-    url = backendEndpoint + `/blogs?size=${size}&page=${page}`;
+    url =
+      backendEndpoint +
+      `/blogs?sortBy=createdAt&sortDir=desc&size=${size}&page=${page}`;
   }
 
   return getBlogsWithEmbedded(url);

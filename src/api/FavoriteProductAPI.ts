@@ -7,14 +7,13 @@ export const fetchFavoriteProductsByUserId = async (): Promise<
   FavoriteProductModel[]
 > => {
   const userId = getUserIdByToken();
-  const token = localStorage.getItem('token');
 
   try {
     const response = await fetch(
       backendEndpoint + `/favorite-products/find-by-user?userId=${userId}`,
       {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       },
     );

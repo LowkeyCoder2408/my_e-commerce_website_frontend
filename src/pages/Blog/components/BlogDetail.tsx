@@ -21,7 +21,7 @@ import { format } from 'date-fns';
 import BlogComment from './BlogComment';
 import 'react-quill/dist/quill.snow.css';
 import Latest from '../../BlogList/components/Latest';
-import { CommentOutlined } from '@mui/icons-material';
+import { CommentOutlined, Edit } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../../utils/Context/AuthContext';
 import {
@@ -32,6 +32,8 @@ import { backendEndpoint } from '../../../utils/Service/Constant';
 import LikedBlogModel from '../../../models/LikedBlogModel';
 import { fetchLikedBlogsByUserId } from '../../../api/LikedBlogAPI';
 import BlogCommentModel from '../../../models/BlogCommentModel';
+import { FadeModal } from '../../../utils/FadeModal';
+import BlogCommentModal from './BlogCommentModal';
 
 const cx = classNames.bind(styles);
 
@@ -46,10 +48,18 @@ const BlogDetail = () => {
   const idNumber = id ? parseInt(id, 10) : 0;
 
   const [blog, setBlog] = useState<BlogModel | null>(null);
-  const [userLikedBlogs, setUserLikedBlogs] = useState<LikedBlogModel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
   const [parentComments, setParentComments] = useState<BlogCommentModel[]>([]);
+  const [blogCommentId, setBlogCommentId] = useState<number | undefined>(
+    undefined,
+  );
+  const [parentBlogCommentId, setParentBlogCommentId] = useState<
+    number | undefined
+  >(undefined);
+  const [option, setOption] = useState<string>('');
+  const [openBlogCommentModal, setOpenBlogCommentModal] =
+    useState<boolean>(false);
   const [keyCountReload, setKeyCountReload] = useState<number>(0);
 
   const fetchBlogAndLikedData = async () => {
@@ -77,7 +87,6 @@ const BlogDetail = () => {
         );
 
         if (userId) {
-          setUserLikedBlogs(likedBlogsResult);
           if (blogResult?.id) {
             const isLiked = likedBlogsResult.some(
               (likedBlog: LikedBlogModel) => likedBlog.blogId === blogResult.id,
@@ -167,6 +176,32 @@ const BlogDetail = () => {
         toast.error('Đã xảy ra lỗi khi thích bài đăng này');
       }
     }
+  };
+
+  const handleOpenBlogCommentModal = () => {
+    if (!isLoggedIn) {
+      toast.error('Bạn cần đăng nhập để thực hiện thao tác này');
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
+    if (isTokenExpired()) {
+      localStorage.removeItem('token');
+      setIsLoggedIn(false);
+      toast.error(
+        'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
+      );
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+    setOpenBlogCommentModal(true);
+  };
+
+  const handleCloseBlogCommentModal = () => {
+    setBlogCommentId(undefined);
+    setOption('');
+    setParentBlogCommentId(undefined);
+    setOpenBlogCommentModal(false);
   };
 
   useEffect(() => {
@@ -301,17 +336,56 @@ const BlogDetail = () => {
             className={`${cx('blog__right')} col col-xxl-4 col-xl-4 col-lg-4 col-12`}
             style={{ height: '1000px' }}
           >
-            <div className={cx('blog__category-name')}>
+            <div className={cx('blog__comments')}>
               <span>CÁC BÌNH LUẬN GẦN ĐÂY</span>
+              <IconButton
+                aria-label="add"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  handleOpenBlogCommentModal();
+                  setBlogCommentId(undefined);
+                  setParentBlogCommentId(undefined);
+                  setOption('add');
+                }}
+                sx={{
+                  color: '#1976d2',
+                  padding: '5px',
+                  borderRadius: '50%',
+                  boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+                }}
+              >
+                <Edit sx={{ fontSize: '1.8rem' }} />
+              </IconButton>
             </div>
             {parentComments.length > 0 ? (
               parentComments
-                .sort((a, b) => (b.authorComment === true ? 1 : -1))
+                .sort((a, b) => {
+                  if (b.authorComment === true && a.authorComment === false) {
+                    return 1;
+                  } else if (
+                    b.authorComment === false &&
+                    a.authorComment === true
+                  ) {
+                    return -1;
+                  } else {
+                    return (
+                      new Date(b.createdAt).getTime() -
+                      new Date(a.createdAt).getTime()
+                    );
+                  }
+                })
+
                 .map((blogComment, index) => (
                   <BlogComment
                     key={index}
                     blogComment={blogComment}
+                    setBlogCommentId={setBlogCommentId}
+                    setParentBlogCommentId={setParentBlogCommentId}
+                    setOption={setOption}
                     setKeyCountReload={setKeyCountReload}
+                    handleCloseModal={handleCloseBlogCommentModal}
+                    handleOpenModal={handleOpenBlogCommentModal}
                   />
                 ))
             ) : (
@@ -333,14 +407,31 @@ const BlogDetail = () => {
           </h1>
           <div className="text-center mt-5">
             <img
-              style={{ width: '20%' }}
-              src="https://res.cloudinary.com/dgdn13yur/image/upload/v1728747132/eosgj3jl9fc5keeb1hci.png"
+              style={{
+                width: '40%',
+                mixBlendMode: 'multiply',
+              }}
+              src="https://res.cloudinary.com/dgdn13yur/image/upload/v1728969157/oxotnjztsov0gxkaselp.gif"
               alt=""
               className="mb-5"
             />
           </div>
         </>
       )}
+      <FadeModal
+        open={openBlogCommentModal}
+        handleOpen={handleOpenBlogCommentModal}
+        handleClose={handleCloseBlogCommentModal}
+      >
+        <BlogCommentModal
+          blogId={blog?.id}
+          blogCommentId={blogCommentId}
+          parentBlogCommentId={parentBlogCommentId}
+          option={option}
+          setKeyCountReload={setKeyCountReload}
+          handleCloseModal={handleCloseBlogCommentModal}
+        />
+      </FadeModal>
     </div>
   );
 };

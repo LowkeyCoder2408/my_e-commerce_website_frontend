@@ -29,7 +29,7 @@ const cx = classNames.bind(styles);
 function ProductDetail() {
   const location = useLocation();
   const navigate = useNavigate();
-  const token = localStorage.getItem('token');
+
   const { isLoggedIn, setIsLoggedIn } = useAuth();
   const { cartItems, fetchCartItems } = useCartItems();
 
@@ -119,7 +119,7 @@ function ProductDetail() {
             {
               method: 'PUT',
               headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
                 'Content-type': 'application/json',
               },
               body: JSON.stringify(request),
@@ -156,7 +156,7 @@ function ProductDetail() {
             {
               method: 'POST',
               headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
                 'Content-type': 'application/json',
               },
               body: JSON.stringify(request),
@@ -403,7 +403,7 @@ function ProductDetail() {
                       )}
                     </div>
 
-                    <div
+                    {/* <div
                       className={`${cx('product-details__information-freeship')} mt-3`}
                     >
                       <div className={`${cx('product-details__title')} mb-2`}>
@@ -417,7 +417,7 @@ function ProductDetail() {
                           Miễn phí ship (áp dụng trên toàn quốc)
                         </i>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 

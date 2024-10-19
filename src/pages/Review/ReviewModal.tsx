@@ -41,7 +41,6 @@ const ReviewModal: React.FC<ReviewModalProps> = (props) => {
       return;
     }
 
-    const token = localStorage.getItem('token');
     const endpoint = userReview
       ? '/reviews/update-review'
       : '/reviews/add-review';
@@ -51,7 +50,7 @@ const ReviewModal: React.FC<ReviewModalProps> = (props) => {
       const response = await fetch(backendEndpoint + endpoint, {
         method: method,
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({

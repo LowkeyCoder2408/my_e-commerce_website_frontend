@@ -30,7 +30,7 @@ const cx = classNames.bind(styles);
 
 const ProductCard: React.FC<ProductCardInterface> = (props) => {
   const userId = getUserIdByToken();
-  const token = localStorage.getItem('token');
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -107,7 +107,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
             {
               method: 'PUT',
               headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
                 'Content-type': 'application/json',
               },
               body: JSON.stringify(request),
@@ -144,7 +144,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
             {
               method: 'POST',
               headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
                 'Content-type': 'application/json',
               },
               body: JSON.stringify(request),
@@ -197,7 +197,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
         {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
             'content-type': 'application/json',
           },
           body: JSON.stringify({
@@ -230,7 +230,7 @@ const ProductCard: React.FC<ProductCardInterface> = (props) => {
         {
           method: 'DELETE',
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
             'content-type': 'application/json',
           },
           body: JSON.stringify({

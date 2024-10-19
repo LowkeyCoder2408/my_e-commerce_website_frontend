@@ -16,12 +16,18 @@ import LikedBlogCommentModel from '../../../models/LikedBlogCommentModel';
 import { fetchLikedBlogCommentsByUserId } from '../../../api/LikedBlogCommentAPI';
 import { toast } from 'react-toastify';
 import { backendEndpoint } from '../../../utils/Service/Constant';
+import { confirm } from 'material-ui-confirm';
 
 const cx = classNames.bind(styles);
 
 interface BlogCommentProps {
   blogComment: BlogCommentModel;
+  setBlogCommentId?: Dispatch<SetStateAction<number | undefined>>;
+  setParentBlogCommentId?: Dispatch<SetStateAction<number | undefined>>;
   setKeyCountReload?: Dispatch<SetStateAction<number>>;
+  setOption?: Dispatch<SetStateAction<string>>;
+  handleOpenModal?: () => void;
+  handleCloseModal?: () => void;
 }
 
 const BlogComment: React.FC<BlogCommentProps> = (props: BlogCommentProps) => {
@@ -31,7 +37,7 @@ const BlogComment: React.FC<BlogCommentProps> = (props: BlogCommentProps) => {
   const userId = getUserIdByToken();
 
   const isChild = props.blogComment.parentCommentId !== null;
-  // const [isShowReplies, setIsShowReplies] = useState<boolean>(false);
+  const [isShowReplies, setIsShowReplies] = useState<boolean>(false);
   const [isLiked, setIsLiked] = useState(false);
 
   const fetchLikedBlogCommentData = async () => {
@@ -126,16 +132,74 @@ const BlogComment: React.FC<BlogCommentProps> = (props: BlogCommentProps) => {
     }
   };
 
+  const handleEditBlogComment = () => {
+    props.setOption && props.setOption('update');
+    props.handleOpenModal && props.handleOpenModal();
+    props.setBlogCommentId && props.setBlogCommentId(props.blogComment.id);
+    props.setParentBlogCommentId &&
+      props.setParentBlogCommentId(props.blogComment.parentCommentId);
+  };
+
+  const handleDeleteBlogComment = async () => {
+    confirm({
+      title: <div className="default-title">XÓA BÌNH LUẬN BÀI ĐĂNG</div>,
+      description: (
+        <span style={{ fontSize: '16px' }}>
+          Bạn có chắc chắn rằng sẽ xóa bình luận này?
+        </span>
+      ),
+      confirmationText: <span style={{ fontSize: '15px' }}>Đồng ý</span>,
+      cancellationText: <span style={{ fontSize: '15px' }}>Huỷ</span>,
+    })
+      .then(async () => {
+        if (!isLoggedIn) {
+          toast.error('Bạn phải đăng nhập để xóa bình luận này');
+          navigate('/login', {
+            state: { from: location },
+          });
+          return;
+        }
+
+        if (isTokenExpired()) {
+          localStorage.removeItem('token');
+          setIsLoggedIn(false);
+          toast.error(
+            'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
+          );
+          navigate('/login', { state: { from: location } });
+          return;
+        }
+
+        const response = await fetch(
+          backendEndpoint +
+            `/blog-comments/delete-comment/${props.blogComment.id}`,
+          {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+              'content-type': 'application/json',
+            },
+          },
+        );
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'success') {
+          toast.success(data.message || 'Xóa bình luận thành công');
+          props.setKeyCountReload && props.setKeyCountReload(Math.random());
+        } else {
+          toast.error(data.message || 'Đã xảy ra lỗi khi xóa bình luận này');
+        }
+      })
+      .catch(() => {});
+  };
+
   useEffect(() => {
     fetchLikedBlogCommentData();
   }, []);
 
-  useEffect(() => {
-    console.log({ isLiked });
-  }, [isLiked]);
-
   return (
-    <div style={{ marginBottom: isChild ? 0 : `40px` }}>
+    <div style={{ marginBottom: isChild ? 0 : `30px` }}>
       <div
         className={cx('comment-item', {
           'parent-item': !isChild,
@@ -181,10 +245,34 @@ const BlogComment: React.FC<BlogCommentProps> = (props: BlogCommentProps) => {
                     <strong> (Tác giả)</strong>
                   )}
                 </Typography>
-                <Typography fontSize="1.2rem" variant="caption">
+                <Typography
+                  sx={{ display: 'flex' }}
+                  fontSize="1.2rem"
+                  variant="caption"
+                  gap="5px"
+                >
                   {format(
                     new Date(props.blogComment.createdAt || 0),
                     'HH:mm, dd/MM/yyyy',
+                  )}
+                  {props.blogComment.user.id === getUserIdByToken() && (
+                    <strong>
+                      <div className="d-flex gap-2">
+                        <div
+                          style={{ cursor: 'pointer' }}
+                          onClick={handleEditBlogComment}
+                        >
+                          Sửa
+                        </div>
+                        |
+                        <div
+                          style={{ cursor: 'pointer' }}
+                          onClick={handleDeleteBlogComment}
+                        >
+                          Xóa
+                        </div>
+                      </div>
+                    </strong>
                   )}
                 </Typography>
               </div>
@@ -237,6 +325,10 @@ const BlogComment: React.FC<BlogCommentProps> = (props: BlogCommentProps) => {
                   onClick={(e) => {
                     e.stopPropagation();
                     e.preventDefault();
+                    props.setOption && props.setOption('reply');
+                    props.setParentBlogCommentId &&
+                      props.setParentBlogCommentId(props.blogComment.id);
+                    props.handleOpenModal && props.handleOpenModal();
                   }}
                 >
                   <ReplyRounded
@@ -255,8 +347,8 @@ const BlogComment: React.FC<BlogCommentProps> = (props: BlogCommentProps) => {
           {props.blogComment.content}
         </p>
       </div>
-      {/* {isShowReplies ? ( */}
-        {props.blogComment.replies &&
+      {isShowReplies ? (
+        props.blogComment.replies &&
         props.blogComment.replies.length > 0 && (
           <>
             {props.blogComment.replies.map((reply) => (
@@ -264,22 +356,27 @@ const BlogComment: React.FC<BlogCommentProps> = (props: BlogCommentProps) => {
                 key={reply.id}
                 blogComment={reply}
                 setKeyCountReload={props.setKeyCountReload}
+                setBlogCommentId={props.setBlogCommentId}
+                setParentBlogCommentId={props.setParentBlogCommentId}
+                setOption={props.setOption}
+                handleOpenModal={props.handleOpenModal}
+                handleCloseModal={props.handleCloseModal}
               />
             ))}
           </>
-        )}
-      {/* // ) : (
-      //   <>
-      //     {props.blogComment.replies.length > 0 && (
-      //       <div
-      //         className={cx('show-comments')}
-      //         onClick={() => setIsShowReplies(true)}
-      //       >
-      //         Xem tất cả {props.blogComment.replies.length} phản hồi
-      //       </div>
-      //     )}
-      //   </>
-      // )} */}
+        )
+      ) : (
+        <>
+          {props.blogComment.replies.length > 0 && (
+            <div
+              className={cx('show-comments')}
+              onClick={() => setIsShowReplies(true)}
+            >
+              Xem tất cả {props.blogComment.replies.length} phản hồi
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };

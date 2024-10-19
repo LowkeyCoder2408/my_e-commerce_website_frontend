@@ -12,7 +12,8 @@
   scrollbar-width: none;
 }
 
-.blog__category-name {
+.blog__category-name,
+.blog__comments {
   font-size: 1.6rem;
   text-transform: uppercase;
   color: #094272;
@@ -96,4 +97,9 @@
   background: #e4e5e6;
   display: inline-block;
   color: #000;
+}
+
+.blog__comments {
+  display: flex;
+  justify-content: space-between;
 }

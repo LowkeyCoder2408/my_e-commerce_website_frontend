@@ -22,7 +22,7 @@ import { toast } from 'react-toastify';
 
 const MyOrders = () => {
   const userId = getUserIdByToken();
-  const token = localStorage.getItem('token');
+
   const { isLoggedIn, setIsLoggedIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation;
@@ -39,7 +39,7 @@ const MyOrders = () => {
       fetch(backendEndpoint + `/orders/find-by-user?userId=${userId}`, {
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       })
         .then((response) => response.json())
@@ -104,7 +104,7 @@ const MyOrders = () => {
           fetch(backendEndpoint + `/orders/cancel-order/${orderId}`, {
             method: 'PUT',
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
           })
             .then(async (response) => {
