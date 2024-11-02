@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import styles from './scss/Newsletter.module.scss';
+import styles from '../scss/Newsletter.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faFacebookF,

@@ -1,4 +1,4 @@
-import styles from './scss/Information.module.scss';
+import styles from '../scss/Information.module.scss';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {

@@ -1,0 +1,56 @@
+.bigChartBox {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.bigChartBox__chart {
+  width: 100%;
+  height: 300px;
+}
+
+.bigChartBox__title {
+  font-size: 22px;
+}
+
+@media screen and (max-width: 1400px) {
+  .bigChartBox__title {
+    font-size: 24px;
+  }
+}
+
+.MuiChartsGrid-line .MuiChartsGrid-verticalLine {
+  color: #fff !important;
+}
+
+.MuiChartsAxis-line,
+.MuiChartsAxis-tick,
+.MuiChartsAxis-tickLabel,
+.MuiChartsAxis-label {
+  stroke: #fff !important;
+  background-color: #fff !important;
+}
+
+.MuiChartsAxis-tickLabel tspan {
+  font-size: 1.1rem;
+  font-weight: 300 !important;
+}
+
+.MuiChartsAxis-label tspan {
+  font-size: 1.4rem;
+}
+
+.MuiChartsLegend-series tspan {
+  stroke: #fff !important;
+  font-size: 1.4rem;
+}
+
+.css-1ezchsq-MuiAreaElement-root {
+  fill: #6d6d67 !important;
+}
+
+.css-195sd4n-MuiChartsGrid-line {
+  stroke: rgba(205, 205, 205, 0.12) !important;
+}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import styles from './scss/UpButton.module.scss';
+import styles from '../scss/UpButton.module.scss';
 import { FaChevronUp } from 'react-icons/fa';
 import classNames from 'classnames/bind';
 

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import styles from './scss/Brand.module.scss';
+import styles from '../scss/Brand.module.scss';
 import classNames from 'classnames/bind';
 import { useEffect, useState } from 'react';
 import BrandModel from '../../../../models/BrandModel';

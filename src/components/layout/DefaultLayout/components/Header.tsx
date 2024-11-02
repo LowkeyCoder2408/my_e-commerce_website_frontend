@@ -3,7 +3,7 @@ import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import CategoryModel from '../../../../models/CategoryModel';
 import 'boxicons/css/boxicons.min.css';
 import classNames from 'classnames/bind';
-import styles from './scss/Header.module.scss';
+import styles from '../scss/Header.module.scss';
 import { getAllCategories } from '../../../../api/CategoryAPI';
 import { frontendEndpoint } from '../../../../utils/Service/Constant';
 import { MicNone } from '@mui/icons-material';

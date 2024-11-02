@@ -26,8 +26,14 @@ import BlogList from '../pages/BlogList/BlogList';
 import BlogDetail from '../pages/Blog/components/BlogDetail';
 import MyBlogs from '../pages/Blog/MyBlogs';
 import CreateBlog from '../pages/Blog/components/CreateBlog';
+import AdminDashboard from '../pages/AdminPage/AdminDashboard/AdminDashboard';
 
 const publicRoutes = [
+  {
+    path: '*',
+    component: Error404,
+    layout: 'none',
+  },
   {
     path: '/',
     component: Home,
@@ -141,6 +147,17 @@ const publicRoutes = [
 ];
 
 // Login as admin to access
-const privateRoutes: any[] = [];
+const privateRoutes = [
+  {
+    path: '*',
+    component: Error404,
+    layout: 'none',
+  },
+  {
+    path: '/admin/dashboard',
+    component: AdminDashboard,
+    layout: 'admin',
+  },
+];
 
 export { privateRoutes, publicRoutes };

@@ -1,0 +1,66 @@
+.topBox__title {
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.topBox__listItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.topBox__user {
+    display: flex;
+    gap: 20px;
+}
+
+.topBox__userImg {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.topBox__userTexts {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.topBox__username {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.topBox__email {
+    font-size: 12px;
+}
+
+.topBox__amount {
+    font-weight: 500;
+}
+
+@media screen and (max-width: 1400px) {
+    .topBox__title {
+        font-size: 24px;
+    }
+
+    .topBox__userImg {
+        display: none;
+    }
+
+    .topBox__email {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .topBox__userImg {
+        display: block;
+    }
+
+    .topBox__email {
+        display: block;
+    }
+}
