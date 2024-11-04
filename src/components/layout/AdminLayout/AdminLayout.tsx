@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import styles from "../AdminLayout/scss/AdminLayout.module.scss"
+import styles from '../AdminLayout/scss/AdminLayout.module.scss';
 import classNames from 'classnames/bind';
 import AdminNavbar from './components/AdminNavbar';
 import AdminMenu from './components/AdminMenu';
@@ -16,11 +16,11 @@ function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="main">
       <AdminNavbar />
-      <div className={cx("container-menu")}>
-        <div className={cx("menuContainer")}>
+      <div className={cx('container-menu')}>
+        <div className={cx('menuContainer')}>
           <AdminMenu />
         </div>
-        <div className={cx("contentContainer")}>
+        <div className={cx('contentContainer')}>
           <QueryClientProvider client={queryClient}>
             {children}
           </QueryClientProvider>

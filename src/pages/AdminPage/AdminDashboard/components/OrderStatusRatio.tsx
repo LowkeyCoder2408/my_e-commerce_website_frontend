@@ -1,7 +1,10 @@
 import { PieChart } from '@mui/x-charts/PieChart';
-import './BarChartBox.css';
+import styles from '../scss/OrderStatusRatio.module.scss';
 import { useEffect, useState } from 'react';
 import { backendEndpoint } from '../../../../utils/Service/Constant';
+import classNames from 'classnames/bind';
+
+const cx = classNames.bind(styles);
 
 type Props = {
   title: string;
@@ -9,7 +12,7 @@ type Props = {
   dataKey: string;
 };
 
-const BarChartBox = (props: Props) => {
+const OrderStatusRatio = (props: Props) => {
   const [statusPercentages, setStatusPercentages] = useState([]);
 
   useEffect(() => {
@@ -17,7 +20,7 @@ const BarChartBox = (props: Props) => {
       try {
         const token = localStorage.getItem('token');
         const response = await fetch(
-          backendEndpoint + '/order/status-percentage',
+          backendEndpoint + '/orders/status-percentage',
           {
             method: 'GET',
             headers: {
@@ -43,9 +46,11 @@ const BarChartBox = (props: Props) => {
   }, []);
 
   return (
-    <div className="barChartBox">
-      <h1 className="barChartBox__title">{props.title}</h1>
-      <div className="barChartBox__chart">
+    <div className={cx('barChartBox')}>
+      <h1 className={`${cx('barChartBox__title')} text-white`}>
+        {props.title}
+      </h1>
+      <div className={`${cx('barChartBox__chart')} text-white`}>
         <PieChart
           series={[
             {
@@ -56,8 +61,15 @@ const BarChartBox = (props: Props) => {
                   label: status,
                 }),
               ),
+              highlightScope: { fade: 'global', highlight: 'item' },
+              faded: { innerRadius: 5, additionalRadius: -5, color: 'gray' },
             },
           ]}
+          sx={{
+            '& .MuiChartsLegend-root': {
+              display: 'none',
+            },
+          }}
           height={150}
         />
       </div>
@@ -65,4 +77,4 @@ const BarChartBox = (props: Props) => {
   );
 };
 
-export default BarChartBox;
+export default OrderStatusRatio;

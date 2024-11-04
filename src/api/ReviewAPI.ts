@@ -2,6 +2,12 @@ import ReviewModel from '../models/ReviewModel';
 import { backendEndpoint } from '../utils/Service/Constant';
 import { publicRequest } from './Request';
 
+export async function getAllReviews(): Promise<ReviewModel[]> {
+  const url: string = backendEndpoint + `/reviews`;
+  const responseData = await publicRequest(url);
+  return responseData;
+}
+
 export async function getReviewsByProduct(
   productId: number,
 ): Promise<ReviewModel[]> {

@@ -2,8 +2,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useConfirm } from 'material-ui-confirm';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../../../utils/Context/AuthContext';
-import { getFullNameByToken, getPhotoByToken, logout } from '../../../../utils/Service/JwtService';
-import styles from "../scss/AdminNavbar.module.scss";
+import {
+  getFullNameByToken,
+  getPhotoByToken,
+  logout,
+} from '../../../../utils/Service/JwtService';
+import styles from '../scss/AdminNavbar.module.scss';
 import classNames from 'classnames/bind';
 
 const cx = classNames.bind(styles);
@@ -16,19 +20,21 @@ const AdminNavbar = () => {
   const confirm = useConfirm();
 
   return (
-    <div className={cx("admin-navbar")}>
-      <Link to={'/admin/dashboard'} className={cx("admin-navbar__logo")}>
-        <div className={`${cx("text-white admin-navbar__logo-title")} text-white`}>TechHubAdmin</div>
+    <div className={cx('admin-navbar')}>
+      <Link to={'/admin/dashboard'} className={cx('admin-navbar__logo')}>
+        <div className={`${cx('admin-navbar__logo-title')} text-white`}>
+          TechHubAdmin
+        </div>
       </Link>
-      <div className={cx("admin-navbar__icons")}>
-        <img src="/search.svg" alt="" className={cx("admin-navbar__icon")} />
-        <img src="/app.svg" alt="" className={cx("admin-navbar__icon")} />
-        <img src="/expand.svg" alt="" className={cx("admin-navbar__icon")} />
-        <div className={cx("admin-navbar__notification")}>
+      <div className={cx('admin-navbar__icons')}>
+        <img src="/search.svg" alt="" className={cx('admin-navbar__icon')} />
+        <img src="/app.svg" alt="" className={cx('admin-navbar__icon')} />
+        <img src="/expand.svg" alt="" className={cx('admin-navbar__icon')} />
+        <div className={cx('admin-navbar__notification')}>
           <img src="/notifications.svg" alt="" />
           <span>1</span>
         </div>
-        <div className={cx("admin-navbar__user")}>
+        <div className={cx('admin-navbar__user')}>
           <img src={userAvatar} alt="" />
           <span>{userName}</span> -{' '}
           <span
@@ -57,7 +63,7 @@ const AdminNavbar = () => {
             Thoát
           </span>
         </div>
-        <img src="/settings.svg" alt="" className={cx("admin-navbar__icon")} />
+        <img src="/settings.svg" alt="" className={cx('admin-navbar__icon')} />
       </div>
     </div>
   );

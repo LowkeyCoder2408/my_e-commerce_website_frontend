@@ -1,0 +1,72 @@
+.topBox__title {
+  margin-bottom: 20px;
+  font-size: 20px;
+  color: #fff;
+}
+
+.topBox__listItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  color: #fff;
+}
+
+.topBox__user {
+  display: flex;
+  gap: 20px;
+}
+
+.topBox__userImg {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.topBox__userTexts {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: #fff;
+}
+
+.topBox__username {
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.topBox__infor {
+  font-size: 12px;
+  color: #fff;
+}
+
+.topBox__amount {
+  font-weight: 500;
+  color: #fff;
+}
+
+@media screen and (max-width: 1400px) {
+  .topBox__title {
+    font-size: 24px;
+  }
+
+  .topBox__userImg {
+    display: none;
+  }
+
+  .topBox__infor {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .topBox__userImg {
+    display: block;
+  }
+
+  .topBox__infor {
+    display: block;
+  }
+}

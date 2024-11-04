@@ -9,9 +9,7 @@ const Contact = () => {
       <div className={`${cx('contact')} border bg-light`}>
         <div className={`${cx('contact__action')}`}>
           <div className={`${cx('contact__question')}`}>
-            <h1 className={`${cx('contact__heading')} color-text mb-4`}>
-              <strong>CÂU HỎI PHẢN HỒI VỀ TECH HUB</strong>
-            </h1>
+            <div className="default-title">CÂU HỎI PHẢN HỒI VỀ TECH HUB</div>
             <form className={`${cx('question__form')} row`} autoComplete="off">
               <div className="col col-xxl-6 col-xl-6 col-lg-6 col-12">
                 <label htmlFor={cx('question-form__name')}>

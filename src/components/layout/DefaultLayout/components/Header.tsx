@@ -7,6 +7,7 @@ import styles from '../scss/Header.module.scss';
 import { getAllCategories } from '../../../../api/CategoryAPI';
 import { frontendEndpoint } from '../../../../utils/Service/Constant';
 import { MicNone } from '@mui/icons-material';
+import { getRolesByToken } from '../../../../utils/Service/JwtService';
 
 const cx = classNames.bind(styles);
 // Kiểm tra xem trình duyệt có hỗ trợ Web Speech API không
@@ -16,6 +17,7 @@ const SpeechRecognition =
 function Header() {
   const location = useLocation();
 
+  const userRoles = getRolesByToken();
   const currentUrl = `${window.location.origin}${location.pathname}${location.search}`;
   const [categories, setCategories] = useState<CategoryModel[]>([]);
   const [isCategoryClose, setIsCategoryClose] = useState(true);
@@ -226,7 +228,7 @@ function Header() {
                 <li className={cx('links-list-item')}>
                   <Link to={'/blogs'}>BÀI ĐĂNG</Link>
                 </li>
-                {/* {userRoles &&
+                {userRoles &&
                 userRoles.length === 1 &&
                 userRoles.includes('Khách hàng') ? (
                   <li className={cx('links-list-item')}>
@@ -238,7 +240,7 @@ function Header() {
                       <Link to={'/admin/dashboard'}>TRANG QUẢN TRỊ</Link>
                     </li>
                   )
-                )} */}
+                )}
               </ul>
             </div>
             <div className={cx('search-box')} ref={searchBoxRef}>

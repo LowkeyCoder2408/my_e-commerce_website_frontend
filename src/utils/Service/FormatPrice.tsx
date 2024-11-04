@@ -6,11 +6,8 @@ interface FormatPriceProps {
 
 const FormatPrice: React.FC<FormatPriceProps> = (props: FormatPriceProps) => {
   if (props.price === undefined) {
-    return <span>Giá chưa cập nhật</span>;
+    return <span>Chưa cập nhật</span>;
   }
-  // if (props.price === 0) {
-  //   return <span>Miễn phí</span>;
-  // }
   return (
     <span>
       {new Intl.NumberFormat('vi-VN', {
