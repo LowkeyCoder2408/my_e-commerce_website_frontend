@@ -133,7 +133,7 @@ const Dashboard = () => {
     color: '#8884d8',
     icon: '/user.svg',
     title: 'Người dùng',
-    link: '/admin/view-users',
+    link: '/admin/user-management',
     number: users.length,
     dataKey: 'Người dùng',
     percentage: 45,

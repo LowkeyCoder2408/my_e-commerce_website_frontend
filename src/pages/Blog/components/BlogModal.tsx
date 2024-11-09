@@ -75,7 +75,7 @@ const BlogModal = (props: BlogModalProps) => {
   const handleUploadImage = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       if (event.target.files.length > 1) {
-        toast.error(`Bạn chỉ được upload tối đa 1 ảnh`);
+        toast.error(`Bạn chỉ được tải lên tối đa 1 ảnh`);
         return;
       }
       const selectedImage = event.target.files[0];

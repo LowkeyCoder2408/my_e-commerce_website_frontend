@@ -29,8 +29,8 @@ export const menu = [
     listItems: [
       {
         id: 1,
-        title: 'Khách hàng',
-        url: '/admin/view-customers',
+        title: 'Người dùng',
+        url: '/admin/user-management',
         icon: 'user.svg',
       },
       {

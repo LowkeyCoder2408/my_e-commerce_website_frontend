@@ -27,6 +27,7 @@ import BlogDetail from '../pages/Blog/components/BlogDetail';
 import MyBlogs from '../pages/Blog/MyBlogs';
 import CreateBlog from '../pages/Blog/components/CreateBlog';
 import AdminDashboard from '../pages/AdminPage/AdminDashboard/AdminDashboard';
+import UserManagementPage from '../admin/pages/User/components/UserManagement';
 
 const publicRoutes = [
   {
@@ -156,6 +157,11 @@ const privateRoutes = [
   {
     path: '/admin/dashboard',
     component: AdminDashboard,
+    layout: 'admin',
+  },
+  {
+    path: '/admin/user-management',
+    component: UserManagementPage,
     layout: 'admin',
   },
 ];

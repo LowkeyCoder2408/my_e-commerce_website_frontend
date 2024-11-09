@@ -49,3 +49,15 @@
   font-weight: bold;
   font-size: 1.8rem;
 }
+
+.loader.white-text {
+  border: 4px solid #fff;
+}
+
+.loader.white-text:before {
+  background: #fff;
+}
+
+.white-text {
+  color: #fff;
+}

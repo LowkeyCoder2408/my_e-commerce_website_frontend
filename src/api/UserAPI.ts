@@ -2,6 +2,60 @@ import { toast } from 'react-toastify';
 import UserModel from '../models/UserModel';
 import { backendEndpoint } from '../utils/Service/Constant';
 
+export async function addAUser(
+  firstName: string,
+  lastName: string,
+  roleNames: string[],
+  password: string,
+  email: string,
+  phoneNumber: string,
+  photo: File | null,
+) {
+  const formData = new FormData();
+  if (firstName) formData.append('firstName', firstName);
+  if (lastName) formData.append('lastName', lastName);
+  if (roleNames && roleNames.length > 0)
+    formData.append('rolesJson', JSON.stringify(roleNames));
+  if (password) formData.append('password', password);
+  if (email) formData.append('email', email);
+  if (phoneNumber) formData.append('phoneNumber', phoneNumber);
+  if (photo) formData.append('photo', photo);
+
+  const response = await fetch(`${backendEndpoint}/users/add-user`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+    body: formData,
+  });
+  return response.json();
+}
+
+export async function updateAUser(
+  firstName: string,
+  lastName: string,
+  phoneNumber: string,
+  roleNames: string[],
+  photo: File | null,
+) {
+  const formData = new FormData();
+  if (firstName) formData.append('firstName', firstName);
+  if (lastName) formData.append('lastName', lastName);
+  if (roleNames && roleNames.length > 0)
+    formData.append('rolesJson', JSON.stringify(roleNames));
+  if (phoneNumber) formData.append('phoneNumber', phoneNumber);
+  if (photo) formData.append('photo', photo);
+
+  const response = await fetch(`${backendEndpoint}/users/update-user`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+    body: formData,
+  });
+  return response.json();
+}
+
 export async function getAllUsers(): Promise<UserModel[]> {
   try {
     const endpoint: string = backendEndpoint + '/users';

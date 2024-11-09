@@ -3,11 +3,15 @@ import styles from './scss/Loader.module.scss';
 
 const cx = classNames.bind(styles);
 
-function Loader() {
+interface LoaderProps {
+  isAdmin?: boolean;
+}
+
+function Loader(props: LoaderProps) {
   return (
     <div className={cx('loader-container')}>
-      <div className={cx('loader')}></div>
-      <p>Đang tải dữ liệu...</p>
+      <div className={cx('loader', { 'white-text': props.isAdmin })}></div>
+      <p className={cx({ 'white-text': props.isAdmin })}>Đang tải dữ liệu...</p>
     </div>
   );
 }
