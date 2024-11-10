@@ -69,3 +69,8 @@ export function logout(navigate: any) {
   navigate('/login');
   localStorage.removeItem('token');
 }
+
+export function logoutAdmin(navigate: any) {
+  navigate('/admin/login');
+  localStorage.removeItem('token');
+}

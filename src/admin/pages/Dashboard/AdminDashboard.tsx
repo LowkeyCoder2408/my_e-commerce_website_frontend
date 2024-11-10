@@ -51,7 +51,7 @@ const Dashboard = () => {
     color: 'skyblue',
     icon: '/productIcon.svg',
     title: 'Sản Phẩm',
-    link: '/admin/view-products',
+    link: '/admin/product-management',
     number: products.length,
     dataKey: 'sản phẩm',
     percentage: 21,

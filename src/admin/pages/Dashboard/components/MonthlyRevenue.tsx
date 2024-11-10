@@ -6,7 +6,10 @@ import classNames from 'classnames/bind';
 
 const cx = classNames.bind(styles);
 
-const orderDistinctMonthsArray = Array.from({ length: 12 }, (_, i) => i + 1);
+const orderDistinctMonthsArray = Array.from(
+  { length: new Date().getMonth() + 1 },
+  (_, i) => i + 1,
+);
 
 const MonthlyRevenue = () => {
   const [totalAmountByMonth, setTotalAmountByMonth] = useState<

@@ -1,8 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import UserModel from '../../../../models/UserModel';
-import { backendEndpoint } from '../../../../utils/Service/Constant';
-import Loader from '../../../../utils/Loader';
+import { backendEndpoint } from '../../../utils/Service/Constant';
+import Loader from '../../../utils/Loader';
 import {
   Checkbox,
   FormControl,
@@ -16,13 +15,14 @@ import {
 } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Add, Edit } from '@mui/icons-material';
-import { getDefaultAddressByUserId } from '../../../../api/AddressAPI';
+import { getDefaultAddressByUserId } from '../../../api/AddressAPI';
 import { format } from 'date-fns';
-import UploadImageInput from '../../../../utils/UploadImageInput';
+import UploadImageInput from '../../../utils/UploadImageInput';
 import { toast } from 'react-toastify';
-import { isTokenExpired } from '../../../../utils/Service/JwtService';
-import { useAuth } from '../../../../utils/Context/AuthContext';
-import { addAUser, updateAUser } from '../../../../api/UserAPI';
+import { isTokenExpired } from '../../../utils/Service/JwtService';
+import { useAuth } from '../../../utils/Context/AuthContext';
+import { addAUser, updateAUser } from '../../../api/UserAPI';
+import UserModel from '../../../models/UserModel';
 
 interface UserModalProps {
   userId: number | undefined;
@@ -262,7 +262,14 @@ const UserModal = (props: UserModalProps) => {
           setSubmitLoading(false);
         });
     } else {
-      updateAUser(firstName, lastName, phoneNumber, userRoles, imageFile)
+      updateAUser(
+        props.userId || 0,
+        firstName,
+        lastName,
+        phoneNumber,
+        userRoles,
+        imageFile,
+      )
         .then((data) => {
           if (data.status === 'success') {
             toast.success(data.message || 'Cập nhật người dùng thành công');
@@ -315,42 +322,6 @@ const UserModal = (props: UserModalProps) => {
       fetchUser();
     }
   }, [props.userId]);
-
-  useEffect(() => {
-    console.log({
-      firstName,
-      lastName,
-      userRoles,
-      password,
-      email,
-      phoneNumber,
-      imagePreview,
-      imageFile,
-    });
-    console.log({
-      firstNameError,
-      lastNameError,
-      emailError,
-      passwordError,
-      phoneNumberError,
-      userRolesError,
-    });
-  }, [
-    firstName,
-    lastName,
-    userRoles,
-    password,
-    email,
-    emailError,
-    phoneNumber,
-    imagePreview,
-    imageFile,
-    firstNameError,
-    lastNameError,
-    passwordError,
-    phoneNumberError,
-    userRolesError,
-  ]);
 
   if (isLoading) {
     return <Loader />;
@@ -723,7 +694,23 @@ const UserModal = (props: UserModalProps) => {
                 emailError.length > 0 ||
                 phoneNumber.trim() === '' ||
                 phoneNumberError.length > 0
-              : firstNameError.length > 0
+              : firstName.trim() === '' ||
+                firstNameError.length > 0 ||
+                lastName.trim() === '' ||
+                lastNameError.length > 0 ||
+                userRoles.length === 0 ||
+                userRolesError.length > 0 ||
+                email.trim() === '' ||
+                emailError.length > 0 ||
+                phoneNumber.trim() === '' ||
+                phoneNumberError.length > 0 ||
+                (user?.photo && !imagePreview && !imageFile) ||
+                (firstName === user?.firstName &&
+                  lastName === user.lastName &&
+                  userRoles === user?.roles &&
+                  email === user?.email &&
+                  phoneNumber === user?.phoneNumber &&
+                  imagePreview === user?.photo)
           }
           fullWidth
           onClick={handleSubmit}
@@ -742,25 +729,11 @@ const UserModal = (props: UserModalProps) => {
               color: 'white',
             },
             border: 'none',
-            opacity: (
-              props.option === 'add'
-                ? firstName.trim() === '' ||
-                  firstNameError.length > 0 ||
-                  lastName.trim() === '' ||
-                  lastNameError.length > 0 ||
-                  userRoles.length === 0 ||
-                  userRolesError.length > 0 ||
-                  password.trim() === '' ||
-                  passwordError.length > 0 ||
-                  email.trim() === '' ||
-                  emailError.length > 0 ||
-                  phoneNumber.trim() === '' ||
-                  phoneNumberError.length > 0
-                : firstNameError.length > 0
-            )
-              ? 0.7
-              : 1,
+            opacity: submitLoading ? 0.7 : 1,
             transition: 'opacity 0.3s ease',
+            '&.Mui-disabled': {
+              opacity: 0.7,
+            },
           }}
         >
           <div className="text-white" style={{ fontSize: '1.6rem' }}>

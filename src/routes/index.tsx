@@ -26,8 +26,10 @@ import BlogList from '../pages/BlogList/BlogList';
 import BlogDetail from '../pages/Blog/components/BlogDetail';
 import MyBlogs from '../pages/Blog/MyBlogs';
 import CreateBlog from '../pages/Blog/components/CreateBlog';
-import AdminDashboard from '../pages/AdminPage/AdminDashboard/AdminDashboard';
-import UserManagementPage from '../admin/pages/User/components/UserManagement';
+import UserManagementPage from '../admin/pages/User/UserManagement';
+import AdminLogin from '../admin/pages/Login/AdminLogin';
+import AdminDashboard from '../admin/pages/Dashboard/AdminDashboard';
+import ProductManagementPage from '../admin/pages/Product/components/ProductManagement';
 
 const publicRoutes = [
   {
@@ -154,6 +156,7 @@ const privateRoutes = [
     component: Error404,
     layout: 'none',
   },
+  { path: '/admin/login', component: AdminLogin, layout: 'none' },
   {
     path: '/admin/dashboard',
     component: AdminDashboard,
@@ -162,6 +165,11 @@ const privateRoutes = [
   {
     path: '/admin/user-management',
     component: UserManagementPage,
+    layout: 'admin',
+  },
+  {
+    path: '/admin/product-management',
+    component: ProductManagementPage,
     layout: 'admin',
   },
 ];

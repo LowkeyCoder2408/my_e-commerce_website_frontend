@@ -32,6 +32,7 @@ export async function addAUser(
 }
 
 export async function updateAUser(
+  userId: number,
   firstName: string,
   lastName: string,
   phoneNumber: string,
@@ -39,6 +40,8 @@ export async function updateAUser(
   photo: File | null,
 ) {
   const formData = new FormData();
+
+  if (userId) formData.append('userId', userId.toString());
   if (firstName) formData.append('firstName', firstName);
   if (lastName) formData.append('lastName', lastName);
   if (roleNames && roleNames.length > 0)

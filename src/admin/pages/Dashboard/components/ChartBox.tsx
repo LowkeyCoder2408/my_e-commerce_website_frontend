@@ -1,7 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Line, LineChart, ResponsiveContainer, Tooltip } from 'recharts';
 import styles from '../scss/ChartBox.module.scss';
 import classNames from 'classnames/bind';
+import { toast } from 'react-toastify';
+import { isTokenExpired } from '../../../../utils/Service/JwtService';
+import { useAuth } from '../../../../utils/Context/AuthContext';
 
 const cx = classNames.bind(styles);
 
@@ -17,6 +20,11 @@ type ChartBoxProps = {
 };
 
 const ChartBox = (props: ChartBoxProps) => {
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
   return (
     <div className={cx('chartBox')}>
       <div className={cx('chartBox__boxInfo')}>
@@ -26,9 +34,28 @@ const ChartBox = (props: ChartBoxProps) => {
           </div>
         )}
         <h1 className={cx('chartBox__boxInfo-number')}>{props.number}</h1>
-        <Link to={`${props.link}`} style={{ color: props.color }}>
+        <div
+          onClick={() => {
+            if (!isLoggedIn) {
+              toast.error('Bạn cần đăng nhập để thực hiện chức năng này');
+              navigate('/admin/login', { state: { from: location } });
+              return;
+            }
+            if (isTokenExpired()) {
+              localStorage.removeItem('token');
+              setIsLoggedIn(false);
+              toast.error(
+                'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
+              );
+              navigate('/admin/login', { state: { from: location } });
+              return;
+            }
+            navigate(`${props.link}`);
+          }}
+          style={{ color: props.color, cursor: 'pointer' }}
+        >
           Xem tất cả
-        </Link>
+        </div>
       </div>
       {props.dataKey && (
         <div className={cx('chartBox__chartInfo')}>

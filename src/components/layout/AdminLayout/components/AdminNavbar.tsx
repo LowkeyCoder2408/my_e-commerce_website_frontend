@@ -5,7 +5,7 @@ import { useAuth } from '../../../../utils/Context/AuthContext';
 import {
   getFullNameByToken,
   getPhotoByToken,
-  logout,
+  logoutAdmin,
 } from '../../../../utils/Service/JwtService';
 import styles from '../scss/AdminNavbar.module.scss';
 import classNames from 'classnames/bind';
@@ -53,7 +53,7 @@ const AdminNavbar = () => {
                 cancellationText: <span style={{ fontSize: '15px' }}>Huỷ</span>,
               })
                 .then(() => {
-                  logout(navigate);
+                  logoutAdmin(navigate);
                   toast.success('Đăng xuất khỏi website thành công');
                   setIsLoggedIn(false);
                 })

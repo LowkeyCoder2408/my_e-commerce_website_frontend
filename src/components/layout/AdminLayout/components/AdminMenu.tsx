@@ -36,7 +36,7 @@ export const menu = [
       {
         id: 2,
         title: 'Sản Phẩm',
-        url: '/admin/view-products',
+        url: '/admin/product-management',
         icon: 'product.svg',
       },
       {

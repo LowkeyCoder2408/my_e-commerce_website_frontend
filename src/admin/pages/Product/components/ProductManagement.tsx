@@ -5,13 +5,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheck,
   faEdit,
+  faStar,
   faTimes,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { DataTable } from '../../../../utils/DataTable';
 import { useEffect, useState } from 'react';
-import UserModel from '../../../../models/UserModel';
+import ProductModel from '../../../../models/ProductModel';
 import { FadeModal } from '../../../../utils/FadeModal';
 import Loader from '../../../../utils/Loader';
 import { backendEndpoint } from '../../../../utils/Service/Constant';
@@ -19,21 +20,24 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../../utils/Context/AuthContext';
 import { Avatar, Fab } from '@mui/material';
 import { FaHandshake, FaUser, FaUserShield, FaUserTag } from 'react-icons/fa';
-import UserModal from './UserModal';
-import { Add } from '@mui/icons-material';
+import ProductModal from './ProductModal';
+import { Add, Star } from '@mui/icons-material';
 import { confirm } from 'material-ui-confirm';
 import { toast } from 'react-toastify';
 import { isTokenExpired } from '../../../../utils/Service/JwtService';
+import { getAllProductsNoFilter } from '../../../../api/ProductAPI';
+import ProductRating from '../../../../pages/Product/ProductRating/ProductRating';
+import FormatPrice from '../../../../utils/Service/FormatPrice';
 
-const UserManagement = () => {
+const ProductManagement = () => {
   const { isLoggedIn, setIsLoggedIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const [keyCountReload, setKeyCountReload] = useState<number>(0);
-  const [users, setUsers] = useState<UserModel[]>([]);
-  const [userId, setUserId] = useState<number | undefined>(undefined);
-  const [openUserModal, setOpenUserModal] = useState<boolean>(false);
+  const [products, setProducts] = useState<ProductModel[]>([]);
+  const [productId, setProductId] = useState<number | undefined>(undefined);
+  const [openProductModal, setOpenProductModal] = useState<boolean>(false);
   const [option, setOption] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -47,7 +51,7 @@ const UserManagement = () => {
       },
     },
     {
-      field: 'photo',
+      field: 'mainImage',
       headerName: 'Ảnh',
       width: 50,
       renderCell: (params) => {
@@ -74,37 +78,33 @@ const UserManagement = () => {
       },
     },
     {
-      field: 'fullName',
-      headerName: 'Tên đầy đủ',
-      width: 160,
+      field: 'name',
+      headerName: 'Tên sản phẩm',
+      width: 250,
+    },
+    {
+      field: 'category',
+      headerName: 'Danh mục sản phẩm',
+      width: 150,
       renderCell: (params) => {
-        const { firstName, lastName } = params.row;
-        return <div>{`${lastName} ${firstName}`}</div>;
+        return <div className="text-center">{params.row.category.name}</div>;
       },
     },
     {
-      field: 'email',
-      headerName: 'Email',
-      width: 200,
-      renderCell: (params) => {
-        return <div className="text-center">{params.value}</div>;
-      },
-    },
-    {
-      field: 'phoneNumber',
-      headerName: 'Điện thoại',
+      field: 'brand',
+      headerName: 'Thương hiệu',
       width: 100,
       renderCell: (params) => {
-        return <div className="text-center">{params.value}</div>;
+        return <div className="text-center">{params.row.brand.name}</div>;
       },
     },
     {
       field: 'createdTime',
-      headerName: 'Lần đầu tham gia',
+      headerName: 'Ngày nhập hàng',
       width: 150,
       renderCell: (params) => {
         const dateValue = new Date(params.value);
-        if (isNaN(dateValue.getTime())) {
+        if (!params.value) {
           return <div className="text-center">Không xác định</div>;
         }
         const formattedDateTime = format(dateValue, 'HH:mm:ss, dd/MM/yyyy');
@@ -112,12 +112,12 @@ const UserManagement = () => {
       },
     },
     {
-      field: 'lastLoginTime',
-      headerName: 'Đăng nhập lần cuối',
+      field: 'updatedTime',
+      headerName: 'Chỉnh sửa lần cuối',
       width: 150,
       renderCell: (params) => {
         const dateValue = new Date(params.value);
-        if (isNaN(dateValue.getTime())) {
+        if (!params.value) {
           return <div className="text-center">Không xác định</div>;
         }
         const formattedDateTime = format(dateValue, 'HH:mm:ss, dd/MM/yyyy');
@@ -125,94 +125,134 @@ const UserManagement = () => {
       },
     },
     {
-      field: 'authenticationType',
-      headerName: 'Loại xác thực',
+      field: 'listedPrice',
+      headerName: 'Giá niêm yết',
+      width: 120,
+      renderCell: (params) => {
+        return (
+          <div className="text-center">
+            <FormatPrice price={params.value} />
+          </div>
+        );
+      },
+    },
+    {
+      field: 'discountPercent',
+      headerName: 'Giảm',
+      width: 55,
+      renderCell: (params) => {
+        return <div className="text-center">{params.value}%</div>;
+      },
+    },
+    {
+      field: 'currentPrice',
+      headerName: 'Giá hiện tại',
+      width: 120,
+      renderCell: (params) => {
+        return (
+          <div className="text-center">
+            <FormatPrice price={params.value} />
+          </div>
+        );
+      },
+    },
+    {
+      field: 'soldQuantity',
+      headerName: 'Đã bán',
+      width: 65,
+      renderCell: (params) => {
+        return <div className="text-center">{params.value}</div>;
+      },
+    },
+    {
+      field: 'quantity',
+      headerName: 'Tồn kho',
+      width: 70,
+      renderCell: (params) => {
+        return <div className="text-center">{params.value}</div>;
+      },
+    },
+    {
+      field: 'shortDescription',
+      headerName: 'Mô tả ngắn gọn',
+      width: 200,
+    },
+    {
+      field: 'fullDescription',
+      headerName: 'Mô tả đầy đủ',
+      width: 200,
+    },
+    {
+      field: 'operatingSystem',
+      headerName: 'Hệ điều hành',
       width: 110,
       renderCell: (params) => {
+        return <div className="text-center">{params.value}</div>;
+      },
+    },
+    {
+      field: 'weight',
+      headerName: 'Cân nặng',
+      width: 90,
+      renderCell: (params) => {
+        return <div className="text-center">{params.value} (kg)</div>;
+      },
+    },
+    {
+      field: 'dimensions',
+      headerName: 'Kích thước',
+      width: 170,
+      renderCell: (params) => {
+        const { length, width, height } = params.row;
+
+        let dimensions = '';
+        if (length && width && height) {
+          dimensions = `${length} x ${width} x ${height}`;
+        } else if (length && width) {
+          dimensions = `${length} x ${width} (dài x rộng)`;
+        } else if (length && height) {
+          dimensions = `${length} x ${height} (dài x cao)`;
+        } else if (width && height) {
+          dimensions = `${width} x ${height} (rộng x cao)`;
+        } else if (length) {
+          dimensions = `${length} (dài)`;
+        } else if (width) {
+          dimensions = `${width} (rộng)`;
+        } else if (height) {
+          dimensions = `${height} (cao)`;
+        } else {
+          dimensions = 'Không có thông tin kích thước';
+        }
+
+        return <div className="text-center">{dimensions}</div>;
+      },
+    },
+    {
+      field: 'averageRating',
+      headerName: 'Đánh giá',
+      width: 80,
+      renderCell: (params) => {
         return (
-          <div className="text-center" style={{ color: 'rgb(188, 177, 92)' }}>
-            <i>{params.value}</i>
+          <div className="d-flex align-items-center gap-1 justify-content-center">
+            {params.value}
+            <FontAwesomeIcon
+              icon={faStar as IconProp}
+              style={{
+                fontSize: '1.2rem',
+                color: '#f5c31a',
+                marginBottom: '2px',
+              }}
+            />
           </div>
         );
       },
     },
     {
-      field: 'roles',
-      headerName: 'Vai trò',
-      width: 90,
+      field: 'ratingCount',
+      headerName: 'Số lượt',
+      width: 70,
       renderCell: (params) => {
-        const roles = params.value || [];
-
-        const iconStyle = {
-          fontSize: '1.5rem',
-          borderRadius: '50%',
-          width: '27px',
-          height: '27px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'transparent',
-          borderStyle: 'solid',
-          borderWidth: '2px',
-        };
-
-        return (
-          <div
-            style={{
-              display: 'flex',
-              gap: '6px',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
-              width: '100%',
-            }}
-          >
-            {roles.includes('Quản trị hệ thống') && (
-              <div
-                style={{
-                  ...iconStyle,
-                  color: '#d0021b',
-                  borderColor: '#d0021b',
-                }}
-              >
-                <FaUserShield title="Quản trị hệ thống" />
-              </div>
-            )}
-            {roles.includes('Quản lý nội dung') && (
-              <div
-                style={{
-                  ...iconStyle,
-                  color: '#2382f5',
-                  borderColor: '#2382f5',
-                }}
-              >
-                <FaUserTag title="Quản lý nội dung" />
-              </div>
-            )}
-            {roles.includes('Nhân viên bán hàng') && (
-              <div
-                style={{
-                  ...iconStyle,
-                  color: '#159010',
-                  borderColor: '#159010',
-                }}
-              >
-                <FaHandshake title="Nhân viên bán hàng" />
-              </div>
-            )}
-            {roles.includes('Khách hàng') && (
-              <div
-                style={{
-                  ...iconStyle,
-                  color: '#f5a623',
-                  borderColor: '#f5a623',
-                }}
-              >
-                <FaUser title="Khách hàng" />
-              </div>
-            )}
-          </div>
-        );
+        return <div className="text-center">{params.value}</div>;
       },
     },
     {
@@ -248,7 +288,7 @@ const UserManagement = () => {
               }}
             >
               <FontAwesomeIcon
-                title="Sửa người dùng"
+                title="Sửa sản phẩm"
                 onClick={() => {
                   if (!isLoggedIn) {
                     toast.error('Bạn cần đăng nhập để thực hiện chức năng này');
@@ -264,8 +304,8 @@ const UserManagement = () => {
                     navigate('/admin/login', { state: { from: location } });
                     return;
                   }
-                  setUserId(item.row.id);
-                  setOpenUserModal(true);
+                  setProductId(item.row.id);
+                  setOpenProductModal(true);
                   setOption('update');
                 }}
                 icon={faEdit as IconProp}
@@ -280,9 +320,9 @@ const UserManagement = () => {
               }}
             >
               <FontAwesomeIcon
-                title="Xóa người dùng"
+                title="Xóa sản phẩm"
                 onClick={() => {
-                  handleDeleteUser(item.row.id);
+                  handleDeleteProduct(item.row.id);
                 }}
                 icon={faTrash as IconProp}
               />
@@ -293,37 +333,27 @@ const UserManagement = () => {
     },
   ];
 
-  const handleOpenUserModal = () => setOpenUserModal(true);
-  const handleCloseUserModal = () => {
-    setUserId(undefined);
-    setOpenUserModal(false);
+  const handleOpenProductModal = () => setOpenProductModal(true);
+  const handleCloseProductModal = () => {
+    setProductId(undefined);
+    setOpenProductModal(false);
   };
 
-  const fetchUsers = () => {
-    fetch(backendEndpoint + `/users`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data: UserModel[]) => {
+  const fetchProducts = () => {
+    getAllProductsNoFilter()
+      .then((data) => {
         setIsLoading(false);
-        const users: UserModel[] = data.map((user: UserModel) => ({
-          ...user,
-        }));
-
-        setUsers(users);
+        setProducts(data.result);
       })
       .catch((error) => console.log(error));
   };
 
-  const handleDeleteUser = async (userId: number) => {
+  const handleDeleteProduct = async (productId: number) => {
     confirm({
       title: <div className="default-title">XÓA NGƯỜI DÙNG</div>,
       description: (
         <span style={{ fontSize: '16px' }}>
-          Khi xác nhận xóa người dùng, tất cả các hoạt động liên quan đều sẽ bị
+          Khi xác nhận xóa sản phẩm, tất cả các hoạt động liên quan đều sẽ bị
           xóa bao gồm các bình luận, bài đăng, ...
         </span>
       ),
@@ -332,7 +362,7 @@ const UserManagement = () => {
     })
       .then(async () => {
         if (!isLoggedIn) {
-          toast.error('Bạn phải đăng nhập để xóa người dùng này');
+          toast.error('Bạn phải đăng nhập để xóa sản phẩm này');
           navigate('/admin/login', {
             state: { from: location },
           });
@@ -350,7 +380,7 @@ const UserManagement = () => {
         }
 
         const response = await fetch(
-          backendEndpoint + `/users/delete-user/${userId}`,
+          backendEndpoint + `/products/delete-product/${productId}`,
           {
             method: 'DELETE',
             headers: {
@@ -373,22 +403,22 @@ const UserManagement = () => {
             return;
           }
 
-          toast.success(data.message || 'Xóa người dùng thành công');
+          toast.success(data.message || 'Xóa sản phẩm thành công');
           setKeyCountReload(Math.random());
         } else {
-          toast.error(data.message || 'Đã xảy ra lỗi khi xóa người dùng này');
+          toast.error(data.message || 'Đã xảy ra lỗi khi xóa sản phẩm này');
         }
       })
       .catch(() => {});
   };
 
   useEffect(() => {
-    fetchUsers();
+    fetchProducts();
   }, [keyCountReload]);
 
   useEffect(() => {
-    console.log({ userId, openUserModal, option });
-  }, [userId, openUserModal, option]);
+    console.log({ productId, openProductModal, option });
+  }, [productId, openProductModal, option]);
 
   if (isLoading) {
     return <Loader isAdmin />;
@@ -396,21 +426,21 @@ const UserManagement = () => {
 
   return (
     <div className="container mt-5">
-      <DataTable title="Danh sách người dùng" columns={columns} rows={users} />
+      <DataTable title="Danh sách sản phẩm" columns={columns} rows={products} />
       <FadeModal
-        open={openUserModal}
-        handleOpen={handleOpenUserModal}
-        handleClose={handleCloseUserModal}
+        open={openProductModal}
+        handleOpen={handleOpenProductModal}
+        handleClose={handleCloseProductModal}
       >
-        <UserModal
-          userId={userId}
-          option={option}
-          setKeyCountReload={setKeyCountReload}
-          handleCloseUserModal={handleCloseUserModal}
+        <ProductModal
+        //productId={productId}
+        //option={option}
+        //setKeyCountReload={setKeyCountReload}
+        //handleCloseProductModal={handleCloseProductModal}
         />
       </FadeModal>
       <Fab
-        title="Thêm người dùng"
+        title="Thêm sản phẩm"
         color="primary"
         aria-label="add"
         sx={{
@@ -422,9 +452,9 @@ const UserManagement = () => {
           backgroundColor: 'rgb(66, 165, 245)',
         }}
         onClick={() => {
-          handleOpenUserModal();
+          handleOpenProductModal();
           setOption('add');
-          setUserId(undefined);
+          setProductId(undefined);
         }}
       >
         <Add sx={{ fontSize: '3rem' }} />
@@ -433,5 +463,5 @@ const UserManagement = () => {
   );
 };
 
-const UserManagementPage = AdminRequirement(UserManagement);
-export default UserManagementPage;
+const ProductManagementPage = AdminRequirement(ProductManagement);
+export default ProductManagementPage;
