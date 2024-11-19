@@ -205,3 +205,70 @@ export async function getAndFindProducts(
   }
   return getProductsWithEmbedded(url);
 }
+
+export async function addAProduct(
+  productName: string,
+  categoryName: string,
+  brandName: string,
+  listedPrice: number,
+  currentPrice: number,
+  quantity: number,
+  operatingSystem: string,
+  weight: number,
+  length: number,
+  width: number,
+  height: number,
+  shortDescription: string,
+  fullDescription: string,
+  mainImageFile: File | null,
+  relatedImagesFiles: File[],
+) {
+  const formData = new FormData();
+
+  // Thêm dữ liệu sản phẩm vào FormData
+  formData.append('productName', productName);
+  formData.append('categoryName', categoryName);
+  formData.append('brandName', brandName);
+  formData.append('listedPrice', listedPrice.toString());
+  formData.append('currentPrice', currentPrice.toString());
+  formData.append('quantity', quantity.toString());
+  formData.append('operatingSystem', operatingSystem);
+  formData.append('weight', weight.toString());
+  formData.append('length', length.toString());
+  formData.append('width', width.toString());
+  formData.append('height', height.toString());
+  formData.append('shortDescription', shortDescription);
+  formData.append('fullDescription', fullDescription);
+
+  // Thêm ảnh chính nếu có
+  if (mainImageFile) {
+    formData.append('mainImage', mainImageFile);
+  }
+
+  if (relatedImagesFiles.length > 0) {
+    relatedImagesFiles.forEach((relatedImagesFile) => {
+      formData.append('relatedImages', relatedImagesFile);
+    });
+  }
+
+  try {
+    // Gửi yêu cầu POST với Fetch API
+    const response = await fetch(`${backendEndpoint}/products/add-product`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Xảy ra lỗi khi thêm sản phẩm');
+    }
+
+    // Trả về kết quả dưới dạng JSON
+    return response.json();
+  } catch (error) {
+    console.error('Lỗi khi thêm sản phẩm:', error);
+    return null;
+  }
+}

@@ -8,7 +8,7 @@ class ProductModel {
   name: string;
   alias: string;
   shortDescription: string;
-  fullDescription?: string;
+  fullDescription: string;
   createdTime?: Date;
   updatedTime?: Date;
   enabled?: boolean;
@@ -42,7 +42,7 @@ class ProductModel {
     category: CategoryModel,
     brand: BrandModel,
     images: ProductImageModel[],
-    fullDescription?: string,
+    fullDescription: string,
     createdTime?: Date,
     updatedTime?: Date,
     enabled?: boolean,

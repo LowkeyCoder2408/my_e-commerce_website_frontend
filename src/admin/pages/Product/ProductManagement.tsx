@@ -1,5 +1,5 @@
 import { GridColDef } from '@mui/x-data-grid';
-import AdminRequirement from '../../../../utils/AdminRequirement';
+import AdminRequirement from '../../../utils/AdminRequirement';
 import { format } from 'date-fns';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -10,24 +10,24 @@ import {
   faTrash,
 } from '@fortawesome/free-solid-svg-icons';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { DataTable } from '../../../../utils/DataTable';
+import { DataTable } from '../../../utils/DataTable';
 import { useEffect, useState } from 'react';
-import ProductModel from '../../../../models/ProductModel';
-import { FadeModal } from '../../../../utils/FadeModal';
-import Loader from '../../../../utils/Loader';
-import { backendEndpoint } from '../../../../utils/Service/Constant';
+import ProductModel from '../../../models/ProductModel';
+import { FadeModal } from '../../../utils/FadeModal';
+import Loader from '../../../utils/Loader';
+import { backendEndpoint } from '../../../utils/Service/Constant';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../../utils/Context/AuthContext';
+import { useAuth } from '../../../utils/Context/AuthContext';
 import { Avatar, Fab } from '@mui/material';
-import { FaHandshake, FaUser, FaUserShield, FaUserTag } from 'react-icons/fa';
 import ProductModal from './ProductModal';
-import { Add, Star } from '@mui/icons-material';
+import { Add } from '@mui/icons-material';
 import { confirm } from 'material-ui-confirm';
 import { toast } from 'react-toastify';
-import { isTokenExpired } from '../../../../utils/Service/JwtService';
-import { getAllProductsNoFilter } from '../../../../api/ProductAPI';
-import ProductRating from '../../../../pages/Product/ProductRating/ProductRating';
-import FormatPrice from '../../../../utils/Service/FormatPrice';
+import { isTokenExpired } from '../../../utils/Service/JwtService';
+import { getAllProductsNoFilter } from '../../../api/ProductAPI';
+import FormatPrice from '../../../utils/Service/FormatPrice';
+import { styled } from '@mui/material/styles';
+import Switch from '@mui/material/Switch';
 
 const ProductManagement = () => {
   const { isLoggedIn, setIsLoggedIn } = useAuth();
@@ -40,6 +40,53 @@ const ProductManagement = () => {
   const [openProductModal, setOpenProductModal] = useState<boolean>(false);
   const [option, setOption] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const AntSwitch = styled(Switch)(({ theme }) => ({
+    width: 28,
+    height: 16,
+    padding: 0,
+    display: 'flex',
+    '&:active': {
+      '& .MuiSwitch-thumb': {
+        width: 15,
+      },
+      '& .MuiSwitch-switchBase.Mui-checked': {
+        transform: 'translateX(9px)',
+      },
+    },
+    '& .MuiSwitch-switchBase': {
+      padding: 2,
+      '&.Mui-checked': {
+        transform: 'translateX(12px)',
+        color: '#fff',
+        '& + .MuiSwitch-track': {
+          opacity: 1,
+          backgroundColor: '#1890ff',
+          ...theme.applyStyles('dark', {
+            backgroundColor: '#177ddc',
+          }),
+        },
+      },
+    },
+    '& .MuiSwitch-thumb': {
+      boxShadow: '0 2px 4px 0 rgb(0 35 11 / 20%)',
+      width: 12,
+      height: 12,
+      borderRadius: 6,
+      transition: theme.transitions.create(['width'], {
+        duration: 200,
+      }),
+    },
+    '& .MuiSwitch-track': {
+      borderRadius: 16 / 2,
+      opacity: 1,
+      backgroundColor: 'rgba(0,0,0,.25)',
+      boxSizing: 'border-box',
+      ...theme.applyStyles('dark', {
+        backgroundColor: 'rgba(255,255,255,.35)',
+      }),
+    },
+  }));
 
   const columns: GridColDef[] = [
     {
@@ -181,21 +228,29 @@ const ProductManagement = () => {
       field: 'fullDescription',
       headerName: 'Mô tả đầy đủ',
       width: 200,
+      renderCell: (params) => {
+        const textContent =
+          new DOMParser()
+            .parseFromString(params.value?.toString() || '', 'text/html')
+            .documentElement.textContent?.trim() || '';
+        return <>{textContent}</>;
+      },
     },
+
     {
       field: 'operatingSystem',
       headerName: 'Hệ điều hành',
       width: 110,
       renderCell: (params) => {
-        return <div className="text-center">{params.value}</div>;
+        return <div className="text-center">{params.value || 'Không có'}</div>;
       },
     },
     {
       field: 'weight',
-      headerName: 'Cân nặng',
-      width: 90,
+      headerName: 'Trọng lượng',
+      width: 100,
       renderCell: (params) => {
-        return <div className="text-center">{params.value} (kg)</div>;
+        return <div className="text-center">{params.value} (g)</div>;
       },
     },
     {
@@ -221,7 +276,7 @@ const ProductManagement = () => {
         } else if (height) {
           dimensions = `${height} (cao)`;
         } else {
-          dimensions = 'Không có thông tin kích thước';
+          dimensions = 'Không có thông tin';
         }
 
         return <div className="text-center">{dimensions}</div>;
@@ -261,12 +316,14 @@ const ProductManagement = () => {
       width: 75,
       renderCell: (params) => {
         return (
-          <div className="text-center">
-            {params.value ? (
-              <FontAwesomeIcon icon={faCheck} style={{ color: 'green' }} />
-            ) : (
-              <FontAwesomeIcon icon={faTimes} style={{ color: 'red' }} />
-            )}
+          <div className="text-center h-100 d-flex align-items-center justify-content-center">
+            <AntSwitch
+              checked={params.value}
+              onChange={(e) => {
+                // handleChangeActiveState(params.row.id, e.);
+              }}
+              inputProps={{ 'aria-label': 'ant design' }}
+            />
           </div>
         );
       },
@@ -433,10 +490,10 @@ const ProductManagement = () => {
         handleClose={handleCloseProductModal}
       >
         <ProductModal
-        //productId={productId}
-        //option={option}
-        //setKeyCountReload={setKeyCountReload}
-        //handleCloseProductModal={handleCloseProductModal}
+          productId={productId}
+          option={option}
+          setKeyCountReload={setKeyCountReload}
+          handleCloseProductModal={handleCloseProductModal}
         />
       </FadeModal>
       <Fab

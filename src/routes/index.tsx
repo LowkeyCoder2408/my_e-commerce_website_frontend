@@ -29,7 +29,7 @@ import CreateBlog from '../pages/Blog/components/CreateBlog';
 import UserManagementPage from '../admin/pages/User/UserManagement';
 import AdminLogin from '../admin/pages/Login/AdminLogin';
 import AdminDashboard from '../admin/pages/Dashboard/AdminDashboard';
-import ProductManagementPage from '../admin/pages/Product/components/ProductManagement';
+import ProductManagementPage from '../admin/pages/Product/ProductManagement';
 
 const publicRoutes = [
   {

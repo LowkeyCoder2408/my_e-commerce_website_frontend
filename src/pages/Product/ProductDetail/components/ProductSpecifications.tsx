@@ -113,7 +113,7 @@ function ProductSpecifications(props: ProductSpecificationsProps) {
                 Trọng lượng
               </td>
               <td style={{ width: '60%', paddingLeft: '20px' }}>
-                {props.product.weight} kg
+                {(props.product.weight / 1000).toFixed(3)} kg
               </td>
             </tr>
           )}
