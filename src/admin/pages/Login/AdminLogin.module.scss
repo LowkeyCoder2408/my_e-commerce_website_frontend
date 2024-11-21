@@ -1,7 +1,14 @@
 .login__container {
   border-radius: 10px;
-  background-color: #fff;
-  margin-top: 30px;
+  // background-color: #fff;
+  width: 650px;
+  // background-color: transparent;
+}
+
+.login__row {
+  border: 1.6px solid rgb(159, 159, 159);
+  border-radius: 10px;
+  // background-color: #172237;
 }
 
 .login__logo {
@@ -40,7 +47,7 @@
 }
 
 .login__error svg {
-  color: crimson;
+  color: #fff;
   margin-left: 5px;
 }
 
@@ -77,6 +84,8 @@
   background-color: transparent;
   letter-spacing: 1px;
   transition: 0.5s;
+  color: #fff;
+  border: 1px solid rgb(159, 159, 159);
 }
 
 .login__input-box span {
@@ -90,10 +99,17 @@
   pointer-events: none;
   font-size: 1.6rem;
   transition: 0.8s;
+  color: #fff;
 }
 
 .login__input-box input:focus {
-  border: 1px solid #555;
+  // border: 1px solid #555;
+  // border: 1px solid rgb(159, 159, 159);
+  background-color: #172237 !important;
+}
+
+.login__input-box input::placeholder {
+  color: #fff;
 }
 
 .login__input-box input:focus + span,
@@ -104,6 +120,8 @@
   padding: 0 5px;
   background-color: #fff;
   border-radius: 5px;
+  background-color: #172237;
+  color: #fff;
 }
 
 .login__transfer {
@@ -111,8 +129,10 @@
 }
 
 .login__transfer a {
-  color: rgb(0, 109, 193);
+  // color: rgb(0, 109, 193);
   font-weight: 430;
+
+  color: rgb(136, 132, 216);
 }
 
 .login__transfer a:hover {

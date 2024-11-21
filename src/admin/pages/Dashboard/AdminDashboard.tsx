@@ -123,6 +123,25 @@ const Dashboard = () => {
     ],
   };
 
+  const chartBoxComment = {
+    color: 'gold',
+    icon: '/blog.svg',
+    title: 'Bình luận',
+    number: 0,
+    dataKey: 'bài đăng',
+    link: '/admin/blog-management',
+    percentage: -7,
+    chartData: [
+      { name: 'Chủ Nhật', 'bình luận': 4 },
+      { name: 'Thứ Hai', 'bình luận': 6 },
+      { name: 'Thứ Ba', 'bình luận': 5 },
+      { name: 'Thứ Tư', 'bình luận': 7 },
+      { name: 'Thứ Năm', 'bình luận': 14 },
+      { name: 'Thứ Sáu', 'bình luận': 5 },
+      { name: 'Thứ Bảy', 'bình luận': 4 },
+    ],
+  };
+
   const barChartBoxOrderStatus = {
     title: 'TRẠNG THÁI ĐƠN HÀNG',
     color: '#FF8042',
@@ -163,7 +182,7 @@ const Dashboard = () => {
         <ChartBox {...chartBoxBlog} />
       </div>
       <div className={cx('home__box', 'home__box2')}>
-        <ChartBox {...chartBoxBlog} />
+        <ChartBox {...chartBoxComment} />
       </div>
       <div className={cx('home__box', 'home__box2')}>
         <ChartBox {...chartBoxReview} />

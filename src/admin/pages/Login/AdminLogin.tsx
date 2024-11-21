@@ -35,6 +35,12 @@ function AdminLogin() {
     if (isLoggedIn) {
       navigate('/admin/dashboard');
     }
+
+    document.body.style.backgroundColor = '#172237';
+    document.body.style.display = 'flex';
+    document.body.style.alignItems = 'center';
+    document.body.style.justifyContent = 'center';
+    document.body.style.height = '100vh';
   }, []);
 
   const checkValidEmail = (email: string) => {
@@ -125,12 +131,12 @@ function AdminLogin() {
 
   return (
     <div className={`${cx('login__container')} container`}>
-      <div className="row">
+      <div className={`${cx('login__row')} row`}>
         <div
-          className={`${cx('login__form')} col col-xxl-6 col-xl-6 col-lg-12 col-md-12 col-12`}
+          className={`${cx('login__form')} col col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-12`}
         >
           <h1 className={`${cx('login__form-title')} text-center mt-5`}>
-            <strong>ĐĂNG NHẬP</strong>
+            <strong style={{ color: '#fff' }}>ĐĂNG NHẬP</strong>
           </h1>
           <div className="mt-3 mb-5">
             <form className="form" autoComplete="off">
@@ -202,14 +208,19 @@ function AdminLogin() {
                   </div>
                 </div>
               </div>
-              <div className="d-flex justify-content-between">
+              <div
+                className="d-flex justify-content-between"
+                style={{ color: '#fff' }}
+              >
                 <label htmlFor="remember-me" className="d-flex gap-2 mt-3">
                   <input id="remember-me" type="checkbox" value="remember-me" />
                   Ghi nhớ tài khoản
                 </label>
                 <div className={`${cx('login__transfer')}`}>
                   <Link to={'/forgot-password'} className="mt-3">
-                    <strong>Quên mật khẩu</strong>
+                    <strong style={{ color: 'rgb(136, 132, 216)' }}>
+                      Quên mật khẩu
+                    </strong>
                   </Link>
                 </div>
               </div>
@@ -223,35 +234,41 @@ function AdminLogin() {
                 sx={{
                   marginTop: '7px',
                   padding: '3px 0',
-                  color: '#fff',
-                  backgroundColor: 'primary.light',
-                  '&:hover': {
-                    backgroundColor: 'primary.dark',
-                  },
-                  '& svg': {
-                    color: 'white',
-                  },
+                  // color: '#fff',
+                  // backgroundColor: 'primary.light',
+                  // '&:hover': {
+                  //   backgroundColor: 'primary.dark',
+                  // },
+                  // '& svg': {
+                  //   color: 'white',
+                  // },
                   border: 'none',
                   opacity: emailError !== '' || passwordError ? 0.5 : 1,
                   transition: 'opacity 0.3s ease',
                 }}
+                style={{
+                  backgroundColor: ' transparent',
+                  color: '#fff',
+                  border: '1px solid rgb(159, 159, 159',
+                }}
               >
-                <div className="text-white" style={{ fontSize: '1.6rem' }}>
+                <div style={{ fontSize: '1.6rem', color: '#fff' }}>
                   ĐĂNG NHẬP
                 </div>
-              </LoadingButton>
-
+              </LoadingButton>{' '}
               <div className={`${cx('login__transfer')} mb-4`}>
-                <span>
+                <span style={{ color: '#fff' }}>
                   Bạn chưa có tài khoản quản trị viên?{' '}
-                  <Link to={'/'}>Mua sắm ngay</Link>
+                  <Link to={'/'} style={{ color: 'rgb(136, 132, 216)' }}>
+                    Mua sắm ngay
+                  </Link>
                 </span>
               </div>
             </form>
           </div>
         </div>
         <div
-          className={`${cx('login__logo')} col col-xxl-6 col-xl-6 col-lg-12 col-md-12 col-12 d-flex flex-column justify-content-center align-items-center`}
+          className={`${cx('login__logo')} col col-xxl-6 col-xl-6 col-lg-12 col-md-12 col-12 d-flex flex-column justify-content-center align-items-center d-none`}
         >
           <img
             src="https://res.cloudinary.com/dgdn13yur/image/upload/v1707592447/logo_main_tes0gp.png"

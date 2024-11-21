@@ -245,7 +245,7 @@ const BlogManagement = () => {
 
   const handleDeleteBlog = async (blogId: number) => {
     confirm({
-      title: <div className="default-title">XÓA SẢN PHẨM</div>,
+      title: <div className="default-title">XÓA BÀI ĐĂNG</div>,
       description: (
         <span style={{ fontSize: '16px' }}>
           Việc xác nhận xóa bài đăng sẽ đồng thời xóa tất cả dữ liệu liên quan,

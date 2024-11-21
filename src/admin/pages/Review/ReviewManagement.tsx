@@ -28,6 +28,62 @@ const ReviewManagement = () => {
   const [reviews, setReviews] = useState<ReviewModel[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  const handleDeleteBlog = async (reviewId: number) => {
+    confirm({
+      title: <div className="default-title">XÓA BÌNH LUẬN</div>,
+      description: (
+        <span style={{ fontSize: '16px' }}>
+          Việc xác nhận xóa bình luận sẽ đồng thời xóa tất cả dữ liệu liên quan,
+          bao gồm đánh giá, giỏ hàng, và các thông tin khác liên quan đến sản
+          phẩm này.
+        </span>
+      ),
+
+      confirmationText: <span style={{ fontSize: '15px' }}>Đồng ý</span>,
+      cancellationText: <span style={{ fontSize: '15px' }}>Huỷ</span>,
+    })
+      .then(async () => {
+        if (!isLoggedIn) {
+          toast.error('Bạn phải đăng nhập để xóa bình luận này');
+          navigate('/admin/login', {
+            state: { from: location },
+          });
+          return;
+        }
+
+        if (isTokenExpired()) {
+          localStorage.removeItem('token');
+          setIsLoggedIn(false);
+          toast.error(
+            'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục',
+          );
+          navigate('/admin/login', { state: { from: location } });
+          return;
+        }
+
+        const response = await fetch(
+          backendEndpoint + `/reviews/delete-review/${reviewId}`,
+          {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+              'content-type': 'application/json',
+            },
+          },
+        );
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'success') {
+          toast.success(data.message || 'Xóa bình luận thành công');
+          setKeyCountReload(Math.random());
+        } else {
+          toast.error(data.message || 'Đã xảy ra lỗi khi xóa bình luận này');
+        }
+      })
+      .catch(() => {});
+  };
+
   const AntSwitch = styled(Switch)(({ theme }) => ({
     width: 28,
     height: 16,
@@ -107,7 +163,7 @@ const ReviewManagement = () => {
     {
       field: 'content',
       headerName: 'Nội dung',
-      width: 400,
+      width: 300,
     },
     {
       field: 'authorName',
@@ -134,8 +190,33 @@ const ReviewManagement = () => {
       field: 'productName',
       headerName: 'Tên sản phẩm',
       width: 400,
-      renderCell: (params) => {
-        return <div className="text-center">{params.row.productName}</div>;
+    },
+    {
+      field: 'action',
+      headerName: 'Thao tác',
+      width: 80,
+      type: 'actions',
+      renderCell: (item) => {
+        return (
+          <div className="d-flex gap-1">
+            <div
+              style={{
+                fontSize: '1.3rem',
+                cursor: 'pointer',
+                padding: '5px',
+                color: 'red',
+              }}
+            >
+              <FontAwesomeIcon
+                title="Xóa bình luận"
+                onClick={() => {
+                  handleDeleteBlog(item.row.id);
+                }}
+                icon={faTrash as IconProp}
+              />
+            </div>
+          </div>
+        );
       },
     },
   ];
