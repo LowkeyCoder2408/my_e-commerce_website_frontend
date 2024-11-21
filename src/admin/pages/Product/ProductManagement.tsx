@@ -407,13 +407,15 @@ const ProductManagement = () => {
 
   const handleDeleteProduct = async (productId: number) => {
     confirm({
-      title: <div className="default-title">XÓA NGƯỜI DÙNG</div>,
+      title: <div className="default-title">XÓA SẢN PHẨM</div>,
       description: (
         <span style={{ fontSize: '16px' }}>
-          Khi xác nhận xóa sản phẩm, tất cả các hoạt động liên quan đều sẽ bị
-          xóa bao gồm các bình luận, bài đăng, ...
+          Việc xác nhận xóa sản phẩm sẽ đồng thời xóa tất cả dữ liệu liên quan,
+          bao gồm đánh giá, giỏ hàng, và các thông tin khác liên quan đến sản
+          phẩm này.
         </span>
       ),
+
       confirmationText: <span style={{ fontSize: '15px' }}>Đồng ý</span>,
       cancellationText: <span style={{ fontSize: '15px' }}>Huỷ</span>,
     })
@@ -450,16 +452,6 @@ const ProductManagement = () => {
         const data = await response.json();
 
         if (response.ok && data.status === 'success') {
-          if (data.logout) {
-            localStorage.removeItem('token');
-            setIsLoggedIn(false);
-            toast.success(
-              'Tài khoản đã bị xóa. Liên hệ với quản trị viên để tạo lại tài khoản',
-            );
-            navigate('/admin/login', { state: { from: location } });
-            return;
-          }
-
           toast.success(data.message || 'Xóa sản phẩm thành công');
           setKeyCountReload(Math.random());
         } else {
@@ -472,10 +464,6 @@ const ProductManagement = () => {
   useEffect(() => {
     fetchProducts();
   }, [keyCountReload]);
-
-  useEffect(() => {
-    console.log({ productId, openProductModal, option });
-  }, [productId, openProductModal, option]);
 
   if (isLoading) {
     return <Loader isAdmin />;

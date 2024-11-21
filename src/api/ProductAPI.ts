@@ -272,3 +272,75 @@ export async function addAProduct(
     return null;
   }
 }
+
+export async function updateAProduct(
+  productId: number,
+  productName?: string,
+  categoryName?: string,
+  brandName?: string,
+  listedPrice?: number,
+  currentPrice?: number,
+  quantity?: number,
+  operatingSystem?: string,
+  weight?: number,
+  length?: number,
+  width?: number,
+  height?: number,
+  shortDescription?: string,
+  fullDescription?: string,
+  mainImageFile?: File | null,
+  relatedImagesFiles?: File[],
+) {
+  const formData = new FormData();
+
+  // Kiểm tra và thêm các tham số không bị bỏ trống vào FormData
+  if (productId) formData.append('productId', productId.toString());
+  if (productName) formData.append('productName', productName);
+  if (categoryName) formData.append('categoryName', categoryName);
+  if (brandName) formData.append('brandName', brandName);
+  if (listedPrice !== undefined)
+    formData.append('listedPrice', listedPrice.toString());
+  if (currentPrice !== undefined)
+    formData.append('currentPrice', currentPrice.toString());
+  if (quantity !== undefined) formData.append('quantity', quantity.toString());
+  if (operatingSystem) formData.append('operatingSystem', operatingSystem);
+  if (weight !== undefined) formData.append('weight', weight.toString());
+  if (length !== undefined) formData.append('length', length.toString());
+  if (width !== undefined) formData.append('width', width.toString());
+  if (height !== undefined) formData.append('height', height.toString());
+  if (shortDescription) formData.append('shortDescription', shortDescription);
+  if (fullDescription) formData.append('fullDescription', fullDescription);
+
+  // Thêm ảnh chính nếu có
+  if (mainImageFile) {
+    formData.append('mainImage', mainImageFile);
+  }
+
+  // Thêm ảnh liên quan nếu có
+  if (relatedImagesFiles && relatedImagesFiles.length > 0) {
+    relatedImagesFiles.forEach((relatedImageFile) => {
+      formData.append('relatedImages', relatedImageFile);
+    });
+  }
+
+  try {
+    // Gửi yêu cầu PUT với Fetch API
+    const response = await fetch(`${backendEndpoint}/products/update-product`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Xảy ra lỗi khi cập nhật sản phẩm');
+    }
+
+    // Trả về kết quả dưới dạng JSON
+    return response.json();
+  } catch (error) {
+    console.error('Lỗi khi cập nhật sản phẩm:', error);
+    return null;
+  }
+}

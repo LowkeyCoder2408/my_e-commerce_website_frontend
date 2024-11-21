@@ -15,7 +15,6 @@ import UploadImageInput from '../../../utils/UploadImageInput';
 import { toast } from 'react-toastify';
 import { isTokenExpired } from '../../../utils/Service/JwtService';
 import { useAuth } from '../../../utils/Context/AuthContext';
-// import { addAProduct, updateAProduct } from '../../../api/ProductAPI';
 import ProductModel from '../../../models/ProductModel';
 import CategoryModel from '../../../models/CategoryModel';
 import { getAllCategories } from '../../../api/CategoryAPI';
@@ -23,7 +22,7 @@ import BrandModel from '../../../models/BrandModel';
 import { getAllBrands } from '../../../api/BrandAPI';
 import 'react-quill/dist/quill.snow.css';
 import { useQuill } from 'react-quilljs';
-import { addAProduct } from '../../../api/ProductAPI';
+import { addAProduct, updateAProduct } from '../../../api/ProductAPI';
 
 interface ProductModalProps {
   productId: number | undefined;
@@ -72,20 +71,6 @@ const ProductModal = (props: ProductModalProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    console.log({
-      mainImagePreview,
-      mainImageFile,
-      relatedImagesPreview,
-      relatedImagesFiles,
-    });
-  }, [
-    mainImagePreview,
-    mainImageFile,
-    relatedImagesPreview,
-    relatedImagesFiles,
-  ]);
 
   const fetchCategories = async () => {
     try {
@@ -265,30 +250,46 @@ const ProductModal = (props: ProductModalProps) => {
           setSubmitLoading(false);
         });
     } else {
-      // updateAProduct(
-      //   props.productId || 0,
-      //   firstName,
-      //   lastName,
-      //   phoneNumber,
-      //   productRoles,
-      //   mainImageFile,
-      // )
-      //   .then((data) => {
-      //     if (data.status === 'success') {
-      //       toast.success(data.message || 'Cập nhật sản phẩm thành công');
-      //       props.handleCloseProductModal();
-      //       props.setKeyCountReload(Math.random());
-      //     } else {
-      //       toast.error(data.message || 'Đã có lỗi xảy ra, vui lòng thử lại');
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     console.error(error);
-      //     toast.error('Đã có lỗi trong quá trình xử lý');
-      //   })
-      //   .finally(() => {
-      //     setSubmitLoading(false);
-      //   });
+      updateAProduct(
+        props.productId || 0,
+        productName !== product?.name ? productName : undefined,
+        categoryName !== product?.category?.name ? categoryName : undefined,
+        brandName !== product?.brand?.name ? brandName : undefined,
+        listedPrice !== product?.listedPrice ? listedPrice : undefined,
+        currentPrice !== product?.currentPrice ? currentPrice : undefined,
+        quantity !== product?.quantity ? quantity : undefined,
+        operatingSystem !== product?.operatingSystem
+          ? operatingSystem
+          : undefined,
+        weight !== product?.weight ? weight : undefined,
+        length !== product?.length ? length : undefined,
+        width !== product?.width ? width : undefined,
+        height !== product?.height ? height : undefined,
+        shortDescription !== product?.shortDescription
+          ? shortDescription
+          : undefined,
+        fullDescription !== product?.fullDescription
+          ? fullDescription
+          : undefined,
+        mainImageFile,
+        relatedImagesFiles?.length > 0 ? relatedImagesFiles : undefined,
+      )
+        .then((data) => {
+          if (data.status === 'success') {
+            toast.success(data.message || 'Cập nhật sản phẩm thành công');
+            props.handleCloseProductModal();
+            props.setKeyCountReload(Math.random());
+          } else {
+            toast.error(data.message || 'Đã có lỗi xảy ra, vui lòng thử lại');
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error('Đã có lỗi trong quá trình xử lý');
+        })
+        .finally(() => {
+          setSubmitLoading(false);
+        });
     }
   };
 
@@ -801,7 +802,9 @@ const ProductModal = (props: ProductModalProps) => {
             <UploadImageInput
               required
               title={
-                props.option === 'add' || !product?.mainImage
+                props.option === 'add' ||
+                !product?.images ||
+                product?.images.length === 0
                   ? 'Thêm ảnh liên quan'
                   : 'Chỉnh sửa ảnh liên quan'
               }

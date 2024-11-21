@@ -168,10 +168,6 @@ const ResetPassword = () => {
 
   const canSubmit = passwordError === '' && repeatPasswordError === '';
 
-  useEffect(() => {
-    console.log({ resetPasswordToken, password, repeatPassword });
-  }, [resetPasswordToken, password, repeatPassword]);
-
   return (
     <div className={`${cx('reset-password__container')} container`}>
       <div className="row">
