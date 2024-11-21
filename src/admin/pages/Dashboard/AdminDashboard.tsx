@@ -72,7 +72,7 @@ const Dashboard = () => {
     title: 'Đơn Hàng',
     number: orders.length,
     dataKey: 'đơn hàng',
-    link: '/admin/view-orders',
+    link: '/admin/order-management',
     percentage: 12,
     chartData: [
       { name: 'Chủ Nhật', 'đơn hàng': 400 },
@@ -91,7 +91,7 @@ const Dashboard = () => {
     title: 'Đánh giá',
     number: reviews.length,
     dataKey: 'đánh giá',
-    link: '/admin/view-reviews',
+    link: '/admin/review-management',
     percentage: 12,
     chartData: [
       { name: 'Chủ Nhật', 'đánh giá': 400 },
@@ -110,7 +110,7 @@ const Dashboard = () => {
     title: 'Bài Đăng',
     number: blogs.length,
     dataKey: 'bài đăng',
-    link: '/admin/view-blogs',
+    link: '/admin/blog-management',
     percentage: -7,
     chartData: [
       { name: 'Chủ Nhật', 'bài đăng': 4 },

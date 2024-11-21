@@ -30,6 +30,9 @@ import UserManagementPage from '../admin/pages/User/UserManagement';
 import AdminLogin from '../admin/pages/Login/AdminLogin';
 import AdminDashboard from '../admin/pages/Dashboard/AdminDashboard';
 import ProductManagementPage from '../admin/pages/Product/ProductManagement';
+import BlogManagementPage from '../admin/pages/Blog/BlogManagement';
+import OrderManagementPage from '../admin/pages/Order/OrderManagement';
+import ReviewManagementPage from '../admin/pages/Review/ReviewManagement';
 
 const publicRoutes = [
   {
@@ -170,6 +173,21 @@ const privateRoutes = [
   {
     path: '/admin/product-management',
     component: ProductManagementPage,
+    layout: 'admin',
+  },
+  {
+    path: '/admin/blog-management',
+    component: BlogManagementPage,
+    layout: 'admin',
+  },
+  {
+    path: '/admin/order-management',
+    component: OrderManagementPage,
+    layout: 'admin',
+  },
+  {
+    path: '/admin/review-management',
+    component: ReviewManagementPage,
     layout: 'admin',
   },
 ];

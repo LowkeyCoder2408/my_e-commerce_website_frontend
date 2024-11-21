@@ -17,12 +17,13 @@ async function getBlogsWithEmbedded(url: string): Promise<ResultInterface> {
 
   const result = responseData.map((data: any) => ({
     id: data.id,
-    name: data.name,
+    likesCount: data.likesCount,
     title: data.title,
     content: data.content,
     author: data.author,
     blogCategory: data.blogCategory,
     featuredImage: data.featuredImage,
+    enabled: data.enabled,
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
   }));

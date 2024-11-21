@@ -42,13 +42,13 @@ export const menu = [
       {
         id: 3,
         title: 'Đơn Hàng',
-        url: '/admin/view-orders',
+        url: '/admin/order-management',
         icon: 'order.svg',
       },
       {
         id: 4,
         title: 'Bài Đăng',
-        url: '/admin/view-blogs',
+        url: '/admin/blog-management',
         icon: 'post.svg',
       },
     ],

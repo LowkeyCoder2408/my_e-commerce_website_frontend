@@ -4,7 +4,6 @@ import UserModel from './UserModel';
 
 class BlogModel {
   id: number;
-  name: string;
   title: string;
   content: string;
   author: UserModel;
@@ -17,7 +16,6 @@ class BlogModel {
 
   constructor(
     id: number,
-    name: string,
     title: string,
     content: string,
     author: UserModel,
@@ -29,7 +27,6 @@ class BlogModel {
     comments: BlogCommentModel[],
   ) {
     this.id = id;
-    this.name = name;
     this.title = title;
     this.content = content;
     this.author = author;
